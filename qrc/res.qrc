@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/write2file.png</file>
+        <file>style.qss</file>
+        <file>title.ico</file>
+    </qresource>
+</RCC>
