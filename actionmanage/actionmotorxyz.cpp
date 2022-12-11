@@ -19,13 +19,14 @@ ActionMotorXYZ::ActionMotorXYZ(QObject *parent)
     m_stTaskToSend.m_u16PathId = 0;
     m_stTaskToSend.m_eXZeroDir = emMorotX_UnKnow;
     /***********下层同步任务信息***********/
-    m_stDTaskInfo.m_eTaskType = emTskDXYZType_start;
+    m_stDTaskInfo.m_eTaskTypeD = emTskDXYZType_start;
     m_stDTaskInfo.m_eTaskStatusD = emWorkStatus_start;
     m_stDTaskInfo.m_eTaskSeluteD = emSeluteDMoveXYZ_start;
     m_stDTaskInfo.m_stAimDPos = {WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit};
     m_stDTaskInfo.m_u32MoveTime = 0;
     m_stDTaskInfo.m_u16XZeroSpeed = WK_SpeedNotLimit;
     m_stDTaskInfo.m_stCurDPos = {WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit};
+    m_stDTaskInfo.m_stCurLogicDPos = {LOGIC_LINE, LOGIC_LINE, LOGIC_LINE};
     m_stDTaskInfo.m_eXZeroDir = emMorotX_UnKnow;
     m_stDTaskInfo.m_stLinePos = {WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit,
                                 WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit};
@@ -79,7 +80,7 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         + (emWorkStatus_finish-->m_i32MoveDirMinEMinPos+m_i32MoveDirMinEMaxPos+m_i32MoveDirMaxEMinPos+m_i32MoveDirMaxEMaxPos
         + newAimId(u8) + XErrCode[U32]+ YErrCode[U32]+ ZErrCode[U32]*/
 
-        m_stDTaskInfo.m_eTaskType = (emTaskDXYZType)puData[uLen];
+        m_stDTaskInfo.m_eTaskTypeD = (emTaskDXYZType)puData[uLen];
         uLen += 1;
 
         m_stDTaskInfo.m_eTaskStatusD = (emWorkStatus)puData[uLen];
@@ -95,13 +96,13 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         m_stDTaskInfo.m_stAimDPos.m_i32Z = common_read_u32(&puData[uLen]);
         uLen += 4;
 
-        if(emTskDXYZType_zeroXMoveCheck == m_stDTaskInfo.m_eTaskType)
+        if(emTskDXYZType_zeroXMoveCheck == m_stDTaskInfo.m_eTaskTypeD)
             m_stDTaskInfo.m_u16XZeroSpeed = common_read_u32(&puData[uLen]);
         else
             m_stDTaskInfo.m_u32MoveTime = common_read_u32(&puData[uLen]);
         uLen += 4;
 
-        if(emTskDXYZType_setXPosZero == m_stDTaskInfo.m_eTaskType)
+        if(emTskDXYZType_setXPosZero == m_stDTaskInfo.m_eTaskTypeD)
             m_stDTaskInfo.m_eXZeroDir = (emMotorXDir)common_read_u32(&puData[uLen]);
         else
             m_stDTaskInfo.m_stCurDPos.m_i32X = common_read_u32(&puData[uLen]);
@@ -165,6 +166,8 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         m_stDTaskInfo.m_u32ZErrCode = common_read_u32(&puData[uLen]);
         uLen += 4;
 
+        //将物理坐标转换成逻辑值，获得一份逻辑坐标
+        convertPhyPosToLogicPos();
         // 更新 XYZ 界面信息
         emit signal_UiUpdate();
         // 如果任务是finish的，在链表中查找对应CmdFlag的结点删除，没找到，丢弃该数据
@@ -266,4 +269,34 @@ bool ActionMotorXYZ::setTaskCmdReSend(uint32_t sdNum)
         return true;
     }
     return false;
+}
+
+bool ActionMotorXYZ::isLineHasLocated()
+{
+    if( (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32XLineLeft) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32XLineLeft)
+            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32XLineRight) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32XLineRight)
+            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32YLineIn) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32YLineIn)
+            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32YLineOut) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32YLineOut)
+            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32ZLineUp) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32ZLineUp)
+            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) )
+        return false;
+    return true;
+}
+void ActionMotorXYZ::convertPhyPosToLogicPos()
+{
+    if(isLineHasLocated())
+    {
+        uint32_t xLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft - m_stDTaskInfo.m_stLinePos.m_i32XLineRight);
+        uint32_t yLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32YLineIn - m_stDTaskInfo.m_stLinePos.m_i32YLineOut);
+        uint32_t zLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp - m_stDTaskInfo.m_stLinePos.m_i32ZLineDown);
+
+        m_stDTaskInfo.m_stCurLogicDPos.m_fX = ( m_stDTaskInfo.m_stCurDPos.m_i32X -
+                std::min(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft, m_stDTaskInfo.m_stLinePos.m_i32XLineRight) ) / xLineLength * LOGIC_LINE;
+
+        m_stDTaskInfo.m_stCurLogicDPos.m_fY = ( m_stDTaskInfo.m_stCurDPos.m_i32Y -
+                std::min(m_stDTaskInfo.m_stLinePos.m_i32YLineIn, m_stDTaskInfo.m_stLinePos.m_i32YLineOut) ) / yLineLength * LOGIC_LINE;
+
+        m_stDTaskInfo.m_stCurLogicDPos.m_fZ = ( m_stDTaskInfo.m_stCurDPos.m_i32Z -
+                std::min(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp, m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) ) / zLineLength * LOGIC_LINE;
+    }
 }

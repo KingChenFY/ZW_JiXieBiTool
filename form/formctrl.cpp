@@ -20,10 +20,6 @@ FormCtrl::~FormCtrl()
 
 void FormCtrl::initForm()
 {
- ui->label_4->setText("xbasxjksbjksbcjkbckjcbjdsjkcsdjb");
-        ui->label_4->setWordWrap(true);
-        ui->label_4->adjustSize();
-
 
 }
 
@@ -44,15 +40,16 @@ void FormCtrl::initConfig()
     connect(m_pActionMotorV, &ActionMotorV::signal_UiUpdate, this, &FormCtrl::slot_MotorV_UiUpdate);
     connect(m_pActionMotorXYZ, &ActionMotorXYZ::signal_UiUpdate, this, &FormCtrl::slot_MotorXYZ_UiUpdate);
 
-
     emTaskStatus = QMetaEnum::fromType<FormCtrl::E_TASK_STATUS>();
+
+    slot_MotorXYZ_UiUpdate();
 }
 
 void FormCtrl::slot_BeltIN_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emBeltSelute = QMetaEnum::fromType<ActionBeltIn::E_SELUTE_BELTIN>();
-    ui->txtEd_BI->setPlainText(QString(emBeltSelute.valueToKey(m_pActionBeltIn->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionBeltIn->m_eTaskStatusD)));
+//    ui->txtEd_BI->setPlainText(QString(emBeltSelute.valueToKey(m_pActionBeltIn->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionBeltIn->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -60,7 +57,7 @@ void FormCtrl::slot_BeltOUT_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emBeltSelute = QMetaEnum::fromType<ActionBeltOut::E_SELUTE_BELTOUT>();
-    ui->txtEd_BO->setPlainText(QString(emBeltSelute.valueToKey(m_pActionBeltOut->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionBeltOut->m_eTaskStatusD)));
+//    ui->txtEd_BO->setPlainText(QString(emBeltSelute.valueToKey(m_pActionBeltOut->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionBeltOut->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -68,7 +65,7 @@ void FormCtrl::slot_PoleIN_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emPoleSelute = QMetaEnum::fromType<ActionPoleIn::E_SELUTE_POLEIN>();
-    ui->txtEd_PI->setPlainText(QString(emPoleSelute.valueToKey(m_pActionPoleIn->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionPoleIn->m_eTaskStatusD)));
+//    ui->txtEd_PI->setPlainText(QString(emPoleSelute.valueToKey(m_pActionPoleIn->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionPoleIn->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -76,7 +73,7 @@ void FormCtrl::slot_PoleOUT_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emPoleSelute = QMetaEnum::fromType<ActionPoleOut::E_SELUTE_POLEOUT>();
-    ui->txtEd_PO->setPlainText(QString(emPoleSelute.valueToKey(m_pActionPoleOut->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionPoleOut->m_eTaskStatusD)));
+//    ui->txtEd_PO->setPlainText(QString(emPoleSelute.valueToKey(m_pActionPoleOut->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionPoleOut->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -84,7 +81,7 @@ void FormCtrl::slot_Upender_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emUpenderSelute = QMetaEnum::fromType<ActionUpender::E_SELUTE_UPENDER>();
-    ui->txtEd_PO->setPlainText(QString(emUpenderSelute.valueToKey(m_pActionUpender->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionUpender->m_eTaskStatusD)));
+//    ui->txtEd_PO->setPlainText(QString(emUpenderSelute.valueToKey(m_pActionUpender->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionUpender->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -92,14 +89,33 @@ void FormCtrl::slot_MotorV_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
     QMetaEnum emMotorVSelute = QMetaEnum::fromType<ActionMotorV::E_SELUTE_MOTORV>();
-    ui->txtEd_PO->setPlainText(QString(emMotorVSelute.valueToKey(m_pActionMotorV->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionMotorV->m_eTaskStatusD)));
+//    ui->txtEd_PO->setPlainText(QString(emMotorVSelute.valueToKey(m_pActionMotorV->m_eTaskSeluteD)) + QString(emTaskStatus.valueToKey(m_pActionMotorV->m_eTaskStatusD)));
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
 void FormCtrl::slot_MotorXYZ_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
-//    QMetaEnum emMotorXYZSelute = QMetaEnum::fromType<emSeluteDMoveXYZ>();
+    QMetaEnum emMotorXYZTaskType = QMetaEnum::fromType<ActionMotorXYZ::E_TASKTPYE_MOTORXYZ>();
+    QMetaEnum emMotorXYZSelute = QMetaEnum::fromType<ActionMotorXYZ::E_SELUTE_MOTORXYZ>();
+    ui->lab_taskInfo_type->setText( QString(emMotorXYZTaskType.valueToKey(m_pActionMotorXYZ->m_stDTaskInfo.m_eTaskTypeD)) );
+    ui->lab_taskInfo_status->setText( QString(emTaskStatus.valueToKey(m_pActionMotorXYZ->m_stDTaskInfo.m_eTaskStatusD)) );
+    ui->lab_taskInfo_selute->setText( QString(emMotorXYZSelute.valueToKey(m_pActionMotorXYZ->m_stDTaskInfo.m_eTaskSeluteD)) );
+    //显示边界
+    ui->lab_lineXMin->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32XLineLeft);
+    ui->lab_lineXMax->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32XLineRight);
+    ui->lab_lineYMin->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32YLineIn);
+    ui->lab_lineYMax->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32YLineOut);
+    ui->lab_lineZMin->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32ZLineUp);
+    ui->lab_lineZMax->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32ZLineDown);
+    //显示当前坐标物理值
+    ui->lab_CurPhyPosX->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurDPos.m_i32X);
+    ui->lab_CurPhyPosY->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurDPos.m_i32Y);
+    ui->lab_CurPhyPosZ->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurDPos.m_i32Z);
+    //显示当前坐标逻辑值
+    ui->lab_CurlogicPosX->setText( QString::number(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurLogicDPos.m_fX, 'f', 2) );
+    ui->lab_CurlogicPosY->setText( QString::number(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurLogicDPos.m_fY, 'f', 2) );
+    ui->lab_CurlogicPosZ->setText( QString::number(m_pActionMotorXYZ->m_stDTaskInfo.m_stCurLogicDPos.m_fZ, 'f', 2) );
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
 
@@ -108,19 +124,20 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
  */
 void FormCtrl::on_rbtn_BIin_clicked()
 {
-    //上一次任务与这次相同，重复任务
-    if( (emTskDBeltInType_InSideMoving == m_pActionBeltIn->m_stTaskToSend.m_eTaskType) )
-    {
-        _LOG(QString("same task"));
-        return;
-    }
-    //非重复任务
-    m_pActionBeltIn->m_stTaskToSend.m_eTaskType = emTskDBeltInType_InSideMoving;
-    m_pActionBeltIn->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
-    m_pActionBeltIn->m_stTaskToSend.m_bNeedQR = false;
-    _LOG(QString("task is set"));
+//    //上一次任务与这次相同，重复任务
+//    if( (emTskDBeltInType_InSideMoving == m_pActionBeltIn->m_stTaskToSend.m_eTaskType) )
+//    {
+//        _LOG(QString("same task"));
+//        return;
+//    }
+//    //非重复任务
+//    m_pActionBeltIn->m_stTaskToSend.m_eTaskType = emTskDBeltInType_InSideMoving;
+//    m_pActionBeltIn->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+//    m_pActionBeltIn->m_stTaskToSend.m_bNeedQR = false;
+//    _LOG(QString("task is set"));
 
-    m_pActionBeltIn->setTaskSend();
+//    m_pActionBeltIn->setTaskSend();
+    bool a = ui->ledit_moveX->isLogicValue();
 }
 void FormCtrl::on_rbtn_BIout_clicked()
 {
@@ -438,7 +455,7 @@ void FormCtrl::on_rbtn_MVmove_clicked()
     m_pActionMotorV->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
     m_pActionMotorV->m_stTaskToSend.m_fScanBgn = 0;
     m_pActionMotorV->m_stTaskToSend.m_fScanEnd = 0;
-    m_pActionMotorV->m_stTaskToSend.m_fTargetPos = ui->sbox_MVaimpos->value();
+//    m_pActionMotorV->m_stTaskToSend.m_fTargetPos = ui->sbox_MVaimpos->value();
     _LOG(QString("task is set"));
 
     m_pActionMotorV->setTaskSend();
@@ -479,5 +496,117 @@ void FormCtrl::on_rbtn_XLineZero_clicked()
     _LOG(QString("task is set"));
 
     m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_YLineIn_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTskDXYZType_minPosYSet == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_minPosYSet;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_YLineOut_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTskDXYZType_maxPosYSet == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_maxPosYSet;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_ZLineUp_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTskDXYZType_minPosZSet == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_minPosZSet;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_ZLineDown_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTskDXYZType_maxPosZSet == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_maxPosZSet;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_xyzPosPhyValue_clicked()
+{
+    ui->ledit_moveX->setPhyValueRegularExp();
+    ui->ledit_moveY->setPhyValueRegularExp();
+    ui->ledit_moveZ->setPhyValueRegularExp();
+}
+
+
+void FormCtrl::on_rbtn_rbtn_xyzLogicPhyValue_clicked()
+{
+    ui->ledit_moveX->setLogicValueRegularExp();
+    ui->ledit_moveY->setLogicValueRegularExp();
+    ui->ledit_moveZ->setLogicValueRegularExp();
+}
+
+void FormCtrl::on_pbtn_xyzStop_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTskDXYZType_stop == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_stop;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_Move_clicked()
+{
+
+}
+
+
+void FormCtrl::on_pbtn_MoveInTime_clicked()
+{
+
 }
 

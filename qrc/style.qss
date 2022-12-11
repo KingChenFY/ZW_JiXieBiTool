@@ -538,6 +538,7 @@ QTextEdit {
         border-color:transparent;
         color:rgb(17,17,17);
         selection-background-color:rgb(236,116,64);
+		background-color:transparent
 }
 QTimeEdit {
         color:rgb(81,72,65);

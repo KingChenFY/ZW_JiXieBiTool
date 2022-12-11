@@ -4,9 +4,11 @@ FORMS += \
 
 HEADERS += \
     $$PWD/formctrl.h \
-    $$PWD/frmmain.h
+    $$PWD/frmmain.h \
+    $$PWD/motorposlineedit.h
 
 SOURCES += \
     $$PWD/formctrl.cpp \
-    $$PWD/frmmain.cpp
+    $$PWD/frmmain.cpp \
+    $$PWD/motorposlineedit.cpp
 
