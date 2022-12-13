@@ -29,7 +29,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>220</y>
+     <y>210</y>
      <width>390</width>
      <height>400</height>
     </rect>
@@ -37,7 +37,7 @@
    <property name="title">
     <string>机械臂</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_17" stretch="2,1,1">
+   <layout class="QVBoxLayout" name="verticalLayout_17" stretch="2,0,1">
     <item>
      <layout class="QHBoxLayout" name="hlay_xyzCtrl" stretch="3,1">
       <item>
@@ -49,7 +49,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -104,7 +104,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="MotorPosLineEdit" name="ledit_moveX">
+             <widget class="NumberLineEdit" name="ledit_moveX">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -146,7 +146,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="MotorPosLineEdit" name="ledit_moveY">
+             <widget class="NumberLineEdit" name="ledit_moveY">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -185,7 +185,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="MotorPosLineEdit" name="ledit_moveZ">
+             <widget class="NumberLineEdit" name="ledit_moveZ">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -221,7 +221,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="ledit_moveTime">
+             <widget class="NumberLineEdit" name="ledit_moveTime">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -233,6 +233,9 @@
                 <pointsize>10</pointsize>
                </font>
               </property>
+              <property name="inputMethodHints">
+               <set>Qt::ImhNone</set>
+              </property>
              </widget>
             </item>
            </layout>
@@ -243,7 +246,7 @@
              <number>6</number>
             </property>
             <item>
-             <widget class="QRadioButton" name="rbtn_xyzPosPhyValue">
+             <widget class="QPushButton" name="pbtn_phyMove">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -251,15 +254,12 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>物理值</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
+               <string>物理移动</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="rbtn_rbtn_xyzLogicPhyValue">
+             <widget class="QPushButton" name="pbtn_phyMoveInTime">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -267,33 +267,21 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>逻辑值</string>
+               <string>物理定时移动</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pbtn_Move">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+             <widget class="QPushButton" name="pbtn_logicMove">
               <property name="text">
-               <string>移动</string>
+               <string>逻辑移动</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pbtn_MoveInTime">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
+             <widget class="QPushButton" name="pbtn_logicMoveInTime">
               <property name="text">
-               <string>定时移动</string>
+               <string>逻辑定时移动</string>
               </property>
              </widget>
             </item>
@@ -335,19 +323,6 @@
           <item row="0" column="2">
            <layout class="QVBoxLayout" name="verticalLayout_19">
             <item>
-             <widget class="QRadioButton" name="rbtn_YLineIn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Y_里定位</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QRadioButton" name="rbtn_YLineOut">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -357,6 +332,19 @@
               </property>
               <property name="text">
                <string>Y_外定位</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_YLineIn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Y_里定位</string>
               </property>
              </widget>
             </item>
@@ -494,197 +482,288 @@
      </layout>
     </item>
     <item>
-     <widget class="QGroupBox" name="gb_xyzTaskInfo">
-      <property name="title">
-       <string>任务信息</string>
-      </property>
-      <layout class="QHBoxLayout" name="hlay_xyzTaskInfo" stretch="1,4">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_12">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QGroupBox" name="gb_xyzTaskInfo">
+        <property name="title">
+         <string>任务信息</string>
+        </property>
+        <layout class="QHBoxLayout" name="hlay_xyzTaskInfo" stretch="1,4">
          <item>
-          <widget class="QLabel" name="label_32">
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_32">
+             <property name="text">
+              <string>任务类型</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_34">
+             <property name="text">
+              <string>任务状态</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_35">
+             <property name="text">
+              <string>任务结论</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <widget class="QLabel" name="lab_taskInfo_type">
+             <property name="text">
+              <string>zeroXMoveCheck</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lab_taskInfo_status">
+             <property name="text">
+              <string>emWorkStatus_finish</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lab_taskInfo_selute">
+             <property name="text">
+              <string>zFollowAdptFailed</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="gb_xyzAimpos">
+        <property name="title">
+         <string>任务坐标</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_25">
            <property name="text">
-            <string>任务类型</string>
+            <string>X</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label_34">
+         <item row="0" column="1">
+          <widget class="QLabel" name="lab_AimPhyPosX">
            <property name="text">
-            <string>任务状态</string>
+            <string>-2147483647</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label_35">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_26">
            <property name="text">
-            <string>任务结论</string>
+            <string>Y</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lab_AimPhyPosY">
+           <property name="text">
+            <string>-2147483647</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_27">
+           <property name="text">
+            <string>Z</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="lab_AimPhyPosZ">
+           <property name="text">
+            <string>-2147483647</string>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_13">
-         <item>
-          <widget class="QLabel" name="lab_taskInfo_type">
-           <property name="text">
-            <string>emTskDXYZType_zeroXMoveCheck</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lab_taskInfo_status">
-           <property name="text">
-            <string>emWorkStatus_finish</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="lab_taskInfo_selute">
-           <property name="text">
-            <string>emSeluteDMoveXYZ_zFollowAdptFailed</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="hlay_xyzPos" stretch="0,0,0">
+     <layout class="QHBoxLayout" name="hlay_xyzPos" stretch="2,0,1">
       <property name="spacing">
-       <number>10</number>
+       <number>18</number>
       </property>
       <item>
        <widget class="QGroupBox" name="gb_xyzLine">
         <property name="title">
          <string>边界</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_9">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <property name="spacing">
-            <number>2</number>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <property name="horizontalSpacing">
+          <number>2</number>
+         </property>
+         <item row="1" column="2">
+          <widget class="QLabel" name="lab_lineYMin">
+           <property name="text">
+            <string>-11152</string>
            </property>
-           <item>
-            <widget class="QLabel" name="lab_lineX">
-             <property name="text">
-              <string>X:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineXMin">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>~</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineXMax">
-             <property name="text">
-              <string>2147483647</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          </widget>
          </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <property name="spacing">
-            <number>2</number>
+         <item row="1" column="5">
+          <widget class="QLabel" name="lab_lineYMax">
+           <property name="text">
+            <string>2147483647</string>
            </property>
-           <item>
-            <widget class="QLabel" name="lab_lineY">
-             <property name="text">
-              <string>Y:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineYMin">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_15">
-             <property name="text">
-              <string>~</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineYMax">
-             <property name="text">
-              <string>2147483647</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          </widget>
          </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <property name="spacing">
-            <number>2</number>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>~</string>
            </property>
-           <item>
-            <widget class="QLabel" name="lab_lineZ">
-             <property name="text">
-              <string>Z:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineZMin">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_16">
-             <property name="text">
-              <string>~</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_lineZMax">
-             <property name="text">
-              <string>2147483647</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lab_lineZ">
+           <property name="text">
+            <string>Z:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>顶</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="lab_lineXMin">
+           <property name="text">
+            <string>123</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>~</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="lab_lineXMax">
+           <property name="text">
+            <string>2147483647</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>~</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QLabel" name="lab_lineZMax">
+           <property name="text">
+            <string>2147483647</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>外</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lab_lineX">
+           <property name="text">
+            <string>X:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lab_lineY">
+           <property name="text">
+            <string>Y:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>左</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="lab_lineZMin">
+           <property name="text">
+            <string>15151105</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>右</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>里</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>底</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -703,112 +782,106 @@
        </spacer>
       </item>
       <item>
-       <widget class="QGroupBox" name="gb_xyzCurpos_2">
+       <widget class="QGroupBox" name="gb_xyzCurpos">
         <property name="title">
          <string>当前坐标</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QLabel" name="lab_cpX">
-             <property name="text">
-              <string>X:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurPhyPosX">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurlogicPosX">
-             <property name="text">
-              <string>1000.00</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <property name="horizontalSpacing">
+          <number>8</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>6</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lab_CurPhyPosX">
+           <property name="text">
+            <string>-2147483647</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
          </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <item>
-            <widget class="QLabel" name="lab_cpY">
-             <property name="text">
-              <string>Y:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurPhyPosY">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurlogicPosY">
-             <property name="text">
-              <string>1000.00</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lab_cpX">
+           <property name="text">
+            <string>X:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
          </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
-            <widget class="QLabel" name="lab_cpZ">
-             <property name="text">
-              <string>Z:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurPhyPosZ">
-             <property name="text">
-              <string>-2147483647</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="lab_CurlogicPosZ">
-             <property name="text">
-              <string>1000.00</string>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
+         <item row="2" column="1">
+          <widget class="QLabel" name="lab_CurPhyPosZ">
+           <property name="text">
+            <string>-2147483647</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="lab_CurlogicPosY">
+           <property name="text">
+            <string>1000.00</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lab_cpZ">
+           <property name="text">
+            <string>Z:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lab_cpY">
+           <property name="text">
+            <string>Y:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="lab_CurlogicPosX">
+           <property name="text">
+            <string>1000.00</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="lab_CurlogicPosZ">
+           <property name="text">
+            <string>1000.00</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lab_CurPhyPosY">
+           <property name="text">
+            <string>-2147483647</string>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -817,90 +890,113 @@
     </item>
    </layout>
   </widget>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>220</y>
+     <width>261</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Microsoft YaHei UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime  finish 透明&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime run 绿色&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime ask 橙色&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;异常 红色&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
   <widget class="QTabWidget" name="tabW_main">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>20</y>
+     <y>30</y>
      <width>961</width>
-     <height>181</height>
+     <height>151</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="tabPosition">
     <enum>QTabWidget::East</enum>
    </property>
-   <widget class="QWidget" name="page_transport" native="true">
+   <widget class="QWidget" name="page_transport">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <attribute name="title">
      <string>运输机构</string>
     </attribute>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,5,5,5,5,6">
-     <property name="spacing">
-      <number>8</number>
-     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,1,1,1,1,1">
      <item>
-      <widget class="QGroupBox" name="gb_BO">
+      <widget class="QGroupBox" name="gb_BI">
        <property name="title">
-        <string>出仓皮带</string>
+        <string>入仓皮带</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_25" stretch="8,1">
-        <property name="spacing">
-         <number>8</number>
-        </property>
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rbtn_BOout">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>出仓</string>
-            </property>
-           </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QRadioButton" name="rbtn_BIin">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>入仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_BIout">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>出仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_BIoff">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>失能</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rbtn_BOin">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>入仓</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="rbtn_BOoff">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>失能</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="rbtn_BOstop">
+          <item>
+           <widget class="QPushButton" name="rbtn_BIstop">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -915,21 +1011,39 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_29">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>TextLabel</string>
+           <widget class="QLabel" name="lab_BIcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="styleSheet">
-             <string notr="true">background-color:transparent</string>
+             <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string/>
@@ -942,69 +1056,58 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="gb_BI">
+      <widget class="QGroupBox" name="gb_BO">
        <property name="title">
-        <string>入仓皮带</string>
+        <string>出仓皮带</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_23" stretch="8,1">
-        <property name="spacing">
-         <number>8</number>
-        </property>
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rbtn_BIin">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>入仓</string>
-            </property>
-           </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QRadioButton" name="rbtn_BOout">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>出仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_BOin">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>入仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_BOoff">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>失能</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rbtn_BIout">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>出仓</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="rbtn_BIoff">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>失能</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="rbtn_BIstop">
+          <item>
+           <widget class="QPushButton" name="rbtn_BOstop">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1019,19 +1122,36 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_24">
+         <spacer name="verticalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>BeltHardwareErr</string>
+           <widget class="QLabel" name="lab_BOcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -1050,65 +1170,54 @@
        <property name="title">
         <string>上推杆</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_26" stretch="8,1">
-        <property name="spacing">
-         <number>8</number>
-        </property>
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
         <item>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rbtn_PIin">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>入仓</string>
-            </property>
-           </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QRadioButton" name="rbtn_PIin">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>入仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_PIout">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>出仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_PIoff">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>失能</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rbtn_PIout">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>出仓</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="rbtn_PIoff">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>失能</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="rbtn_PIstop">
+          <item>
+           <widget class="QPushButton" name="rbtn_PIstop">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1123,19 +1232,36 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <spacer name="verticalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>TextLabel</string>
+           <widget class="QLabel" name="lab_PIcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -1154,65 +1280,54 @@
        <property name="title">
         <string>下推杆</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_22" stretch="8,1">
-        <property name="spacing">
-         <number>8</number>
-        </property>
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_14">
         <item>
-         <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rbtn_POout">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>出仓</string>
-            </property>
-           </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_15">
+            <item>
+             <widget class="QRadioButton" name="rbtn_POout">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>出仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_POin">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>入仓</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_POoff">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>失能</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rbtn_POin">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>入仓</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="rbtn_POoff">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>失能</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="rbtn_POstop">
+          <item>
+           <widget class="QPushButton" name="rbtn_POstop">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1227,19 +1342,36 @@
          </layout>
         </item>
         <item>
+         <spacer name="verticalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>TextLabel</string>
+           <widget class="QLabel" name="lab_POcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -1258,71 +1390,54 @@
        <property name="title">
         <string>翻转装置</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_8" stretch="8,1">
-        <property name="spacing">
-         <number>8</number>
-        </property>
-        <property name="leftMargin">
-         <number>6</number>
-        </property>
-        <property name="topMargin">
-         <number>6</number>
-        </property>
-        <property name="rightMargin">
-         <number>6</number>
-        </property>
-        <property name="bottomMargin">
-         <number>6</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_16">
         <item>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="horizontalSpacing">
-           <number>6</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rbtn_UPstand">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>站立</string>
-            </property>
-           </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QRadioButton" name="rbtn_UPstand">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>站立</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbtn_UPlie">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>平躺</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButton_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>失能</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rbtn_UPlie">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>平躺</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="radioButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>失能</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="radioButton_2">
+          <item>
+           <widget class="QPushButton" name="pbtn_UPstop">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1337,19 +1452,36 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_27">
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_32">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>zeroXMoveCheck</string>
+           <widget class="QLabel" name="lab_UPcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_10">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -1364,30 +1496,30 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="tabW_SF">
+      <widget class="QGroupBox" name="gb_MV">
        <property name="title">
         <string>垂直扫描</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_31">
+       <layout class="QVBoxLayout" name="verticalLayout_33">
         <property name="spacing">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="leftMargin">
-         <number>6</number>
+         <number>9</number>
         </property>
         <property name="topMargin">
-         <number>6</number>
+         <number>9</number>
         </property>
         <property name="rightMargin">
-         <number>6</number>
+         <number>9</number>
         </property>
         <property name="bottomMargin">
-         <number>6</number>
+         <number>9</number>
         </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_28">
+           <layout class="QVBoxLayout" name="verticalLayout_34">
             <item>
              <widget class="QRadioButton" name="rbtn_MVzero">
               <property name="sizePolicy">
@@ -1415,7 +1547,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_3">
+             <widget class="QRadioButton" name="rbtn_MVmove">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1430,9 +1562,12 @@
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_29" stretch="2,1">
+           <layout class="QVBoxLayout" name="verticalLayout_35" stretch="2,1">
+            <property name="spacing">
+             <number>4</number>
+            </property>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="pbtn_MVstop">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1445,12 +1580,21 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit">
+             <widget class="NumberLineEdit" name="ledit_moveV">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="inputMethodHints">
+               <set>Qt::ImhNone</set>
+              </property>
+              <property name="inputMask">
+               <string/>
+              </property>
+              <property name="readOnly">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -1459,22 +1603,36 @@
          </layout>
         </item>
         <item>
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>sfZeroCheckFaild</string>
+           <widget class="QLabel" name="lab_MVcolor">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
             </property>
-            <property name="buddy">
-             <cstring>tabW_SF</cstring>
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_12">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -1491,34 +1649,12 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>270</y>
-     <width>261</width>
-     <height>81</height>
-    </rect>
-   </property>
-   <property name="html">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Microsoft YaHei UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime  finish 透明&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime run 绿色&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;no err/outtime ask 橙色&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;异常 红色&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MotorPosLineEdit</class>
+   <class>NumberLineEdit</class>
    <extends>QLineEdit</extends>
-   <header location="global">motorposlineedit.h</header>
+   <header location="global">numberlineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

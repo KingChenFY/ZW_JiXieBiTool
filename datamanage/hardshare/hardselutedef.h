@@ -1,6 +1,105 @@
 #ifndef __WK_HARD_SELUTE_DEFINE_H_
 #define __WK_HARD_SELUTE_DEFINE_H_
 
+// 入(出)舱皮带任务执行结果定义
+typedef enum
+{
+    emSeluteDBelt_start,
+
+    //动作结论
+    emSeluteDBelt_NoErr,//正常
+    emSeluteDBelt_Outtime,//超时(动作次数)
+    emSeluteDBelt_DCfgErr,//D层配置信息无效
+    emSeluteDBelt_C2DDataErr,//C->D传入参数错误
+    //任务结论
+    emSeluteDBelt_EnvErr,//环境异常
+    emSeluteDBelt_BeltHardwareErr,//传送带硬件错误(有盒子但未移动)
+    emSeluteDBelt_ScanHardwareErr,//扫码器硬件错误
+    emSeluteDBelt_QRScanNolink,//二维码扫描器无连接
+    emSeluteDBelt_SlideErr,//玻片异常(激光被遮挡)
+    emSeluteDBelt_SwitchB1Err,//行程开关1异常(远翻转盒侧)
+    emSeluteDBelt_SwitchB2Err,//行程开关2异常(近翻转盒侧)
+
+    emSeluteDBelt_end
+}emSeluteDBelt;
+
+// 入(出)舱推(拉)杆任务执行结果定义
+typedef enum
+{
+    emSeluteDPole_start,
+
+    //动作结论
+    emSeluteDPole_NoErr,//正常
+    emSeluteDPole_Outtime,//超时(动作次数)
+    emSeluteDPole_DCfgErr,//D层配置信息无效
+    emSeluteDPole_C2DDataErr,//C->D传入参数错误
+    //任务结论
+    emSeluteDPole_EnvErr,//环境异常
+    emSeluteDPole_HardwareErr,//推杆硬件错误(长时间未移动)
+
+    emSeluteDPole_SwitchP1Err,//起点限位开关P1异常
+    emSeluteDPole_SwitchP2Err,//终点限位开关P2异常
+    emSeluteDPole_SwitchP1_P2Err,//开关信号异常（P1、P2同时遮挡）
+    emSeluteDPole_NoBox,//无盒子存在
+    emSeluteDPole_FullBox,//盒子已满
+    emSeluteDPole_PoleInPosErr,//入推杆位置异常
+
+    emSeluteDPole_SwitchL1Err,//起点限位开关L1异常
+    emSeluteDPole_SwitchL2Err,//终点限位开关L2异常
+    emSeluteDPole_SwitchL1_L2Err,//开关信号异常（L1、L2同时遮挡）
+    emSeluteDPole_PoleOutPosErr,//出推杆位置异常
+
+    emSeluteDPole_Disconnect,//板2失去连接（未知的位置信息）
+
+    emSeluteDPole_end
+}emSeluteDPole;
+
+//旋转进出舱D层任务执行结果定义
+typedef enum
+{
+    emSeluteDUpender_start,
+    emSeluteDUpender_NoErr, 			//正常
+    emSeluteDUpender_OutTime,			//超时(动作次数)
+
+    emSeluteDUpender_DCfgErr,			//配置参数错误
+    emSeluteDUpender_C2DDataErr,		//C->D传入参数错误
+    emSeluteDUpender_HardwareErr,		//设备异常，移动了很久也没移动到位置
+    emSeluteDUpender_LimitSwitchErr,	//限位开关异常
+    emSeluteDUpender_LimitSwitch1Err,	//限位开关S异常
+    emSeluteDUpender_LimitSwitch2Err,	//限位开关E异常(S:Start起点 E:End终点)
+    emSeluteDUpender_EnvInErr,			//旋转舱旋入环境位置错误（环境不符合）
+    emSeluteDUpender_EnvOutErr,			//旋转舱旋出环境位置错误（环境不符合）
+    emSeluteDUpender_Disconnect,		//板2失去连接（未知的位置信息）
+
+    emSeluteDUpender_end
+}emSeluteDUpender;
+
+// 垂直扫描D层任务执行结果定义
+typedef enum
+{
+    emSeluteDMoveBoxV_start,
+    emSeluteDMoveBoxV_NoErr, // 正常
+    emSeluteDMoveBoxV_Outtime,//动作超时（动作次数）
+
+    emSeluteDMoveBoxV_DCfgErr,//D层配置信息无效
+    emSeluteDMoveBoxV_C2DTypeErr,//C->D传入参数错误
+    emSeluteDMoveBoxV_C2DDataErr,//C->D传入参数错误
+    emSeluteDMoveBoxV_Nolink,  //设备连接异常
+    emSeluteDMoveBoxV_HardWareErr,  //设备异常
+    emSeluteDMoveBoxV_LineErr,  //边界异常(为默认值)
+    emSeluteDMoveBoxV_LineLimit12Err,  //限位开关异常（1,2遮挡）
+    emSeluteDMoveBoxV_LimitSwitch1Err,// 开关信号异常
+    emSeluteDMoveBoxV_LimitSwitch2Err,// 开关信号异常
+    emSeluteDMoveBoxV_EnvirErr,//环境异常
+    emSeluteDMoveBoxV_MotorErr,//电机报错
+    emSeluteDMoveBoxV_IRErr,//激光异常
+    emSeluteDMoveBoxV_NotConnectB2,//未检测到板2（翻转盒位置信息未知）
+    emSeluteDMoveBoxV_sfZeroCheckFaild,//sf原点校验失败
+    emSeluteDMoveBoxV_sfDriverErr,//x驱动异常
+
+    emSeluteDMoveBoxV_end
+}emSeluteDMoveBoxV;
+
 // 二维码扫码D层任务执行结果定义
 typedef enum 
 {

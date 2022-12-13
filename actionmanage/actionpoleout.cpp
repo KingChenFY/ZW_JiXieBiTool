@@ -55,7 +55,7 @@ emWKCmdType ActionPoleOut::parseCmd(uint8_t* puData)
         uLen += 1;
 
         //任务结果
-        m_eTaskSeluteD = (E_SELUTE_POLEOUT)puData[uLen];
+        m_eTaskSeluteD = (emSeluteDPole)puData[uLen];
         uLen += 1;
 
         //当前位置

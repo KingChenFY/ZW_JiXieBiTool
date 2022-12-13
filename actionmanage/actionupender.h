@@ -24,21 +24,21 @@ public:
 
     // 入(出)舱皮带任务执行结果定义
     enum E_SELUTE_UPENDER {
-        emSeluteDUpender_start,
-        emSeluteDUpender_NoErr, 			//正常
-        emSeluteDUpender_OutTime,			//超时(动作次数)
+        start,
+        NoErr, 			//正常
+        OutTime,			//超时(动作次数)
 
-        emSeluteDUpender_DCfgErr,			//配置参数错误
-        emSeluteDUpender_C2DDataErr,		//C->D传入参数错误
-        emSeluteDUpender_HardwareErr,		//设备异常，移动了很久也没移动到位置
-        emSeluteDUpender_LimitSwitchErr,	//限位开关异常
-        emSeluteDUpender_LimitSwitch1Err,	//限位开关S异常
-        emSeluteDUpender_LimitSwitch2Err,	//限位开关E异常(S:Start起点 E:End终点)
-        emSeluteDUpender_EnvInErr,			//旋转舱旋入环境位置错误（环境不符合）
-        emSeluteDUpender_EnvOutErr,			//旋转舱旋出环境位置错误（环境不符合）
-        emSeluteDUpender_Disconnect,		//板2失去连接（未知的位置信息）
+        DCfgErr,			//配置参数错误
+        C2DDataErr,		//C->D传入参数错误
+        HardwareErr,		//设备异常，移动了很久也没移动到位置
+        LimitSwitchErr,	//限位开关异常
+        LimitSwitch1Err,	//限位开关S异常
+        LimitSwitch2Err,	//限位开关E异常(S:Start起点 E:End终点)
+        EnvInErr,			//旋转舱旋入环境位置错误（环境不符合）
+        EnvOutErr,			//旋转舱旋出环境位置错误（环境不符合）
+        Disconnect,		//板2失去连接（未知的位置信息）
 
-        emSeluteDUpender_end
+        end
     };
     Q_ENUM(E_SELUTE_UPENDER)
 
@@ -61,7 +61,7 @@ public:
     ST_UPENDER_SETTASK_INFO m_stTaskToSend;//准备设置的任务信息/之前设置的任务信息
     //下层获取信息
     emWorkStatus m_eTaskStatusD;//任务状态
-    E_SELUTE_UPENDER m_eTaskSeluteD;//任务结论
+    emSeluteDUpender m_eTaskSeluteD;//任务结论
 
 private:
     void getTaskSend();//封装查询指令到链表

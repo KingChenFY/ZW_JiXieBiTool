@@ -85,22 +85,23 @@ private slots:
     //翻转装置
     void on_rbtn_UPstand_clicked();
     void on_rbtn_UPlie_clicked();
+    void on_pbtn_UPstop_clicked();
     //垂直扫描电机
     void on_rbtn_MVzero_clicked();
     void on_rbtn_MVscan_clicked();
     void on_rbtn_MVmove_clicked();
-    void on_rbtn_MVstop_clicked();
+    void on_pbtn_MVstop_clicked();
     //XYZ模块
     void on_rbtn_XLineZero_clicked();
     void on_rbtn_YLineIn_clicked();
     void on_rbtn_YLineOut_clicked();
     void on_rbtn_ZLineUp_clicked();
     void on_rbtn_ZLineDown_clicked();
-    void on_rbtn_xyzPosPhyValue_clicked();
-    void on_rbtn_rbtn_xyzLogicPhyValue_clicked();
     void on_pbtn_xyzStop_clicked();
-    void on_pbtn_Move_clicked();
-    void on_pbtn_MoveInTime_clicked();
+    void on_pbtn_phyMove_clicked();
+    void on_pbtn_phyMoveInTime_clicked();
+    void on_pbtn_logicMove_clicked();
+    void on_pbtn_logicMoveInTime_clicked();
 };
 
 #endif // FORMCTRL_H

@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTimer>
 #include <QDebug>
+#include <QMetaEnum>
+#include <QMutex>
 
 #include "hardcmdparseagent.h"
 #include "harddef.h"
@@ -12,9 +14,15 @@
 #define WK_SpeedNotLimit (0)//此为未指定的速度值，不可移动
 #define WK_PhyPosNotLimit  (0x7FFFFFFF)//以此为坐标表示无需移动(物理)
 #define WK_PosNotLimit ((float)(0x7FFFFFFF))//以此为坐标表示无需移动(逻辑)
-#define LOGIC_ZERO  (0.00)//逻辑起点
-#define LOGIC_LINE  (1000.00)//逻辑行程
+#define LOGIC_ZERO  ((float)(0.00))//逻辑起点
+#define LOGIC_LINE  ((float)(1000.00))//逻辑行程
 
+typedef enum
+{
+    emMorot_X,
+    emMorot_Y,
+    emMorot_Z,
+}emMotorObj;
 typedef enum
 {
     emMorotX_UnKnow,
@@ -68,6 +76,7 @@ typedef struct
     emTaskDXYZType m_eTaskType;   //任务类型
     uint8_t m_uTaskId;             //任务Id
     ST_XYZ_DPOS m_stAimDPos;       //XYZ目标坐标物理值
+    ST_XYZ_CPOS m_stAimLogicDPos;   //XYZ当前坐标逻辑值
     ST_XYZ_DPOS m_stDPosBgn;       //XYZ的startPos
     uint32_t m_u32MoveTime;        //定时移动的时间
     uint16_t m_u16PathId;          //轨迹Id
@@ -186,6 +195,12 @@ public:
 
     emWKCmdType parseCmd(uint8_t* puData);//回复解析
     bool setTaskCmdReSend(uint32_t sdNum);//重发当前模块的设置任务指令
+    bool isLineHasLocated(emMotorObj motorObj);
+    bool isAllLineHasLocated();//XYZ三轴坐标是否都已经完成定位
+    void convertLogicPosToPhyPos(ST_XYZ_CPOS &logicPos, ST_XYZ_DPOS &phyPos);//把0.00-1000.00的逻辑坐标转换到物理坐标_______m_stTaskToSend
+    void convertPhyPosToLogicPos(ST_XYZ_DPOS &phyPos, ST_XYZ_CPOS &logicPos);//把物理坐标转换到0.00-1000.00的逻辑坐标_______m_stDTaskInfo
+    bool isAimLogicPosOverLimit(ST_XYZ_CPOS &logicPos);
+    bool isAimPhyPosOverLimit(ST_XYZ_DPOS &phyPos);
 
     static uint32_t u32MaxReadNum_to_reSend;
     ST_MOTORXYZ_SETTASK_INFO m_stTaskToSend;//准备设置的任务信息/之前设置的任务信息
@@ -193,12 +208,12 @@ public:
     ST_MOTORXYZ_GETTASK_INFO m_stDTaskInfo;
 
 private:
-    void getTaskSend();//封装查询指令到链表
-    void convertPhyPosToLogicPos();//把物理坐标转换到0.00-1000.00的逻辑坐标
-    bool isLineHasLocated();
+    void getTaskSend();//封装查询指令到链表 
     //自动重发定时器，用于settask指令未回复的情况，重发settask
     static int timeOutValue_setTaskReSend;
     QTimer timer_setTaskReSend;
+    QMetaEnum emMetaTaskType;
+    QMutex mutexXYZLine;
 
 public slots:
     void setTaskSend();//封装页面的设置指令入链表

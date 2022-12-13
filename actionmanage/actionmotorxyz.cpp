@@ -4,8 +4,8 @@
 
 extern SetTaskRingFifo stTaskFifo;
 //extern GetTaskLinkList gtTaskLinkList;
-int ActionMotorXYZ::timeOutValue_setTaskReSend = 10000;
-uint32_t ActionMotorXYZ::u32MaxReadNum_to_reSend = 20;
+int ActionMotorXYZ::timeOutValue_setTaskReSend = 1000;
+uint32_t ActionMotorXYZ::u32MaxReadNum_to_reSend = 2000;
 
 ActionMotorXYZ::ActionMotorXYZ(QObject *parent)
     : QObject{parent}, HardCmdParser()
@@ -43,6 +43,7 @@ ActionMotorXYZ::ActionMotorXYZ(QObject *parent)
     m_stDTaskInfo.m_u32YErrCode = 0;
     m_stDTaskInfo.m_u32ZErrCode = 0;
 
+    emMetaTaskType = QMetaEnum::fromType<E_TASKTPYE_MOTORXYZ>();
 
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_setXYZTask, this);
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_getXYZTaskInfo, this);
@@ -115,6 +116,7 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         m_stDTaskInfo.m_u64CurPosDTime = common_read_u64(&puData[uLen]);
         uLen += 8;
 
+        mutexXYZLine.lock();
         m_stDTaskInfo.m_stLinePos.m_i32XLineLeft = common_read_u32(&puData[uLen]);
         uLen += 4;
         m_stDTaskInfo.m_stLinePos.m_i32XLineRight = common_read_u32(&puData[uLen]);
@@ -127,6 +129,7 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         uLen += 4;
         m_stDTaskInfo.m_stLinePos.m_i32ZLineUp = common_read_u32(&puData[uLen]);
         uLen += 4;
+        mutexXYZLine.unlock();
 
         m_stDTaskInfo.m_bXIsMoving = (bool)puData[uLen++];
         m_stDTaskInfo.m_bYIsMoving = (bool)puData[uLen++];
@@ -167,7 +170,7 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         uLen += 4;
 
         //将物理坐标转换成逻辑值，获得一份逻辑坐标
-        convertPhyPosToLogicPos();
+        convertPhyPosToLogicPos(m_stDTaskInfo.m_stCurDPos, m_stDTaskInfo.m_stCurLogicDPos);
         // 更新 XYZ 界面信息
         emit signal_UiUpdate();
         // 如果任务是finish的，在链表中查找对应CmdFlag的结点删除，没找到，丢弃该数据
@@ -175,7 +178,9 @@ emWKCmdType ActionMotorXYZ::parseCmd(uint8_t* puData)
         {
 //            gtTaskLinkList.app_deleteNodeWithTaskId(EnumBoardObject_BeltIn, m_stTaskD.m_uTaskId);
             GetTaskLinkList::GetInstance().app_deleteNodeWithTaskId(EnumBoardObject_MotorXYZ, m_stDTaskInfo.m_uTaskId);
-            _LOG(QString("parse getTask cmd return, task finish"));
+            QMetaEnum emMotorXYZTaskType = QMetaEnum::fromType<ActionMotorXYZ::E_TASKTPYE_MOTORXYZ>();
+            _LOG(QString("parse getTask cmd return, task finish,TYPE[%1][%2],ID[%3]")
+                 .arg(QString(emMotorXYZTaskType.valueToKey(m_stDTaskInfo.m_eTaskTypeD))).arg(m_stDTaskInfo.m_eTaskTypeD).arg(m_stDTaskInfo.m_uTaskId));
         }
         return emCMD_GET;
     }
@@ -214,6 +219,10 @@ void ActionMotorXYZ::setTaskSend()
         pWriteAddr->u8CmdContent[i++] = (uint8_t)m_stTaskToSend.m_uTaskId;
         pWriteAddr->u16CmdContentLen = i;
 
+        //getWriteMessageAddr已经对 pWriteAddr->eCmdId 进行了赋值，下面不需要了
+        pWriteAddr->u8TaskId = (uint8_t)m_stTaskToSend.m_uTaskId;
+        pWriteAddr->u8TaskType = (uint8_t)m_stTaskToSend.m_eTaskType;
+
         //压入发送队列前，开启重发定时器，如果本来就开着会重启定时器
         timer_setTaskReSend.start(timeOutValue_setTaskReSend);
         stTaskFifo.pushWriteMessageToFifo();
@@ -250,11 +259,14 @@ void ActionMotorXYZ::slot_timer_setTaskReSend()
     //如果下层同步到的taskId和当前准备重发的taskId相等，说明设置的指令已经收到回复，停止重发定时器
     if(m_stDTaskInfo.m_uTaskId == m_stTaskToSend.m_uTaskId)
     {
+        _LOG(QString("set task is get recv,TYPE[%1][%2],ID[%3]").
+             arg(QString(emMetaTaskType.valueToKey(m_stTaskToSend.m_eTaskType))).arg(m_stTaskToSend.m_eTaskType).arg(m_stTaskToSend.m_uTaskId));
         timer_setTaskReSend.stop();
     }
     else
     {
-        _LOG(QString("ReSend"));
+        _LOG(QString("set task lost,ReSend[settask],TYPE[%1][%2],ID[%3]").
+             arg(QString(emMetaTaskType.valueToKey(m_stTaskToSend.m_eTaskType))).arg(m_stTaskToSend.m_eTaskType).arg(m_stTaskToSend.m_uTaskId));
         setTaskSend();
     }
 }
@@ -265,38 +277,130 @@ bool ActionMotorXYZ::setTaskCmdReSend(uint32_t sdNum)
 {
     if(sdNum > u32MaxReadNum_to_reSend)
     {
+        _LOG(QString("get task not finish timeout,ReSend[settask],TYPE[%1][%2],ID[%3]").
+             arg(QString(emMetaTaskType.valueToKey(m_stTaskToSend.m_eTaskType))).arg(m_stTaskToSend.m_eTaskType).arg(m_stTaskToSend.m_uTaskId));
         emit signal_SetTask_ReSend();
         return true;
     }
     return false;
 }
 
-bool ActionMotorXYZ::isLineHasLocated()
+bool ActionMotorXYZ::isLineHasLocated(emMotorObj motorObj)
 {
-    if( (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32XLineLeft) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32XLineLeft)
-            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32XLineRight) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32XLineRight)
-            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32YLineIn) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32YLineIn)
-            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32YLineOut) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32YLineOut)
-            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32ZLineUp) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32ZLineUp)
-            || (WK_PhyPosNotLimit == m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) || ((WK_PhyPosNotLimit - 1) == m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) )
-        return false;
-    return true;
-}
-void ActionMotorXYZ::convertPhyPosToLogicPos()
-{
-    if(isLineHasLocated())
+    if( (emMorot_X == motorObj) &&
+            (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32XLineLeft) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32XLineLeft)
+            && (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32XLineRight) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32XLineRight) )
     {
-        uint32_t xLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft - m_stDTaskInfo.m_stLinePos.m_i32XLineRight);
-        uint32_t yLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32YLineIn - m_stDTaskInfo.m_stLinePos.m_i32YLineOut);
-        uint32_t zLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp - m_stDTaskInfo.m_stLinePos.m_i32ZLineDown);
-
-        m_stDTaskInfo.m_stCurLogicDPos.m_fX = ( m_stDTaskInfo.m_stCurDPos.m_i32X -
-                std::min(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft, m_stDTaskInfo.m_stLinePos.m_i32XLineRight) ) / xLineLength * LOGIC_LINE;
-
-        m_stDTaskInfo.m_stCurLogicDPos.m_fY = ( m_stDTaskInfo.m_stCurDPos.m_i32Y -
-                std::min(m_stDTaskInfo.m_stLinePos.m_i32YLineIn, m_stDTaskInfo.m_stLinePos.m_i32YLineOut) ) / yLineLength * LOGIC_LINE;
-
-        m_stDTaskInfo.m_stCurLogicDPos.m_fZ = ( m_stDTaskInfo.m_stCurDPos.m_i32Z -
-                std::min(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp, m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) ) / zLineLength * LOGIC_LINE;
+        return true;
     }
+    else if( (emMorot_Y == motorObj) &&
+             (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32YLineIn) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32YLineIn)
+             && (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32YLineOut) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32YLineOut) )
+    {
+        return true;
+    }
+    else if( (emMorot_Z == motorObj) &&
+            (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32ZLineUp) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32ZLineUp)
+            && (WK_PhyPosNotLimit != m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) && ((WK_PhyPosNotLimit - 1) != m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool ActionMotorXYZ::isAllLineHasLocated()
+{
+    if( isLineHasLocated(emMorot_X) && isLineHasLocated(emMorot_Y) && isLineHasLocated(emMorot_Z) )
+        return true;
+    else
+        return false;
+}
+
+void ActionMotorXYZ::convertPhyPosToLogicPos(ST_XYZ_DPOS &phyPos, ST_XYZ_CPOS &logicPos)
+{
+    if((isLineHasLocated(emMorot_X)) && (WK_PhyPosNotLimit != phyPos.m_i32X))
+    {
+        float xLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft - m_stDTaskInfo.m_stLinePos.m_i32XLineRight);
+            logicPos.m_fX = ( std::max(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft, m_stDTaskInfo.m_stLinePos.m_i32XLineRight) -
+                              phyPos.m_i32X ) / xLineLength * LOGIC_LINE;
+    }
+
+    if((isLineHasLocated(emMorot_Y)) && (WK_PhyPosNotLimit != phyPos.m_i32Y))
+    {
+        float yLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32YLineIn - m_stDTaskInfo.m_stLinePos.m_i32YLineOut);
+        logicPos.m_fY = ( std::max(m_stDTaskInfo.m_stLinePos.m_i32YLineIn, m_stDTaskInfo.m_stLinePos.m_i32YLineOut) -
+                          phyPos.m_i32Y ) / yLineLength * LOGIC_LINE;
+    }
+
+    if((isLineHasLocated(emMorot_Z)) && (WK_PhyPosNotLimit != phyPos.m_i32Y))
+    {
+        float zLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp - m_stDTaskInfo.m_stLinePos.m_i32ZLineDown);
+        logicPos.m_fZ = ( std::max(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp, m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) -
+                          phyPos.m_i32Z ) / zLineLength * LOGIC_LINE;
+    }
+}
+
+void ActionMotorXYZ::convertLogicPosToPhyPos(ST_XYZ_CPOS &logicPos, ST_XYZ_DPOS &phyPos)
+{
+    if(WK_PosNotLimit != logicPos.m_fX)
+    {
+        float xLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft - m_stDTaskInfo.m_stLinePos.m_i32XLineRight);
+        phyPos.m_i32X = std::max(m_stDTaskInfo.m_stLinePos.m_i32XLineLeft, m_stDTaskInfo.m_stLinePos.m_i32XLineRight) -
+                logicPos.m_fX / LOGIC_LINE * xLineLength;
+    }
+    else
+    {
+        phyPos.m_i32X = WK_PhyPosNotLimit;
+    }
+
+    if(WK_PosNotLimit != logicPos.m_fY)
+    {
+        float yLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32YLineIn - m_stDTaskInfo.m_stLinePos.m_i32YLineOut);
+        phyPos.m_i32Y = std::max(m_stDTaskInfo.m_stLinePos.m_i32YLineIn, m_stDTaskInfo.m_stLinePos.m_i32YLineOut) -
+                logicPos.m_fY / LOGIC_LINE * yLineLength;
+    }
+    else
+    {
+        phyPos.m_i32Y = WK_PhyPosNotLimit;
+    }
+
+    if(WK_PosNotLimit != logicPos.m_fZ)
+    {
+        float zLineLength = abs(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp - m_stDTaskInfo.m_stLinePos.m_i32ZLineDown);
+        phyPos.m_i32Z = std::max(m_stDTaskInfo.m_stLinePos.m_i32ZLineUp, m_stDTaskInfo.m_stLinePos.m_i32ZLineDown) -
+                logicPos.m_fZ / LOGIC_LINE * zLineLength;
+    }
+    else
+    {
+        phyPos.m_i32Z = WK_PhyPosNotLimit;
+    }
+}
+
+bool ActionMotorXYZ::isAimLogicPosOverLimit(ST_XYZ_CPOS &logicPos)
+{
+    if( ((WK_PosNotLimit == logicPos.m_fX) ||
+         ((logicPos.m_fX >= LOGIC_ZERO) && (logicPos.m_fX <= LOGIC_LINE)) ) &&
+            ((WK_PosNotLimit == logicPos.m_fY) ||
+            ((logicPos.m_fY >= LOGIC_ZERO) && (logicPos.m_fY <= LOGIC_LINE)) ) &&
+            ((WK_PosNotLimit == logicPos.m_fZ) ||
+            ((logicPos.m_fZ >= LOGIC_ZERO) && (logicPos.m_fZ <= LOGIC_LINE)) ) )
+        return true;
+    return false;
+}
+
+bool ActionMotorXYZ::isAimPhyPosOverLimit(ST_XYZ_DPOS &phyPos)
+{
+    if(!isAllLineHasLocated())
+        return false;
+    if( ((WK_PhyPosNotLimit == phyPos.m_i32X) ||
+            ((phyPos.m_i32X >= m_stDTaskInfo.m_stLinePos.m_i32XLineLeft) && (phyPos.m_i32X <= m_stDTaskInfo.m_stLinePos.m_i32XLineRight)) )&&
+            ( (WK_PhyPosNotLimit == phyPos.m_i32Y) ||
+              ((phyPos.m_i32Y >= m_stDTaskInfo.m_stLinePos.m_i32YLineOut) && (phyPos.m_i32Y <= m_stDTaskInfo.m_stLinePos.m_i32YLineIn)) ) &&
+            ( (WK_PhyPosNotLimit == phyPos.m_i32Z) ||
+              ((phyPos.m_i32Z >= m_stDTaskInfo.m_stLinePos.m_i32ZLineUp) && (phyPos.m_i32Z <= m_stDTaskInfo.m_stLinePos.m_i32ZLineDown)) ) )
+        return true;
+    return false;
 }

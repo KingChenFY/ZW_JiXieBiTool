@@ -52,7 +52,7 @@ emWKCmdType ActionUpender::parseCmd(uint8_t* puData)
         m_eTaskStatusD = (emWorkStatus)puData[uLen];
         uLen += 1;
 
-        m_eTaskSeluteD = (E_SELUTE_UPENDER)puData[uLen];
+        m_eTaskSeluteD = (emSeluteDUpender)puData[uLen];
         uLen += 1;
 
         m_eCurPos = (emPositionType)puData[uLen];

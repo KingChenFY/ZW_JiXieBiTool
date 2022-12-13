@@ -5,10 +5,10 @@ FORMS += \
 HEADERS += \
     $$PWD/formctrl.h \
     $$PWD/frmmain.h \
-    $$PWD/motorposlineedit.h
+    $$PWD/numberlineedit.h
 
 SOURCES += \
     $$PWD/formctrl.cpp \
     $$PWD/frmmain.cpp \
-    $$PWD/motorposlineedit.cpp
+    $$PWD/numberlineedit.cpp
 

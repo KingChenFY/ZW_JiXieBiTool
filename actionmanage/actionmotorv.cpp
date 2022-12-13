@@ -49,7 +49,7 @@ emWKCmdType ActionMotorV::parseCmd(uint8_t* puData)
         m_eTaskStatusD = (emWorkStatus)puData[uLen];
         uLen += 1;
 
-        m_eTaskSeluteD = (E_SELUTE_MOTORV)puData[uLen];
+        m_eTaskSeluteD = (emSeluteDMoveBoxV)puData[uLen];
         uLen += 1;
 
         errFlag = common_read_u16(&puData[uLen]);
@@ -64,7 +64,7 @@ emWKCmdType ActionMotorV::parseCmd(uint8_t* puData)
         m_stTaskD.m_fScanEnd = common_read_u32(&puData[uLen]);
         uLen += 4;
 
-        m_fCurPos = common_read_u32(&puData[uLen]);
+        m_i32CurPos = common_read_u32(&puData[uLen]);
         uLen += 4;
 
         m_eCurPosStatus = (emBoxVPosType)puData[uLen];
@@ -170,4 +170,17 @@ bool ActionMotorV::setTaskCmdReSend(uint32_t sdNum)
         return true;
     }
     return false;
+}
+
+bool ActionMotorV::getBoxLieDownPos(int32_t &pos)
+{
+    if((WK_PhyPosNotLimit == m_iLineUp) || (WK_PhyPosNotLimit == m_iLineDown))
+        return false;
+
+    if((MOTOR_V_BOXOUT_LOGICPOS > LOGIC_LINE) || (MOTOR_V_BOXOUT_LOGICPOS < LOGIC_ZERO))
+        return false;
+
+    float vLineLength = abs(m_iLineUp - m_iLineDown);
+    pos = vLineLength / LOGIC_LINE * MOTOR_V_BOXOUT_LOGICPOS + std::min(m_iLineUp, m_iLineDown);
+    return true;
 }

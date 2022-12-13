@@ -54,7 +54,7 @@ emWKCmdType ActionBeltOut::parseCmd(uint8_t* puData)
         uLen += 1;
 
         //任务结果
-        m_eTaskSeluteD = (E_SELUTE_BELTOUT)puData[uLen];
+        m_eTaskSeluteD = (emSeluteDBelt)puData[uLen];
         uLen += 1;
 
         m_IsMoving = puData[uLen];

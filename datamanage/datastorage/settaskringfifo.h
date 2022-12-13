@@ -11,7 +11,9 @@
 typedef struct
 {
     bool bIsValid;                                              //是否有效
-    emBoardCmdId eCmdId;
+    emBoardCmdId eCmdId;                                        //指令ID
+    uint8_t u8TaskType;                                         //任务类型
+    uint8_t u8TaskId;                                           //任务ID
     uint8_t u8CmdContent[WK_BOARD_CMD_CONTENT_MAX_LENGTH];
     uint16_t u16CmdContentLen;
 }STRUCT_SETTASK_MESSAGE_INFO;

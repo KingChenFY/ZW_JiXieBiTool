@@ -61,7 +61,7 @@ emWKCmdType ActionBeltIn::parseCmd(uint8_t* puData)
         m_eTaskStatusD = (emWorkStatus)puData[uLen];
         uLen += 1;
 
-        m_eTaskSeluteD = (E_SELUTE_BELTIN)puData[uLen];
+        m_eTaskSeluteD = (emSeluteDBelt)puData[uLen];
         uLen += 1;
 
         m_IsMoving = (uint8_t)puData[uLen];

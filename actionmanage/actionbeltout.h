@@ -24,23 +24,23 @@ public:
 
     // 入(出)舱皮带任务执行结果定义
     enum E_SELUTE_BELTOUT {
-        emSeluteDBelt_start,
+        start,
 
         //动作结论
-        emSeluteDBelt_NoErr,//正常
-        emSeluteDBelt_Outtime,//超时(动作次数)
-        emSeluteDBelt_DCfgErr,//D层配置信息无效
-        emSeluteDBelt_C2DDataErr,//C->D传入参数错误
+        NoErr,//正常
+        Outtime,//超时(动作次数)
+        DCfgErr,//D层配置信息无效
+        C2DDataErr,//C->D传入参数错误
         //任务结论
-        emSeluteDBelt_EnvErr,//环境异常
-        emSeluteDBelt_BeltHardwareErr,//传送带硬件错误(有盒子但未移动)
-        emSeluteDBelt_ScanHardwareErr,//扫码器硬件错误
-        emSeluteDBelt_QRScanNolink,//二维码扫描器无连接
-        emSeluteDBelt_SlideErr,//玻片异常(激光被遮挡)
-        emSeluteDBelt_SwitchB1Err,//行程开关1异常(远翻转盒侧)
-        emSeluteDBelt_SwitchB2Err,//行程开关2异常(近翻转盒侧)
+        EnvErr,//环境异常
+        BeltHardwareErr,//传送带硬件错误(有盒子但未移动)
+        ScanHardwareErr,//扫码器硬件错误
+        QRScanNolink,//二维码扫描器无连接
+        SlideErr,//玻片异常(激光被遮挡)
+        SwitchB1Err,//行程开关1异常(远翻转盒侧)
+        SwitchB2Err,//行程开关2异常(近翻转盒侧)
 
-        emSeluteDBelt_end
+        end
     };
     Q_ENUM(E_SELUTE_BELTOUT)
 
@@ -52,7 +52,7 @@ public:
     //下层获取信息
     emWorkStatus m_eTaskStatusD;// 任务状态
 //    emSeluteBeltD m_eTaskSeluteD;//任务结果
-    E_SELUTE_BELTOUT m_eTaskSeluteD;
+    emSeluteDBelt m_eTaskSeluteD;
 
 private:
     void getTaskSend();//封装查询指令到链表

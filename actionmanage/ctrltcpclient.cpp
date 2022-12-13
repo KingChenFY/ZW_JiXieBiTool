@@ -14,9 +14,9 @@ extern NetRecvRingFifo ntRecvFifo;
 CtrlTcpClient::CtrlTcpClient(QObject *parent)
     : QObject{parent}
 {
-//    m_strIp = "10.10.10.150";
+    m_strIp = "10.10.10.150";
 //    m_strIp = "171.16.100.225";
-    m_strIp = "192.168.182.1";
+//    m_strIp = "192.168.182.1";
     m_u16Port = 8888;
     m_defaultListId = 0;
     m_defaultListReadCnt = 0;
@@ -124,7 +124,8 @@ void CtrlTcpClient::slot_SendTimerOut()
             //把数据从队列移除
             stTaskFifo.popReadMessageOutFifo();
 
-            _LOG(QString("==========>[settask]:TcpClient send cmd[%1]").arg(netSendData[WK_BOARD_COMMAND_ID_INDEX]));
+            _LOG(QString("==========>[settask]:TcpClient send CMD[%1],TYPE[%2],ID[%3]").
+                 arg(netSendData[WK_BOARD_COMMAND_ID_INDEX]).arg(pSendAddr->u8TaskType).arg(pSendAddr->u8TaskId));
             return;
         }
 
