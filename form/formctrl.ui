@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>680</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,8 +28,8 @@
   <widget class="QGroupBox" name="gb_xyzMotor">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>210</y>
+     <x>590</x>
+     <y>200</y>
      <width>390</width>
      <height>400</height>
     </rect>
@@ -893,8 +893,8 @@
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>220</y>
+     <x>20</x>
+     <y>200</y>
      <width>261</width>
      <height>81</height>
     </rect>
@@ -919,9 +919,9 @@ hr { height: 1px; border-width: 0; }
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>30</y>
+     <y>10</y>
      <width>961</width>
-     <height>151</height>
+     <height>181</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -931,7 +931,7 @@ hr { height: 1px; border-width: 0; }
     </sizepolicy>
    </property>
    <property name="tabPosition">
-    <enum>QTabWidget::East</enum>
+    <enum>QTabWidget::North</enum>
    </property>
    <widget class="QWidget" name="page_transport">
     <property name="sizePolicy">

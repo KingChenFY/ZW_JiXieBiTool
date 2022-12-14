@@ -15,6 +15,10 @@ int main(int argc, char *argv[])
 
     FrmMain w;
     w.setWindowTitle("JXB硬件调试平台 (Author: Yisea)");
+    w.setFixedSize(1000, 640);
+    w.setWindowFlags(w.windowFlags() &~ Qt::WindowMaximizeButtonHint);
+
+
     QUIHelper::setFormInCenter(&w);
     w.show();
     return a.exec();
