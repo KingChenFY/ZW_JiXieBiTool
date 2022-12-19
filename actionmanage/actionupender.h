@@ -62,6 +62,7 @@ public:
     //下层获取信息
     emWorkStatus m_eTaskStatusD;//任务状态
     emSeluteDUpender m_eTaskSeluteD;//任务结论
+    emPositionType m_eCurPos;//当前位置
 
 private:
     void getTaskSend();//封装查询指令到链表
@@ -69,8 +70,7 @@ private:
     static int timeOutValue_setTaskReSend;
     QTimer timer_setTaskReSend;
     //下层获取信息
-    ST_UPENDER_SETTASK_INFO m_stTaskD;//任务信息
-    emPositionType m_eCurPos;//当前位置
+    ST_UPENDER_SETTASK_INFO m_stTaskD;//任务信息  
     bool m_bIsMoving;//轴运动状态
 
 public slots:

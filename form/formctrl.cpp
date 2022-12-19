@@ -27,6 +27,7 @@ void FormCtrl::initForm()
 
 void FormCtrl::initConfig()
 {
+    emTaskStatus = QMetaEnum::fromType<FormCtrl::E_TASK_STATUS>();
     m_pActionBeltIn = new ActionBeltIn;
     m_pActionBeltOut = new ActionBeltOut;
     m_pActionPoleIn = new ActionPoleIn;
@@ -42,11 +43,51 @@ void FormCtrl::initConfig()
     connect(m_pActionMotorV, &ActionMotorV::signal_UiUpdate, this, &FormCtrl::slot_MotorV_UiUpdate);
     connect(m_pActionMotorXYZ, &ActionMotorXYZ::signal_UiUpdate, this, &FormCtrl::slot_MotorXYZ_UiUpdate);
 
-    emTaskStatus = QMetaEnum::fromType<FormCtrl::E_TASK_STATUS>();
-
-    slot_MotorXYZ_UiUpdate();
+    m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn,
+                                               m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
+    connect(m_pActionBTransport, &QThread::finished, this, &FormCtrl::slot_TransportTestThread_Stop);
 }
 
+/*
+ * ******************************************************运输仓测试流程******************************************************
+ */
+void FormCtrl::on_pbtn_transportTestStart_clicked()
+{
+    if("开始运输仓测试" == ui->pbtn_transportTestStart->text())
+    {
+        ui->page_transport->setDisabled(true);
+        m_pActionBTransport->m_bNeedStop = false;
+        _LOG("{Trans_Auto_Test}: THREAD START =================================");
+        m_pActionBTransport->start();
+        ui->pbtn_transportTestStart->setText("停止运输仓测试");
+    }
+    else if("停止运输仓测试" == ui->pbtn_transportTestStart->text())
+    {
+        m_pActionBTransport->m_bNeedStop = true;
+        _LOG("{Trans_Auto_Test}: STOP THREAD =================================");
+        ui->pbtn_transportTestStart->setText("正在停止运输仓测试");
+    }
+    else
+    {
+        return;
+    }
+}
+
+void FormCtrl::slot_TransportTestThread_Stop()
+{
+    on_rbtn_BIstop_clicked();
+    on_rbtn_BOstop_clicked();
+    on_rbtn_PIstop_clicked();
+    on_rbtn_POstop_clicked();
+    on_pbtn_UPstop_clicked();
+    on_pbtn_MVstop_clicked();
+    ui->page_transport->setEnabled(true);
+    _LOG("{Trans_Auto_Test}: THREAD FINISH END=================================");
+    ui->pbtn_transportTestStart->setText("开始运输仓测试");
+}
+/*
+ * ******************************************************UI******************************************************
+ */
 void FormCtrl::slot_BeltIN_UiUpdate()
 {
     //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
@@ -232,7 +273,6 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
     ui->lab_AimPhyPosZ->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stAimDPos.m_i32Z);
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
 }
-
 /*
  * ******************************************************入皮带******************************************************
  */
@@ -916,5 +956,8 @@ void FormCtrl::on_pbtn_logicMoveInTime_clicked()
 
     m_pActionMotorXYZ->setTaskSend();
 }
+
+
+
 
 

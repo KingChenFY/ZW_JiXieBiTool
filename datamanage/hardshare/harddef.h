@@ -111,6 +111,53 @@ typedef enum
     emTskDXYZType_end
 }emTaskDXYZType;
 
+// 各路传感信号状态枚举
+typedef enum
+{
+    emSensorStatus_Start,       // 信号未同步
+    emSensorStatus_On,          //信号有效
+    emSensorStatus_Off,         //信号无效
+    emSensorStatus_Err,         //信号功能异常
+    emSensorStatus_End
+}emSensorStatus;
+
+// 各路传感信号编号枚举
+typedef enum
+{
+    emSensorId_Start,
+    emSensorId_DuiShe1,         // 入舱对射1(里)								1
+    emSensorId_DuiShe2,         // 入舱对射2(外)								2
+    emSensorId_Touch1,          // 推杆起点盒到位信号1						3
+    emSensorId_Touch2,          // 推杆起点盒到位信号2(靠翻转装置侧)			4
+    emSensorId_PushLmt1,        // 上层推杆顶住信号							5
+    emSensorId_PullLmt2,        // 下层拉杆顶住信号                           6
+    emSensorId_InPos1,          // 入舱盒位1(手动放盒位)						7
+    emSensorId_InPos2,          // 入舱盒位2(皮带中段)						8
+    emSensorId_InPos3,          // 入舱盒位3(皮带最里端)						9
+    emSensorId_InPos4,          // 入舱盒位4(靠皮带侧)						10
+    emSensorId_InPos5,          // 入舱盒位5(推杆中段靠皮带侧)					11
+    emSensorId_InPos6,          // 入舱盒位6(推杆中段靠翻转装置侧)				12
+    emSensorId_InPos7,          // 入舱盒位7(靠翻转装置侧)						13
+    emSensorId_HatchTouch1,     // 玻片盒存在上信号							14
+    emSensorId_HatchTouch2,     // 玻片盒存在下信号							15
+    emSensorId_HatchExist,      //旋转仓内玻片盒存在信号						16
+    emSensorId_OutPos1,         // 出舱盒位1(靠翻转装置侧)                    17
+    emSensorId_OutPos2,         // 出舱盒位2(拉杆中段靠翻转装置侧)             18
+    emSensorId_OutPos3,         // 出舱盒位3(拉杆中段靠皮带侧)
+    emSensorId_OutPos4,         // 出舱盒位4(靠皮带侧)
+    emSensorId_OutPos5,         // 出舱盒位5(皮带最里端)
+    emSensorId_OutPos6,         // 出舱盒位6(皮带中段)
+    emSensorId_OutPos7,         // 出舱盒位7(手动拿盒位)
+    emSensorId_Gripper,         // 夹爪上玻片信号
+    emSensorId_Door,            // 舱门信号
+    emSensorId_BoxVUp,          // 垂直盒在上
+    emSensorId_BoxVDown,        // 垂直盒在下
+    emSensorId_CleanOilEmpty,   // 除油没纸信号
+    emSensorId_CleanOilRelease, // 除油纸松信号
+
+    emSensorId_End
+}emSensorId;
+
 // 打印对象bitmap
 typedef enum
 {
@@ -240,61 +287,7 @@ typedef enum
     emWorkStatus_end
 }emWorkStatus;
 
-// 各路传感信号状态枚举
-typedef enum 
-{
-	emSensorStatus_Start,// 信号未同步
-	emSensorStatus_On,//信号有效
-	emSensorStatus_Off,//信号无效
-	emSensorStatus_Err,//信号功能异常
-	emSensorStatus_End 
-}emSensorStatus;
 
-// 各路传感信号编号枚举
-typedef enum 
-{
-	emSensorId_Start,
-	emSensorId_DuiShe1, // 入舱对射1(里)									1
-	emSensorId_DuiShe2, // 入舱对射2(外)									2
-	
-	emSensorId_Touch1, // 推杆起点盒到位信号1								3
-	emSensorId_Touch2, // 推杆起点盒到位信号2(靠翻转装置侧)					4
-	
-	emSensorId_PushLmt1, // 上层推杆顶住信号								5
-	emSensorId_PullLmt2, // 下层拉杆顶住信号								6
-	
-	emSensorId_InPos1, // 入舱盒位1(手动放盒位)								7
-	emSensorId_InPos2, // 入舱盒位2(皮带中段)								8
-	emSensorId_InPos3, // 入舱盒位3(皮带最里端)								9
-	emSensorId_InPos4, // 入舱盒位4(靠皮带侧)								10
-	emSensorId_InPos5, // 入舱盒位5(推杆中段靠皮带侧)						11
-	emSensorId_InPos6, // 入舱盒位6(推杆中段靠翻转装置侧)					12
-	emSensorId_InPos7, // 入舱盒位7(靠翻转装置侧)							13
-	
-	emSensorId_HatchTouch1, // 玻片盒存在上信号								14
-	emSensorId_HatchTouch2, // 玻片盒存在下信号								15
-    emSensorId_HatchExist,  //旋转仓内玻片盒存在信号						16
-	
-	emSensorId_OutPos1, // 出舱盒位1(靠翻转装置侧)
-	emSensorId_OutPos2, // 出舱盒位2(拉杆中段靠翻转装置侧)
-	emSensorId_OutPos3, // 出舱盒位3(拉杆中段靠皮带侧)
-	emSensorId_OutPos4, // 出舱盒位4(靠皮带侧)
-	emSensorId_OutPos5, // 出舱盒位5(皮带最里端)
-	emSensorId_OutPos6, // 出舱盒位6(皮带中段)
-	emSensorId_OutPos7, // 出舱盒位7(手动拿盒位)	
-            
-    emSensorId_Gripper, // 夹爪上玻片信号
-    
-	emSensorId_Door, // 舱门信号
-	
-	emSensorId_BoxVUp, // 垂直盒在上
-	emSensorId_BoxVDown, // 垂直盒在下
-	
-	emSensorId_CleanOilEmpty, // 除油没纸信号
-	emSensorId_CleanOilRelease, // 除油纸松信号
-	
-	emSensorId_End 
-}emSensorId;
 
 #endif /* ifndef __HARD_DEF_H_ */
 

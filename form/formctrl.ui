@@ -1649,6 +1649,19 @@ hr { height: 1px; border-width: 0; }
     </layout>
    </widget>
   </widget>
+  <widget class="QPushButton" name="pbtn_transportTestStart">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>290</y>
+     <width>111</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开始运输仓测试</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

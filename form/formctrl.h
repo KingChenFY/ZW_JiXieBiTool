@@ -11,6 +11,7 @@
 #include "actionupender.h"
 #include "actionmotorv.h"
 #include "actionmotorxyz.h"
+#include "actionbtransport.h"
 
 namespace Ui {
 class FormCtrl;
@@ -44,12 +45,15 @@ public:
     ActionUpender* m_pActionUpender;//翻转装置控制
     ActionMotorV* m_pActionMotorV;//垂直扫描轴控制
     ActionMotorXYZ* m_pActionMotorXYZ;//XYZ电机控制
+    ActionBTransport *m_pActionBTransport;//运输仓测试流程
 
 private:
     Ui::FormCtrl *ui;
 
     QMetaEnum emTaskStatus;
 
+private slots:
+    void slot_TransportTestThread_Stop();
 private slots:
     void initForm();
     void initConfig();
@@ -102,6 +106,7 @@ private slots:
     void on_pbtn_phyMoveInTime_clicked();
     void on_pbtn_logicMove_clicked();
     void on_pbtn_logicMoveInTime_clicked();
+    void on_pbtn_transportTestStart_clicked();
 };
 
 #endif // FORMCTRL_H

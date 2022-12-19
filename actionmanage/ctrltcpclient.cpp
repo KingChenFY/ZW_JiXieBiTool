@@ -149,6 +149,13 @@ void CtrlTcpClient::slot_SendTimerOut()
             {
                 //查询链表中的数据已全部查过一遍或者查询链表为空，默认查询列表获得发送权
                 m_eGetTaskSender = emSENDER_DEFAULT_LIST;
+                //在查询默认链表前先同步一次信号状态
+                netSendLen = formatBoardCmd((uint8_t)EnumBoardId_getAllSensors, netSendData, 0);
+                qint64 atcual_sendNum = m_socket->write((const char*)netSendData, netSendLen);
+                m_socket->flush();
+                _LOG(QString("==========>[get sensor status]:TcpClient send cmd[%1]len[%2]").arg(EnumBoardId_getAllSensors).arg(atcual_sendNum));
+                return;
+
             }
         }
 

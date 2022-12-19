@@ -1,6 +1,7 @@
 HEADERS += \
     $$PWD/actionbeltin.h \
     $$PWD/actionbeltout.h \
+    $$PWD/actionbtransport.h \
     $$PWD/actiondatamanage.h \
     $$PWD/actionmotorv.h \
     $$PWD/actionmotorxyz.h \
@@ -13,6 +14,7 @@ HEADERS += \
 SOURCES += \
     $$PWD/actionbeltin.cpp \
     $$PWD/actionbeltout.cpp \
+    $$PWD/actionbtransport.cpp \
     $$PWD/actiondatamanage.cpp \
     $$PWD/actionmotorv.cpp \
     $$PWD/actionmotorxyz.cpp \
