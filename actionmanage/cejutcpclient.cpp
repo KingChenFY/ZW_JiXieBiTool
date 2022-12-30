@@ -200,6 +200,8 @@ void CeJuTcpClient::slot_AutoMeasureTimerOut()
 {
     if(getCejuCurValue(stCurTaskValue))
         emit signal_cejuValueUpdate();
+    else
+        qDebug()<< QString("{CeJu}: AutoMeasure Fail");
 }
 /***********************************测距网络底层驱动***********************************/
 void CeJuTcpClient::slot_initCeJuClient()
@@ -232,6 +234,7 @@ void CeJuTcpClient::slot_connectToCeju()
 
 void CeJuTcpClient::slot_abortConnectCeju()
 {
+    m_autoMeasureTimer->stop();
     m_socket->abort();
 }
 
@@ -252,15 +255,8 @@ void CeJuTcpClient::slot_connected()
     qDebug()<< (QString("{CeJu}:%1:%2, Connect OK!").arg(m_strIp).arg(m_u16Port));
     isConnect = true;
     m_linkTimer->stop();
+    m_autoMeasureTimer->start(20);
 
-    m_autoMeasureTimer->start(5);
-
-//    bool bRecordOn = false;
-//    uint32_t uRecordNum = 3;
-//    getCejuLogInfo(bRecordOn, uRecordNum);
-//    uint32_t u32StartId = 0;
-//    uint32_t u32AskNum = 100;
-//    getCejuLogData(u32StartId, u32AskNum, emCeJuDataTtype_task1, m_uTask1);
     emit signal_cejuConnected();
 }
 
