@@ -36,7 +36,7 @@ emWKCmdType ActionBeltIn::parseCmd(uint8_t* puData)
 //            timer_setTaskReSend.stop();
         // 向gettask链表中压入查询指令
         getTaskSend();
-        qDebug() << QString("EnumBoardId_setBeltInTask::parseCmd, Send getstatus");
+//        qDebug() << QString("EnumBoardId_setBeltInTask::parseCmd, Send getstatus");
         return emCMD_SET;
     }
 
@@ -80,11 +80,11 @@ emWKCmdType ActionBeltIn::parseCmd(uint8_t* puData)
         {
 //            gtTaskLinkList.app_deleteNodeWithTaskId(EnumBoardObject_BeltIn, m_stTaskD.m_uTaskId);
             GetTaskLinkList::GetInstance().app_deleteNodeWithTaskId(EnumBoardObject_BeltIn, m_stTaskD.m_uTaskId);
-            qDebug() << QString("EnumBoardId_getBeltInTaskInfo::parseCmd, ID:[%1], task finish").arg(m_stTaskD.m_uTaskId) << TIMEMS;
+//            qDebug() << QString("EnumBoardId_getBeltInTaskInfo::parseCmd, ID:[%1], task finish").arg(m_stTaskD.m_uTaskId) << TIMEMS;
         }
         return emCMD_GET;
     }
-    qDebug() << "ActionBeltIn::parseCmd no such uCmdId = " << uCmdId;
+//    qDebug() << "ActionBeltIn::parseCmd no such uCmdId = " << uCmdId;
 }
 
 void ActionBeltIn::setTaskSend()
@@ -104,11 +104,11 @@ void ActionBeltIn::setTaskSend()
         //压入发送队列前，开启重发定时器，如果本来就开着会重启定时器
         timer_setTaskReSend.start(timeOutValue_setTaskReSend);
         stTaskFifo.pushWriteMessageToFifo();
-        qDebug() << QString("ActionBeltIn::setTaskSend, TYPE:[%1],ID:[%2], set task OK!").arg(m_stTaskToSend.m_eTaskType).arg(m_stTaskToSend.m_uTaskId);
+//        qDebug() << QString("ActionBeltIn::setTaskSend, TYPE:[%1],ID:[%2], set task OK!").arg(m_stTaskToSend.m_eTaskType).arg(m_stTaskToSend.m_uTaskId);
     }
     else
     {
-        qDebug() << QString("ActionBeltIn::setTaskSend, settask fifo full, data lost");
+//        qDebug() << QString("ActionBeltIn::setTaskSend, settask fifo full, data lost");
     }
 }
 
@@ -140,7 +140,7 @@ void ActionBeltIn::slot_timer_setTaskReSend()
     //如果下层同步到的taskId和当前准备重发的taskId相等，说明设置的指令已经收到回复，停止重发定时器
     if(m_stTaskD.m_uTaskId == m_stTaskToSend.m_uTaskId)
     {
-        qDebug() << QString("ActionBeltIn, ID:[%1], close timer_setTaskReSend").arg(m_stTaskD.m_uTaskId);
+//        qDebug() << QString("ActionBeltIn, ID:[%1], close timer_setTaskReSend").arg(m_stTaskD.m_uTaskId);
         timer_setTaskReSend.stop();
     }
     else

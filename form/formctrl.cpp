@@ -20,6 +20,7 @@ FormCtrl::~FormCtrl()
 
 void FormCtrl::initForm()
 {
+    this->setDisabled(true);
     ui->ledit_moveX->setEnabled(false);
     ui->ledit_moveY->setEnabled(false);
     ui->ledit_moveZ->setEnabled(false);

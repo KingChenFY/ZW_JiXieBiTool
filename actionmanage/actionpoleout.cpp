@@ -31,7 +31,7 @@ emWKCmdType ActionPoleOut::parseCmd(uint8_t* puData)
     {
         // 向gettask链表中压入查询指令
         getTaskSend();
-        qDebug() << QString("[%1][%2][%3]: setTask").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
+//        qDebug() << QString("[%1][%2][%3]: setTask").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
         return emCMD_SET;
     }
 
@@ -72,7 +72,7 @@ emWKCmdType ActionPoleOut::parseCmd(uint8_t* puData)
         {
 //            gtTaskLinkList.app_deleteNodeWithTaskId(EnumBoardObject_BeltIn, m_stTaskD.m_uTaskId);
             GetTaskLinkList::GetInstance().app_deleteNodeWithTaskId(EnumBoardObject_PoleOut, m_stTaskD.m_uTaskId);
-            qDebug() << QString("[%1][%2][%3]: gettask").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
+//            qDebug() << QString("[%1][%2][%3]: gettask").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
         }
         return emCMD_GET;
     }
@@ -132,7 +132,7 @@ void ActionPoleOut::slot_timer_setTaskReSend()
     }
     else
     {
-        qDebug() << QString("[%1][%2][%3]:  ReSend").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
+//        qDebug() << QString("[%1][%2][%3]:  ReSend").arg(__FILE__).arg(__FUNCTION__).arg(__LINE__);
         setTaskSend();
     }
 }

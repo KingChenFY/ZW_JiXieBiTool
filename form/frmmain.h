@@ -22,9 +22,10 @@ public:
 
 private:
     Ui::FrmMain *ui;
+    //机械臂客户端
     CtrlTcpClient *ctrlClient;
     QThread ctrlNetThread;
-
+    //机械臂解析响应线程
     ActionDataManage *actnDataManage;
     QThread dataManageThread;
 

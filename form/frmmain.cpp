@@ -1,6 +1,7 @@
 #include "frmmain.h"
 #include "ui_frmmain.h"
 #include "formctrl.h"
+#include "formceju.h"
 #include "global.h"
 
 FrmMain::FrmMain(QWidget *parent) :
@@ -19,10 +20,10 @@ FrmMain::~FrmMain()
 
 void FrmMain::initForm()
 {
-    slot_netNoLink();
-    ui->tabWidget->addTab(new FormCtrl, "控制窗口");
+    ui->tabWidget->addTab(new FormCtrl, "机械臂工具");
+    ui->tabWidget->addTab(new FormCeJu, "测距工具");
     //启动日志功能
-    SaveLog::Instance()->start();
+//    SaveLog::Instance()->start();
 }
 
 void FrmMain::initConfig()
@@ -35,7 +36,7 @@ void FrmMain::initConfig()
     ctrlClient->moveToThread(&ctrlNetThread);
     //关联网络线程的启动信号
     connect(&ctrlNetThread, &QThread::started, ctrlClient, &CtrlTcpClient::slot_initCtrlClient);
-    qDebug() << "start net thread";
+    _LOG(QString("start net thread"));
 
     //实例化数据管理类
     actnDataManage = new ActionDataManage;
@@ -43,15 +44,14 @@ void FrmMain::initConfig()
     actnDataManage->moveToThread(&dataManageThread);
     //关联数据管理线程的启动信号
     connect(&dataManageThread, &QThread::started, actnDataManage, &ActionDataManage::slot_initDataMange);
-    qDebug() << "start data manage thread";
-
+    _LOG(QString("start data manage thread"));
 
     //关联这两个类的信号和槽
     connect(ctrlClient, &CtrlTcpClient::signal_netRecvData, actnDataManage, &ActionDataManage::slot_netRecvData, Qt::QueuedConnection);
     connect(ctrlClient, &CtrlTcpClient::signal_netConnected, this, &FrmMain::slot_netConnected);
     connect(ctrlClient, &CtrlTcpClient::signal_netNoLink, this, &FrmMain::slot_netNoLink);
 
-    //启动线程 ,
+    //启动线程
     dataManageThread.start();
     ctrlNetThread.start();
 }

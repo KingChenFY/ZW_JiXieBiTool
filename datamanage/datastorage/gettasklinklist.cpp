@@ -69,7 +69,6 @@ bool GetTaskLinkList::app_insertTail(uint8_t taskId, emBoardObject boardObj, uin
 bool GetTaskLinkList::app_deleteNodeWithTaskId(emBoardObject obj, uint8_t taskId)
 {
     QMutexLocker locker(&mtx);
-    qDebug() << "app_deleteNodeWithTaskId = " << nodeNum;
     if( isEmpty() )
     {
         return true;
@@ -154,7 +153,6 @@ bool GetTaskLinkList::app_deleteNodeWithCmdId(uint32_t cmdid)
 bool GetTaskLinkList::app_getOneNotSendNodeData(uint8_t* data, uint16_t &len)
 {
     QMutexLocker locker(&mtx);
-    qDebug() << "app_getOneNotSendNodeData = " << nodeNum;
     if( isEmpty() )
     {
         return false;

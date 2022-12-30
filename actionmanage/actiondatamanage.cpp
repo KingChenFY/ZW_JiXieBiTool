@@ -28,7 +28,7 @@ void ActionDataManage::slot_netRecvData()
     uint32_t packLength = ntRecvFifo.findOnePackFromFifo();
     while(packLength != 0)
     {
-        qDebug() << "ActionDataManage::slot_netRecvData deal"<< packLength << TIMEMS;
+//        qDebug() << "ActionDataManage::slot_netRecvData deal"<< packLength << TIMEMS;
         uint8_t packData[WK_NET_ONE_MESSAGE_MAX_LEN] = {0};
         ntRecvFifo.popOnePackFromFifo(packData, packLength);
 
