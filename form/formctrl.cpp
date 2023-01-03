@@ -21,9 +21,10 @@ FormCtrl::~FormCtrl()
 void FormCtrl::initForm()
 {
     formCeju = new FormCeJu;
-    ui->tabW_apps->addTab(formCeju, "测距工具");
+    ui->tabW_apps->addTab(formCeju, "ZW-5030");
 
-    this->setDisabled(true);
+    ui->tabW_main->setDisabled(true);
+    ui->gb_xyzMotor->setDisabled(true);
     ui->ledit_moveX->setEnabled(false);
     ui->ledit_moveY->setEnabled(false);
     ui->ledit_moveZ->setEnabled(false);
@@ -53,12 +54,14 @@ void FormCtrl::initConfig()
 }
 void FormCtrl::slot_netConnected()
 {
-    this->setEnabled(true);
+    ui->tabW_main->setEnabled(true);
+    ui->gb_xyzMotor->setEnabled(true);
 }
 
 void FormCtrl::slot_netNoLink()
 {
-    this->setDisabled(true);
+    ui->tabW_main->setDisabled(true);
+    ui->gb_xyzMotor->setDisabled(true);
 }
 /*
  * ******************************************************运输仓测试流程******************************************************
