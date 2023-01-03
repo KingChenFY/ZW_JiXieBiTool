@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QTcpSocket>
 
+#include "formctrl.h"
 #include "ctrltcpclient.h"
 #include "actiondatamanage.h"
 
@@ -20,6 +21,8 @@ public:
     explicit FrmMain(QWidget *parent = nullptr);
     ~FrmMain();
 
+    FormCtrl *formCtrl;
+
 private:
     Ui::FrmMain *ui;
     //机械臂客户端
@@ -32,8 +35,6 @@ private:
 private slots:
     void initForm();
     void initConfig();
-    void slot_netConnected();
-    void slot_netNoLink();
 };
 
 #endif // FRMMAIN_H

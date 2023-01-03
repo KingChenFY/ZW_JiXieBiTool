@@ -12,6 +12,7 @@
 #include "actionmotorv.h"
 #include "actionmotorxyz.h"
 #include "actionbtransport.h"
+#include "formceju.h"
 
 namespace Ui {
 class FormCtrl;
@@ -25,6 +26,9 @@ public:
     explicit FormCtrl(QWidget *parent = nullptr);
     ~FormCtrl();
 
+    void slot_netConnected();
+    void slot_netNoLink();
+
     // 执行状态
     enum E_TASK_STATUS
     {
@@ -37,6 +41,8 @@ public:
         emWorkStatus_end
     };
     Q_ENUM(E_TASK_STATUS)
+
+    FormCeJu *formCeju;
 
     ActionBeltIn* m_pActionBeltIn;//入舱皮带控制
     ActionBeltOut* m_pActionBeltOut;//出舱皮带控制

@@ -20,6 +20,9 @@ FormCtrl::~FormCtrl()
 
 void FormCtrl::initForm()
 {
+    formCeju = new FormCeJu;
+    ui->tabW_apps->addTab(formCeju, "测距工具");
+
     this->setDisabled(true);
     ui->ledit_moveX->setEnabled(false);
     ui->ledit_moveY->setEnabled(false);
@@ -48,7 +51,15 @@ void FormCtrl::initConfig()
                                                m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
     connect(m_pActionBTransport, &QThread::finished, this, &FormCtrl::slot_TransportTestThread_Stop);
 }
+void FormCtrl::slot_netConnected()
+{
+    this->setEnabled(true);
+}
 
+void FormCtrl::slot_netNoLink()
+{
+    this->setDisabled(true);
+}
 /*
  * ******************************************************运输仓测试流程******************************************************
  */

@@ -1,7 +1,7 @@
 #include "cejutcpclient.h"
 #include "global.h"
-#include "cejucmddealagent.h"
 #include "quihelperdata.h"
+#include "xlsxdocument.h"
 #include <QThread>
 
 CeJuTcpClient::CeJuTcpClient(QObject *parent)
@@ -13,6 +13,35 @@ CeJuTcpClient::CeJuTcpClient(QObject *parent)
 //      m_u16Port = 8888;
     isConnect = false;
 }
+
+/***********************************测距数据保存***********************************/
+//void CeJuTcpClient::saveCeJuRecordToFile()
+//{
+//    QString fileName = ui->lineEdit_SaveDir->text();
+//    QStringList list = fileName.split(".");
+//    QString filetype = list.at(list.count() - 1);
+//    QString strData = QString("%1").arg(TIMEMS);
+
+//    if(filetype == "xlsx")
+//    {
+//         QXlsx::Document xlsx(fileName);
+//        if(0 == regAddr)
+//        {
+//            quint8 __pt02num = ui->spinBox_pt02num->value();
+//            QStringList tdatalist = tempData.split(",");
+//            xlsx.write(xlsx_row, xlsx_col++, strData);
+//            xlsx.write(xlsx_row, xlsx_col++, tdatalist.at(0).toFloat());
+//            xlsx.write(xlsx_row, xlsx_col++, tdatalist.at(1).toFloat());
+//            if((__pt02num*3 + 1) == xlsx_col)
+//            {
+//                xlsx_row++;
+//                xlsx_col = 1;
+//            }
+//        }
+//        xlsx.save();
+//    }
+//}
+
 
 /***********************************测距指令发送读取解析***********************************/
 void CeJuTcpClient::slot_readData()

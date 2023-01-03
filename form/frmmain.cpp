@@ -1,7 +1,5 @@
 #include "frmmain.h"
 #include "ui_frmmain.h"
-#include "formctrl.h"
-#include "formceju.h"
 #include "global.h"
 
 FrmMain::FrmMain(QWidget *parent) :
@@ -20,8 +18,8 @@ FrmMain::~FrmMain()
 
 void FrmMain::initForm()
 {
-    ui->tabWidget->addTab(new FormCtrl, "机械臂工具");
-    ui->tabWidget->addTab(new FormCeJu, "测距工具");
+    formCtrl = new FormCtrl;
+    ui->tabWidget->addTab(formCtrl, "机械臂工具");
     //启动日志功能
 //    SaveLog::Instance()->start();
 }
@@ -48,20 +46,10 @@ void FrmMain::initConfig()
 
     //关联这两个类的信号和槽
     connect(ctrlClient, &CtrlTcpClient::signal_netRecvData, actnDataManage, &ActionDataManage::slot_netRecvData, Qt::QueuedConnection);
-    connect(ctrlClient, &CtrlTcpClient::signal_netConnected, this, &FrmMain::slot_netConnected);
-    connect(ctrlClient, &CtrlTcpClient::signal_netNoLink, this, &FrmMain::slot_netNoLink);
+    connect(ctrlClient, &CtrlTcpClient::signal_netConnected, formCtrl, &FormCtrl::slot_netConnected);
+    connect(ctrlClient, &CtrlTcpClient::signal_netNoLink, formCtrl, &FormCtrl::slot_netNoLink);
 
     //启动线程
     dataManageThread.start();
     ctrlNetThread.start();
-}
-
-void FrmMain::slot_netConnected()
-{
-    ui->tabWidget->setEnabled(true);
-}
-
-void FrmMain::slot_netNoLink()
-{
-    ui->tabWidget->setDisabled(true);
 }

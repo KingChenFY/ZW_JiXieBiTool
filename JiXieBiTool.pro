@@ -30,7 +30,7 @@ include ($$PWD/form/form.pri)
 include ($$PWD/datamanage/datamanage.pri)
 include ($$PWD/actionmanage/actionmanage.pri)
 
-#INCLUDEPATH += $$PWD/3rdparty/qtxlsx
+INCLUDEPATH += $$PWD/3rdparty/qtxlsx
 INCLUDEPATH += $$PWD/3rdparty/qcustomplot
 include ($$PWD/3rdparty/3rd_party.pri)
 
