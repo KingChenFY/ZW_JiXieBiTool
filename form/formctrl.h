@@ -12,6 +12,7 @@
 #include "actionmotorv.h"
 #include "actionmotorxyz.h"
 #include "actionbtransport.h"
+#include "actiontriggerset.h"
 #include "formceju.h"
 
 namespace Ui {
@@ -51,6 +52,7 @@ public:
     ActionUpender* m_pActionUpender;//翻转装置控制
     ActionMotorV* m_pActionMotorV;//垂直扫描轴控制
     ActionMotorXYZ* m_pActionMotorXYZ;//XYZ电机控制
+    ActionTriggerSet *m_pActionTriggerSet;//触发控制
     ActionBTransport *m_pActionBTransport;//运输仓测试流程
 
 private:
@@ -70,6 +72,7 @@ private slots:
     void slot_Upender_UiUpdate();
     void slot_MotorV_UiUpdate();
     void slot_MotorXYZ_UiUpdate();
+    void slot_TriggerSet_UiUpdate();
 
 private slots:
     //皮带入
@@ -113,6 +116,7 @@ private slots:
     void on_pbtn_logicMove_clicked();
     void on_pbtn_logicMoveInTime_clicked();
     void on_pbtn_transportTestStart_clicked();
+    void on_pbtn_TriggerStart_clicked();
 };
 
 #endif // FORMCTRL_H

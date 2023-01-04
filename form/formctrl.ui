@@ -474,7 +474,7 @@
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>触发对象：</string>
+               <string>触发轴：</string>
               </property>
              </widget>
             </item>
@@ -552,7 +552,7 @@
             <item>
              <widget class="QPushButton" name="pbtn_TriggerStart">
               <property name="text">
-               <string>开始</string>
+               <string>开始触发</string>
               </property>
              </widget>
             </item>

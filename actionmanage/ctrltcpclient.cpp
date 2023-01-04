@@ -115,7 +115,8 @@ void CtrlTcpClient::slot_SendTimerOut()
         if( NULL != pSendAddr )
         {
             //先拷贝指令内容部分
-            memcpy(&netSendData[WK_BOARD_CMD_HEAD_LENGTH], pSendAddr->u8CmdContent, pSendAddr->u16CmdContentLen);
+            if(pSendAddr->u16CmdContentLen)
+                memcpy(&netSendData[WK_BOARD_CMD_HEAD_LENGTH], pSendAddr->u8CmdContent, pSendAddr->u16CmdContentLen);
             //封装指令
             netSendLen = formatBoardCmd(pSendAddr->eCmdId, netSendData, pSendAddr->u16CmdContentLen);
             //发送

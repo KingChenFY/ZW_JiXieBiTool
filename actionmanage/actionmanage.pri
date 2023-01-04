@@ -7,6 +7,7 @@ HEADERS += \
     $$PWD/actionmotorxyz.h \
     $$PWD/actionpolein.h \
     $$PWD/actionpoleout.h \
+    $$PWD/actiontriggerset.h \
     $$PWD/actionupender.h \
     $$PWD/cejutcpclient.h \
     $$PWD/ctrltcpclient.h \
@@ -21,6 +22,7 @@ SOURCES += \
     $$PWD/actionmotorxyz.cpp \
     $$PWD/actionpolein.cpp \
     $$PWD/actionpoleout.cpp \
+    $$PWD/actiontriggerset.cpp \
     $$PWD/actionupender.cpp \
     $$PWD/cejutcpclient.cpp \
     $$PWD/ctrltcpclient.cpp \

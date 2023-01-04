@@ -7,6 +7,15 @@
 
 #define WK_LEN_QRCODE_CONTENT           128             //二维码长度
 
+//测距外触发切换模块 D层轴类型
+typedef enum
+{
+    emAxis_X,           //X轴
+    emAxis_Y,           //Y轴
+    emAxis_Z,           //Z轴
+    emAxis_End
+}emAxisType;
+
 //入舱皮带模块任务类型
 typedef enum
 {

@@ -40,6 +40,7 @@ void FormCtrl::initConfig()
     m_pActionUpender = new ActionUpender;
     m_pActionMotorV = new ActionMotorV;
     m_pActionMotorXYZ = new ActionMotorXYZ;
+    m_pActionTriggerSet = new ActionTriggerSet;
     connect(m_pActionBeltIn, &ActionBeltIn::signal_UiUpdate, this, &FormCtrl::slot_BeltIN_UiUpdate);
     connect(m_pActionBeltOut, &ActionBeltOut::signal_UiUpdate, this, &FormCtrl::slot_BeltOUT_UiUpdate);
     connect(m_pActionPoleIn, &ActionPoleIn::signal_UiUpdate, this, &FormCtrl::slot_PoleIN_UiUpdate);
@@ -47,6 +48,7 @@ void FormCtrl::initConfig()
     connect(m_pActionUpender, &ActionUpender::signal_UiUpdate, this, &FormCtrl::slot_Upender_UiUpdate);
     connect(m_pActionMotorV, &ActionMotorV::signal_UiUpdate, this, &FormCtrl::slot_MotorV_UiUpdate);
     connect(m_pActionMotorXYZ, &ActionMotorXYZ::signal_UiUpdate, this, &FormCtrl::slot_MotorXYZ_UiUpdate);
+    connect(m_pActionTriggerSet, &ActionTriggerSet::signal_UiUpdate, this, &FormCtrl::slot_TriggerSet_UiUpdate);
 
     m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn,
                                                m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
@@ -287,6 +289,11 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
     ui->lab_AimPhyPosY->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stAimDPos.m_i32Y);
     ui->lab_AimPhyPosZ->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stAimDPos.m_i32Z);
 //    ui->txtEd_BI->setStyleSheet("QTextEdit{background: rgb(128,0,0)}");
+}
+
+void FormCtrl::slot_TriggerSet_UiUpdate()
+{
+    ui->pbtn_TriggerStart->setEnabled(true);
 }
 /*
  * ******************************************************入皮带******************************************************
@@ -972,7 +979,52 @@ void FormCtrl::on_pbtn_logicMoveInTime_clicked()
     m_pActionMotorXYZ->setTaskSend();
 }
 
+/*
+ * ******************************************************触发模块******************************************************
+ */
+void FormCtrl::on_pbtn_TriggerStart_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    ST_TRIG_SETTASK_INFO trigUiInfo;
+    bool ok;
+    trigUiInfo.m_u8TrigObj = 0;//触发测距
+    if(ui->rbtn_TriggerX->isChecked())
+        trigUiInfo.m_eAxis = emAxis_X;
+    else if(ui->rbtn_TriggerY->isChecked())
+        trigUiInfo.m_eAxis = emAxis_Y;
+    else
+        trigUiInfo.m_eAxis = emAxis_Z;
 
+    if(!ui->ledit_TriggerDistance->text().isEmpty())
+    {
+        trigUiInfo.m_u16Interval = ui->ledit_TriggerDistance->text().toInt(&ok);
+        if(!ok)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("触发间距输入不合法"));
+            return;
+        }
 
+    }
+    else
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("请输入触发间距"));
+        return;
+    }
 
+    if( (trigUiInfo.m_u8TrigObj == m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj) &&
+            (trigUiInfo.m_eAxis == m_pActionTriggerSet->m_stTaskToSend.m_eAxis) &&
+            (trigUiInfo.m_u16Interval == m_pActionTriggerSet->m_stTaskToSend.m_u16Interval) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    ui->pbtn_TriggerStart->setDisabled(true);
+    //非重复任务
+    m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj = trigUiInfo.m_u8TrigObj;
+    m_pActionTriggerSet->m_stTaskToSend.m_eAxis = trigUiInfo.m_eAxis;
+    m_pActionTriggerSet->m_stTaskToSend.m_u16Interval = trigUiInfo.m_u16Interval;
+    _LOG(QString("task is set"));
+
+    m_pActionTriggerSet->setTaskSend();
+}
 
