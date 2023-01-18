@@ -24,6 +24,14 @@ typedef enum
     emCeJuDataTtype_End
 }emCeJuTaskId;
 
+typedef enum
+{
+    emCeJuTrigMode_internal,
+    emCeJuTrigMode_external,
+
+    emCeJuTrigMode_End
+}emCeJuTrigMode;
+
 class CeJuTcpClient : public QObject
 {
     Q_OBJECT
@@ -38,6 +46,7 @@ public:
     void slot_connected();
     void slot_netErrDeal();
 
+    bool setCejuTriggerMode(emCeJuTrigMode trigMode);
     bool getCejuCurValue(ST_CeJuCurValue &stCurCejuValue);
     bool getCejuLogInfo(bool &bRecordOn, uint32_t &uRecordNum);
     bool startCejuRecord(uint16_t u16RecordGap, uint32_t u32SaveNum);
@@ -45,7 +54,16 @@ public:
     bool clearCejuRecord();
     bool getCejuLogData(uint32_t &u32StartId, uint32_t &u32AskNum, emCeJuTaskId cejuTaskId, int32_t *records);
 
+    void slot_getCejuLogInfo();
+    void slot_startCejuRecord(uint16_t u16RecordGap, uint32_t u32SaveNum);
+    void slot_stopCejuRecord();
+    void slot_clearCejuRecord();
+    void slot_setCejuTriggerModeExternal();
+    void slot_setCejuTriggerModeInternal();
+
     ST_CeJuCurValue stCurTaskValue;
+    bool m_bIsRecordOn;
+    uint32_t m_uRecordNum;// 当前记录总量
 
 private:
     QTcpSocket *m_socket;
@@ -56,7 +74,6 @@ private:
     QTimer *m_linkTimer;
     QTimer *m_autoMeasureTimer;
 
-    uint32_t m_uRecordNum;// 当前记录总量
     uint32_t m_uAskNum;// 一次读取数量
 
     uint32_t m_uReadNum1;// 当前已读取数量
@@ -70,6 +87,13 @@ signals:
     void signal_cejuConnected();
     void signal_cejuNoLink();
     void signal_cejuValueUpdate();
+
+    void signal_getCejuLog_UiUpdate(bool isSucceed);
+    void signal_startCejuRecord_UiUpdate(bool isSucceed);
+    void signal_stopCejuRecord_UiUpdate(bool isSucceed);
+    void signal_clearCejuRecord_UiUpdate(bool isSucceed);
+    void signal_setCejuTriggerModeExternal_UiUpdate(bool isSucceed);
+    void signal_setCejuTriggerModeInternal_UiUpdate(bool isSucceed);
 
 private slots:
     void slot_LinkTimerOut();

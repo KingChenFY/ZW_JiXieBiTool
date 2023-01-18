@@ -13,6 +13,9 @@ CeJuTcpClient::CeJuTcpClient(QObject *parent)
 //      m_u16Port = 8888;
     isConnect = false;
 }
+/***********************************测距任务***********************************/
+//void CeJuTcpClient::CejuTask_Init()
+//{}
 
 /***********************************测距数据保存***********************************/
 //void CeJuTcpClient::saveCeJuRecordToFile()
@@ -42,11 +45,79 @@ CeJuTcpClient::CeJuTcpClient(QObject *parent)
 //    }
 //}
 
+/***********************************响应测距ui线程的槽***********************************/
+void CeJuTcpClient::slot_getCejuLogInfo()
+{
+    bool isSucceed;
+    isSucceed = getCejuLogInfo(m_bIsRecordOn, m_uRecordNum);
+    emit signal_getCejuLog_UiUpdate(isSucceed);
+}
 
+void CeJuTcpClient::slot_startCejuRecord(uint16_t u16RecordGap, uint32_t u32SaveNum)
+ {
+     bool isSucceed;
+     isSucceed = startCejuRecord(u16RecordGap, u32SaveNum);
+     emit signal_startCejuRecord_UiUpdate(isSucceed);
+ }
+
+void CeJuTcpClient::slot_stopCejuRecord()
+{
+    bool isSucceed;
+    isSucceed = stopCejuRecord();
+    emit signal_stopCejuRecord_UiUpdate(isSucceed);
+}
+
+void CeJuTcpClient::slot_clearCejuRecord()
+{
+    bool isSucceed;
+    isSucceed = clearCejuRecord();
+    emit signal_clearCejuRecord_UiUpdate(isSucceed);
+}
+
+void CeJuTcpClient::slot_setCejuTriggerModeExternal()
+{
+    bool isSucceed;
+    isSucceed = setCejuTriggerMode(emCeJuTrigMode_external);
+    emit signal_setCejuTriggerModeExternal_UiUpdate(isSucceed);
+}
+
+void CeJuTcpClient::slot_setCejuTriggerModeInternal()
+{
+    bool isSucceed;
+    isSucceed = setCejuTriggerMode(emCeJuTrigMode_internal);
+    emit signal_setCejuTriggerModeInternal_UiUpdate(isSucceed);
+}
 /***********************************测距指令发送读取解析***********************************/
 void CeJuTcpClient::slot_readData()
 {
     qDebug() << "CeJuTcpClient slot_readData thread:" << QThread::currentThread();
+}
+
+bool CeJuTcpClient::setCejuTriggerMode(emCeJuTrigMode trigMode)
+{
+    QString cmdStr;
+    if(emCeJuTrigMode_external == trigMode)
+        cmdStr = "YS 1120 1\r";
+    else
+        cmdStr = "YS 1120 0\r";
+
+    m_socket->write(cmdStr.toUtf8());
+
+    if(m_socket->waitForReadyRead())
+    {
+        QByteArray qdata = m_socket->readAll();
+        if (qdata.length() < 3) {
+            return false;
+        }
+        uint8_t *puData = (uint8_t *)qdata.data();
+
+        if ('E' == puData[0] && 'R' == puData[1])
+            return false;
+        if ('O' == puData[0] && 'K' == puData[1])
+            return true;
+    }
+
+    return false;
 }
 
 bool CeJuTcpClient::getCejuCurValue(ST_CeJuCurValue &stCurCejuValue)
@@ -284,7 +355,7 @@ void CeJuTcpClient::slot_connected()
     qDebug()<< (QString("{CeJu}:%1:%2, Connect OK!").arg(m_strIp).arg(m_u16Port));
     isConnect = true;
     m_linkTimer->stop();
-    m_autoMeasureTimer->start(20);
+    m_autoMeasureTimer->start(60);
 
     emit signal_cejuConnected();
 }

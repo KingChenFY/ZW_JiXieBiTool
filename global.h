@@ -24,8 +24,8 @@ uint16_t Mb_CRC16_Generate(uint8_t *puckMsg, uint8_t usDataLen);
 
 /************** 打印 **************/
 //_LOG(QString("parse setTask cmd return"));
-//#define _LOG(format)    qDebug() << qPrintable(QString("[%1]%2[%3][%4]>> %5").arg(TIMEMS).arg(__FILE__).\
-//                            arg(__LINE__).arg(__FUNCTION__).arg(format))
-#define _LOG(format)
+#define _LOG(format)    qDebug() << qPrintable(QString("[%1]%2[%3][%4]>> %5").arg(TIMEMS).arg(__FILE__).\
+                            arg(__LINE__).arg(__FUNCTION__).arg(format))
+//#define _LOG(format)
 
 #endif // GLOBAL_H

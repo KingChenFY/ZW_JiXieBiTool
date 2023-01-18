@@ -13,7 +13,7 @@
 #define WK_PosNotLimit ((float)(0x7FFFFFFF))//以此为坐标表示无需移动(逻辑)
 #define LOGIC_ZERO  ((float)(0.00))//逻辑起点
 #define LOGIC_LINE  ((float)(1000.00))//逻辑行程
-#define MOTOR_V_BOXOUT_LOGICPOS ((float)999.90)
+#define MOTOR_V_BOXOUT_LOGICPOS ((float)999.0)
 
 typedef struct
 {

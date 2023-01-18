@@ -1003,7 +1003,6 @@ void FormCtrl::on_pbtn_TriggerStart_clicked()
             QMessageBox::warning(this, tr("警告对话框"), tr("触发间距输入不合法"));
             return;
         }
-
     }
     else
     {
