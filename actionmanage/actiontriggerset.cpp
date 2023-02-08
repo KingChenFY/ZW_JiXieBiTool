@@ -10,6 +10,10 @@ ActionTriggerSet::ActionTriggerSet(QObject *parent)
 {
     m_bStatusSyn = false;
 
+    m_stTaskInfoD.m_eAxis = emAxis_End;
+    m_stTaskInfoD.m_u16Interval = 0;
+    m_stTaskInfoD.m_u8TrigObj = 0;
+
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_setEncodeCh, this);
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_getEncodeCh, this);
     //信号关联

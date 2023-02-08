@@ -208,7 +208,7 @@ void ActionMotorXYZ::setTaskSend()
         i += 4;
         common_write_u32(&pWriteAddr->u8CmdContent[i], (uint32_t)m_stTaskToSend.m_u32MoveTime);
         i += 4;
-        common_write_u16(&pWriteAddr->u8CmdContent[i], (uint32_t)m_stTaskToSend.m_u16PathId);
+        common_write_u16(&pWriteAddr->u8CmdContent[i], (uint16_t)m_stTaskToSend.m_u16PathId);
         i += 2;
         common_write_u32(&pWriteAddr->u8CmdContent[i], (uint32_t)m_stTaskToSend.m_stDPosBgn.m_i32X);
         i += 4;

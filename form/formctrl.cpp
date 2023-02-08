@@ -53,6 +53,13 @@ void FormCtrl::initConfig()
     m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn,
                                                m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
     connect(m_pActionBTransport, &QThread::finished, this, &FormCtrl::slot_TransportTestThread_Stop);
+
+    m_pActionBFollowMove = new ActionBFollowMove(m_pActionTriggerSet, m_pActionMotorXYZ, formCeju->cejuClient);
+    connect(m_pActionBFollowMove, &QThread::finished, this, &FormCtrl::slot_FollowTestThread_Stop);
+
+    //测试跟随测试线程中的 测距结束 的处理放到 测距线程中跑， 看看能不能解决测距网络线程数据处理经常异常
+    connect(m_pActionBFollowMove, &ActionBFollowMove::signal_Ceju_RecordStart, formCeju->cejuClient, &CeJuTcpClient::Ceju_RecordStart);
+    connect(m_pActionBFollowMove, &ActionBFollowMove::signal_Ceju_RecordEnd, formCeju->cejuClient, &CeJuTcpClient::Ceju_RecordEnd);
 }
 void FormCtrl::slot_netConnected()
 {
@@ -64,6 +71,125 @@ void FormCtrl::slot_netNoLink()
 {
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
+}
+/*
+ * ******************************************************跟随测试模块******************************************************
+ */
+bool FormCtrl::slot_TriggerParameter_Check()
+{
+    ST_TRIG_SETTASK_INFO trigUiInfo;
+    bool ok;
+    trigUiInfo.m_u8TrigObj = 0;//触发测距
+    if(ui->rbtn_TriggerX->isChecked())
+        trigUiInfo.m_eAxis = emAxis_X;
+    else if(ui->rbtn_TriggerY->isChecked())
+        trigUiInfo.m_eAxis = emAxis_Y;
+    else
+        trigUiInfo.m_eAxis = emAxis_Z;
+
+    if(!ui->ledit_TriggerDistance->text().isEmpty())
+    {
+        trigUiInfo.m_u16Interval = ui->ledit_TriggerDistance->text().toInt(&ok);
+        if(!ok)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("触发间距输入不合法"));
+            return false;
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("请输入触发间距"));
+        return false;
+    }
+
+//    if( (trigUiInfo.m_u8TrigObj == m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj) &&
+//            (trigUiInfo.m_eAxis == m_pActionTriggerSet->m_stTaskToSend.m_eAxis) &&
+//            (trigUiInfo.m_u16Interval == m_pActionTriggerSet->m_stTaskToSend.m_u16Interval) )
+//    {
+//        _LOG(QString("same task"));
+//        return false;
+//    }
+
+//    ui->pbtn_TriggerStart->setDisabled(true);
+    //非重复任务
+    m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj = trigUiInfo.m_u8TrigObj;
+    m_pActionTriggerSet->m_stTaskToSend.m_eAxis = trigUiInfo.m_eAxis;
+    m_pActionTriggerSet->m_stTaskToSend.m_u16Interval = trigUiInfo.m_u16Interval;
+
+    return true;
+//    _LOG(QString("task is set"));
+
+//    m_pActionTriggerSet->setTaskSend();
+}
+void FormCtrl::on_pbtn_TriggerStart_clicked()
+{
+    if("开始触发" == ui->pbtn_TriggerStart->text())
+    {
+        //初始化环境检查
+        if(!m_pActionMotorXYZ->isAllLineHasLocated())
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请完成机械臂定位"));
+            return;
+        }
+        if(!formCeju->cejuClient->m_bIsCejuInitSucceed)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请等待测距初始化完成"));
+            return;
+        }
+        if(!slot_TriggerParameter_Check())
+        {
+            return;
+        }
+        bool okySt = true;
+        bool okyEd = true;
+        m_pActionBFollowMove->m_stAimStPhyPos.m_i32X = WK_PhyPosNotLimit;
+        m_pActionBFollowMove->m_stAimStPhyPos.m_i32Y = WK_PhyPosNotLimit;
+        m_pActionBFollowMove->m_stAimStPhyPos.m_i32Z = WK_PhyPosNotLimit;
+
+        m_pActionBFollowMove->m_stAimEdPhyPos.m_i32X = WK_PhyPosNotLimit;
+        m_pActionBFollowMove->m_stAimEdPhyPos.m_i32Y = WK_PhyPosNotLimit;
+        m_pActionBFollowMove->m_stAimEdPhyPos.m_i32Z = WK_PhyPosNotLimit;
+        if(!ui->ledit_TriggerStPos->text().isEmpty())
+            m_pActionBFollowMove->m_stAimStPhyPos.m_i32Y = ui->ledit_TriggerStPos->text().toInt(&okySt);
+        if(!ui->ledit_TriggerEdPos->text().isEmpty())
+            m_pActionBFollowMove->m_stAimEdPhyPos.m_i32Y = ui->ledit_TriggerEdPos->text().toInt(&okyEd);
+        if(!okySt || !okyEd)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("触发起始或结束地址输入不合法"));
+            return;
+        }
+        if(!m_pActionMotorXYZ->isAimPhyPosOverLimit(m_pActionBFollowMove->m_stAimStPhyPos) ||
+                !m_pActionMotorXYZ->isAimPhyPosOverLimit(m_pActionBFollowMove->m_stAimEdPhyPos))
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("触发起始或结束地址输入超边界"));
+            return;
+        }
+
+        //启动测距触发线程
+        m_pActionBFollowMove->m_bNeedStop = false;
+        _LOG("{Follow_Auto_Test}: THREAD START =================================");
+        m_pActionBFollowMove->start();
+        ui->pbtn_TriggerStart->setText("停止触发");
+    }
+    else if("停止触发" == ui->pbtn_TriggerStart->text())
+    {
+        ui->pbtn_TriggerStart->setDisabled(true);
+        m_pActionBFollowMove->m_bNeedStop = true;
+        _LOG("{Follow_Auto_Test}: STOP THREAD =================================");
+        ui->pbtn_TriggerStart->setText("正在停止触发");
+    }
+    else
+    {
+        return;
+    }
+}
+
+void FormCtrl::slot_FollowTestThread_Stop()
+{
+    on_pbtn_xyzStop_clicked();
+    ui->pbtn_TriggerStart->setEnabled(true);
+    _LOG("{Follow_Auto_Test}: THREAD FINISH END=================================");
+    ui->pbtn_TriggerStart->setText("开始触发");
 }
 /*
  * ******************************************************运输仓测试流程******************************************************
@@ -293,7 +419,7 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
 
 void FormCtrl::slot_TriggerSet_UiUpdate()
 {
-    ui->pbtn_TriggerStart->setEnabled(true);
+//    ui->pbtn_TriggerStart->setEnabled(true);
 }
 /*
  * ******************************************************入皮带******************************************************
@@ -977,53 +1103,5 @@ void FormCtrl::on_pbtn_logicMoveInTime_clicked()
     _LOG(QString("task is set"));
 
     m_pActionMotorXYZ->setTaskSend();
-}
-
-/*
- * ******************************************************触发模块******************************************************
- */
-void FormCtrl::on_pbtn_TriggerStart_clicked()
-{
-    //上一次任务与这次相同，重复任务
-    ST_TRIG_SETTASK_INFO trigUiInfo;
-    bool ok;
-    trigUiInfo.m_u8TrigObj = 0;//触发测距
-    if(ui->rbtn_TriggerX->isChecked())
-        trigUiInfo.m_eAxis = emAxis_X;
-    else if(ui->rbtn_TriggerY->isChecked())
-        trigUiInfo.m_eAxis = emAxis_Y;
-    else
-        trigUiInfo.m_eAxis = emAxis_Z;
-
-    if(!ui->ledit_TriggerDistance->text().isEmpty())
-    {
-        trigUiInfo.m_u16Interval = ui->ledit_TriggerDistance->text().toInt(&ok);
-        if(!ok)
-        {
-            QMessageBox::warning(this, tr("警告对话框"), tr("触发间距输入不合法"));
-            return;
-        }
-    }
-    else
-    {
-        QMessageBox::warning(this, tr("警告对话框"), tr("请输入触发间距"));
-        return;
-    }
-
-    if( (trigUiInfo.m_u8TrigObj == m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj) &&
-            (trigUiInfo.m_eAxis == m_pActionTriggerSet->m_stTaskToSend.m_eAxis) &&
-            (trigUiInfo.m_u16Interval == m_pActionTriggerSet->m_stTaskToSend.m_u16Interval) )
-    {
-        _LOG(QString("same task"));
-        return;
-    }
-    ui->pbtn_TriggerStart->setDisabled(true);
-    //非重复任务
-    m_pActionTriggerSet->m_stTaskToSend.m_u8TrigObj = trigUiInfo.m_u8TrigObj;
-    m_pActionTriggerSet->m_stTaskToSend.m_eAxis = trigUiInfo.m_eAxis;
-    m_pActionTriggerSet->m_stTaskToSend.m_u16Interval = trigUiInfo.m_u16Interval;
-    _LOG(QString("task is set"));
-
-    m_pActionTriggerSet->setTaskSend();
 }
 

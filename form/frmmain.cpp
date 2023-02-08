@@ -18,10 +18,10 @@ FrmMain::~FrmMain()
 
 void FrmMain::initForm()
 {
-    formCtrl = new FormCtrl;
-    ui->tabWidget->addTab(formCtrl, "机械臂工具");
     //启动日志功能
     SaveLog::Instance()->start();
+    formCtrl = new FormCtrl;
+    ui->tabWidget->addTab(formCtrl, "机械臂工具");
 }
 
 void FrmMain::initConfig()

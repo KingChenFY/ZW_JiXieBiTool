@@ -32,6 +32,14 @@ typedef enum
     emCeJuTrigMode_End
 }emCeJuTrigMode;
 
+typedef enum
+{
+    emCeJuOutputFormat_ascii,
+    emCeJuOutputFormat_binary,  //二进制
+
+    emCeJuOutputFormat_End
+}emCeJuOutputFormat;
+
 class CeJuTcpClient : public QObject
 {
     Q_OBJECT
@@ -47,6 +55,9 @@ public:
     void slot_netErrDeal();
 
     bool setCejuTriggerMode(emCeJuTrigMode trigMode);
+    bool setCejuTriggerModeMain(emCeJuTrigMode trigMode);
+    bool setCejuTaskParameter(emCeJuTaskId cejuTaskId);
+    bool setCejuOutputFormat(emCeJuOutputFormat outFormat);
     bool getCejuCurValue(ST_CeJuCurValue &stCurCejuValue);
     bool getCejuLogInfo(bool &bRecordOn, uint32_t &uRecordNum);
     bool startCejuRecord(uint16_t u16RecordGap, uint32_t u32SaveNum);
@@ -61,6 +72,15 @@ public:
     void slot_setCejuTriggerModeExternal();
     void slot_setCejuTriggerModeInternal();
 
+    void Ceju_Init();
+    void Ceju_RecordStart();
+    void Ceju_RecordEnd();
+
+    bool isConnect;
+    bool m_bIsCejuInitSucceed;
+    bool m_bIsCejuRecordStartSucceed;
+    bool m_bIsCejuRecordEndSucceed;
+
     ST_CeJuCurValue stCurTaskValue;
     bool m_bIsRecordOn;
     uint32_t m_uRecordNum;// 当前记录总量
@@ -69,7 +89,14 @@ private:
     QTcpSocket *m_socket;
     QString m_strIp;
     uint16_t m_u16Port;
-    bool isConnect;
+
+    //Excel文件路径
+    QString path;
+    //Excel文件名称
+    QString name;
+    //Excel文件完整名称
+    QString fileName;
+    void saveCejuRecordToExcel();
 
     QTimer *m_linkTimer;
     QTimer *m_autoMeasureTimer;

@@ -28,7 +28,7 @@ void FormCeJu::initConfig()
     cejuClient->moveToThread(&cejuThread);
     //关联数据管理线程的启动信号
     connect(&cejuThread, &QThread::started, cejuClient, &CeJuTcpClient::slot_initCeJuClient);
-    _LOG(QString("create CeJu thread"));
+    qDebug() << "create CejuClient thread";
 
     connect(this, &FormCeJu::signal_cejuNeedConnect, cejuClient, &CeJuTcpClient::slot_connectToCeju);
     connect(this, &FormCeJu::signal_cejuAbortConnect, cejuClient, &CeJuTcpClient::slot_abortConnectCeju);

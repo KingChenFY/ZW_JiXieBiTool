@@ -17,12 +17,12 @@ public:
     explicit FormCeJu(QWidget *parent = nullptr);
     ~FormCeJu();
 
-private:
-    Ui::FormCeJu *ui;
-
     //测距线程
     CeJuTcpClient *cejuClient;
     QThread cejuThread;
+
+private:
+    Ui::FormCeJu *ui;
 
 private slots:
     void initForm();

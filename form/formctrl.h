@@ -12,6 +12,7 @@
 #include "actionmotorv.h"
 #include "actionmotorxyz.h"
 #include "actionbtransport.h"
+#include "actionbfollowmove.h"
 #include "actiontriggerset.h"
 #include "formceju.h"
 
@@ -54,6 +55,7 @@ public:
     ActionMotorXYZ* m_pActionMotorXYZ;//XYZ电机控制
     ActionTriggerSet *m_pActionTriggerSet;//触发控制
     ActionBTransport *m_pActionBTransport;//运输仓测试流程
+    ActionBFollowMove *m_pActionBFollowMove;//跟随测试流程
 
 private:
     Ui::FormCtrl *ui;
@@ -62,6 +64,8 @@ private:
 
 private slots:
     void slot_TransportTestThread_Stop();
+    void slot_FollowTestThread_Stop();
+    bool slot_TriggerParameter_Check();
 private slots:
     void initForm();
     void initConfig();

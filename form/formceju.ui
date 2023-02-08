@@ -163,10 +163,10 @@
   <widget class="QGroupBox" name="gb_trigMode">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>200</y>
-     <width>211</width>
-     <height>171</height>
+     <x>120</x>
+     <y>10</y>
+     <width>121</width>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
@@ -192,8 +192,8 @@
   <widget class="QPushButton" name="pbtn_linkceju">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>80</y>
+     <x>20</x>
+     <y>50</y>
      <width>75</width>
      <height>24</height>
     </rect>
@@ -374,6 +374,16 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QTextBrowser" name="textBrowser">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>211</width>
+     <height>171</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources/>
