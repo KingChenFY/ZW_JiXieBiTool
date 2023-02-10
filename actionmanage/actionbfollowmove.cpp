@@ -1,6 +1,7 @@
 #include "actionbfollowmove.h"
 #include "quihelper.h"
 #include "global.h"
+#include "xlsxdocument.h"
 
 ActionBFollowMove::ActionBFollowMove(ActionTriggerSet* &objActionTriggerSet, ActionMotorXYZ* &objActionMotorXYZ,
                            CeJuTcpClient* &objCeJuTcpClient, QObject *parent)
@@ -87,6 +88,7 @@ void ActionBFollowMove::run()
                 AxisMoveLength = abs(m_stAimStPhyPos.m_i32Y - m_stAimEdPhyPos.m_i32Y);  //单位是光栅
                 MoveInTimeVMax = m_objActionTriggerSet->m_stTaskInfoD.m_u16Interval * 1.0 / (float)TRIG_SAMPLE_TEMP; //光栅/ms
                 MoveInTimeTMin = (uint32_t)(AxisMoveLength * 1.0 / MoveInTimeVMax); //单位是ms
+                trigPosNeedNum = AxisMoveLength/m_objActionTriggerSet->m_stTaskInfoD.m_u16Interval/2;
             }
             m_objActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTskDXYZType_moveInTime;
             m_objActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
@@ -125,9 +127,46 @@ void ActionBFollowMove::run()
         {
             if(m_objCeJuTcpClient->m_bIsCejuRecordEndSucceed)
             {
-                emActionStep = emFollow_FollowMoveExit;
+                emActionStep = emFollow_GetTrigInfo;
             }
             _LOG("{Follow_Auto_Test}: emActionStep [emFollow_WaitCejuRecordEnd]");
+            continue;
+        }
+        else if(emFollow_GetTrigInfo == emActionStep)
+        {
+            m_objActionTriggerSet->m_stBFollowTrigSetParameter.m_u16NeedTrigPosNum = trigPosNeedNum;
+            m_objActionTriggerSet->m_stBFollowTrigSetParameter.m_bIsGetAllNeedNum = false;
+            m_objActionTriggerSet->m_stTrigInfoGet_TaskToSend.m_u8NeedNum = GET_TRIGPOS_PER_MAX;
+            m_objActionTriggerSet->m_stTrigInfoGet_TaskToSend.m_u16StartIndex = 0;
+            m_objActionTriggerSet->getTrigInfoTaskSend();
+            emActionStep = emFollow_WaitGetTrigInfo;
+            _LOG("{Follow_Auto_Test}: emActionStep [emFollow_GetTrigInfo]");
+            continue;
+        }
+        else if(emFollow_WaitGetTrigInfo == emActionStep)
+        {
+            if(m_objActionTriggerSet->m_stBFollowTrigSetParameter.m_bIsGetAllNeedNum)
+            {
+                emActionStep = emFollow_TrigInfoManage;
+            }
+            _LOG("{Follow_Auto_Test}: emActionStep [emFollow_WaitGetTrigInfo]");
+            continue;
+        }
+        else if(emFollow_TrigInfoManage == emActionStep)
+        {
+            QXlsx::Document xlsx(m_objCeJuTcpClient->fileName);
+            xlsx.write(1, XLSX_COL_LINE_CEJU1, QString("ceju_1"));
+            xlsx.write(1, XLSX_COL_LINE_CEJU2, QString("ceju_2"));
+            uint16_t xlsx_row = 2;
+            for(uint16_t i=0; i<trigPosNeedNum; i++)
+            {
+                xlsx.write(xlsx_row, XLSX_COL_LINE_CEJU1, m_objActionTriggerSet->m_stTrigInfoD.m_i32TrigPosArray[0][i]);
+                xlsx.write(xlsx_row, XLSX_COL_LINE_CEJU2, m_objActionTriggerSet->m_stTrigInfoD.m_i32TrigPosArray[1][i]);
+                xlsx_row++;
+            }
+            xlsx.saveAs(m_objCeJuTcpClient->fileName);
+            emActionStep = emFollow_FollowMoveExit;
+            _LOG("{Follow_Auto_Test}: emActionStep [emFollow_TrigInfoManage]");
             continue;
         }
         else

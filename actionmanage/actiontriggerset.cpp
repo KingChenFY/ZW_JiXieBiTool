@@ -14,12 +14,18 @@ ActionTriggerSet::ActionTriggerSet(QObject *parent)
     m_stTaskInfoD.m_u16Interval = 0;
     m_stTaskInfoD.m_u8TrigObj = 0;
 
+    m_stTrigInfoGet_TaskToSend.m_u8NeedNum = GET_TRIGPOS_PER_MAX;
+
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_setEncodeCh, this);
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_getEncodeCh, this);
+    HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_getExitTrigInfo, this);
     //信号关联
     connect(&timer_setTaskReSend, SIGNAL(timeout()), this, SLOT(slot_timer_setTaskReSend()));
+    connect(&timer_getTrigInfoTaskReSend, SIGNAL(timeout()), this, SLOT(slot_timer_getTrigInfoTaskReSend()));
+    connect(this, SIGNAL(signal_stopGetTrigInfoTaskReSendTimer()), this, SLOT(slot_stopGetTrigInfoTaskReSendTimer()), Qt::QueuedConnection);
     connect(this, SIGNAL(signal_getTaskSend()), this, SLOT(getTaskSend()), Qt::QueuedConnection);
     connect(this, SIGNAL(signal_stopSetTaskReSendTimer()), this, SLOT(slot_stopSetTaskReSendTimer()), Qt::QueuedConnection);
+    connect(this, SIGNAL(signal_getTrigInfoSend()), this, SLOT(getTrigInfoTaskSend()), Qt::QueuedConnection);
 }
 
 emWKCmdType ActionTriggerSet::parseCmd(uint8_t* puData)
@@ -33,7 +39,6 @@ emWKCmdType ActionTriggerSet::parseCmd(uint8_t* puData)
         _LOG(QString("setEncodeCh OK, send signal_getTaskSend"));
         return emCMD_SET;
     }
-
     if (EnumBoardId_getEncodeCh == uCmdId)
     {
         uint8_t uLen = CMD_CONTENT_INDEX;
@@ -60,7 +65,92 @@ emWKCmdType ActionTriggerSet::parseCmd(uint8_t* puData)
         }
         return emCMD_GET;
     }
+    if (EnumBoardId_getExitTrigInfo == uCmdId)
+    {
+        emit signal_stopGetTrigInfoTaskReSendTimer();
+        uint8_t uLen = CMD_CONTENT_INDEX;
+
+        /* 返回：u16 start + u8 num + xyz(U8 目标轴) + AimPos(I32目标位置) + xyzMoveTime(I32移动时间)
+         * + TotalNum(I16) + realStart(U16) + realNum(u16) + triPoses{I32} */
+        m_stTrigInfoD.m_u16StartIndex = common_read_u16(&puData[uLen]);
+        uLen += 2;
+
+        m_stTrigInfoD.m_u8NeedNum = puData[uLen];
+        uLen += 1;
+
+        m_stTrigInfoD.m_u8AimAxis = puData[uLen];
+        uLen += 1;
+
+        m_stTrigInfoD.m_i32AimPos = (int32_t)common_read_u32(&puData[uLen]);
+        uLen += 4;
+
+        m_stTrigInfoD.m_i32AimMoveTime = (int32_t)common_read_u32(&puData[uLen]);
+        uLen += 4;
+
+        m_stTrigInfoD.m_u16TotalNum = common_read_u16(&puData[uLen]);//TotalNum(U16)
+        uLen += 2;
+
+        m_stTrigInfoD.m_u16RealStartIndex = common_read_u16(&puData[uLen]);//realStart(U16)
+        uLen += 2;
+
+        m_stTrigInfoD.m_u16RealGetNum = common_read_u16(&puData[uLen]);//realNum(U16)
+        uLen += 2;
+
+        if( (m_stTrigInfoD.m_u8NeedNum == m_stTrigInfoGet_TaskToSend.m_u8NeedNum) &&
+                (m_stTrigInfoD.m_u16RealStartIndex == m_stTrigInfoGet_TaskToSend.m_u16StartIndex) )
+        {//收到的和任务要求是否一致
+            uint16_t _CurCopyAddr = m_stTrigInfoD.m_u16RealStartIndex;
+            for(uint8_t i=0; i<m_stTrigInfoD.m_u16RealGetNum; i++)
+            {
+                m_stTrigInfoD.m_i32TrigPosArray[0][_CurCopyAddr] = (int32_t)common_read_u32(&puData[uLen]);
+                uLen += 4;
+                m_stTrigInfoD.m_i32TrigPosArray[1][_CurCopyAddr] = (int32_t)common_read_u32(&puData[uLen]);
+                uLen += 4;
+                _CurCopyAddr++;
+            }
+
+            if( (_CurCopyAddr >= m_stBFollowTrigSetParameter.m_u16NeedTrigPosNum) ||
+                    (_CurCopyAddr >= m_stTrigInfoD.m_u16TotalNum) )
+            {//判断拿的数量是否达到B层要求或者拿到硬件的最大数量
+                m_stBFollowTrigSetParameter.m_bIsGetAllNeedNum = true;
+            }
+            else
+            {
+                m_stTrigInfoGet_TaskToSend.m_u16StartIndex = _CurCopyAddr;
+                //m_stTrigInfoGet_TaskToSend.m_u8NeedNum = GET_TRIGPOS_PER_MAX;
+                emit signal_getTrigInfoSend();//修改起始地址，继续获取
+            }
+        }
+        else
+        {
+            emit signal_getTrigInfoSend();//重新获取
+        }
+        return emCMD_GET;
+    }
     _LOG(QString("No such cmd = [%1]").arg(uCmdId));
+}
+
+void ActionTriggerSet::getTrigInfoTaskSend()
+{
+    uint16_t i = 0;
+    STRUCT_SETTASK_MESSAGE_INFO *pWriteAddr;
+
+    //把 settask 指令封装到发送队列
+    pWriteAddr = stTaskFifo.getWriteMessageAddr(EnumBoardId_getExitTrigInfo);
+    if(pWriteAddr)
+    {
+        common_write_u16(&pWriteAddr->u8CmdContent[i], m_stTrigInfoGet_TaskToSend.m_u16StartIndex); i += 2;
+        pWriteAddr->u8CmdContent[i++] = m_stTrigInfoGet_TaskToSend.m_u8NeedNum;
+        pWriteAddr->u16CmdContentLen = i;
+
+        //压入发送队列前，开启重发定时器，如果本来就开着会重启定时器
+        timer_getTrigInfoTaskReSend.start(1000);
+        stTaskFifo.pushWriteMessageToFifo();
+    }
+    else
+    {
+        _LOG(QString("settask fifo full, data lost"));
+    }
 }
 
 void ActionTriggerSet::setTaskSend()
@@ -112,6 +202,14 @@ void ActionTriggerSet::getTaskSend()
     }
 }
 
+void ActionTriggerSet::slot_timer_getTrigInfoTaskReSend()
+{
+    getTrigInfoTaskSend();
+}
+void ActionTriggerSet::slot_stopGetTrigInfoTaskReSendTimer()
+{
+    timer_getTrigInfoTaskReSend.stop();
+}
 /*
  * settask 任务发送后，未收到settask回复的重发处理函数（用定时器实现）
  */

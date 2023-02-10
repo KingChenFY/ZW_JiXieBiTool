@@ -24,6 +24,9 @@ typedef enum
     emFollow_WaitYMoveToEnd,
     emFollow_CejuRecordEnd,
     emFollow_WaitCejuRecordEnd,
+    emFollow_GetTrigInfo,
+    emFollow_WaitGetTrigInfo,
+    emFollow_TrigInfoManage,
     emFollow_FollowMoveExit,
 }emFollowMoveStep;
 
@@ -40,6 +43,7 @@ public:
 protected:
     void run();
 private:
+    uint16_t trigPosNeedNum;
     void saveCejuRecordToExcel();
     emFollowMoveStep emActionStep;
     ActionTriggerSet* &m_objActionTriggerSet;

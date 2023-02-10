@@ -5,16 +5,43 @@
 #include <QDebug>
 #include <QTimer>
 
+#include "cejutcpclient.h"
 #include "hardcmdparseagent.h"
 #include "harddef.h"
 #include "hardselutedef.h"
 
+#define GET_TRIGPOS_PER_MAX 10
 typedef struct
 {
     emAxisType m_eAxis;//目标轴
     uint16_t m_u16Interval;//触发间隔
     uint8_t m_u8TrigObj;//触发对象
 }ST_TRIG_SETTASK_INFO;
+
+typedef struct
+{
+    uint16_t m_u16StartIndex;     //当次获取开始位置
+    uint8_t m_u8NeedNum;      //需要触发位置的数量
+}ST_TRIGINFO_SETTASK_INFO;
+
+typedef struct
+{
+    uint16_t m_u16StartIndex;     //当次获取开始位置
+    uint8_t m_u8NeedNum;      //需要触发位置的数量
+    uint8_t m_u8AimAxis;
+    int32_t m_i32AimPos;
+    int32_t m_i32AimMoveTime;
+    uint16_t m_u16TotalNum;     //当前总的触发数量
+    uint16_t m_u16RealStartIndex;
+    uint16_t m_u16RealGetNum;
+    int32_t m_i32TrigPosArray[2][WK_CeJuRecordNumMax]; //单条数据包保存的数量
+}ST_TRIGINFO_GETTASK_INFO;
+
+typedef struct
+{
+    uint16_t m_u16NeedTrigPosNum;   //B层需要的触发位置的总量，实际不一定有那么多
+    bool m_bIsGetAllNeedNum;        //是否已获得要求的触发位置量
+}ST_BFollowSetParameter;
 
 class ActionTriggerSet : public QObject, public HardCmdParser
 {
@@ -28,23 +55,32 @@ public:
     ST_TRIG_SETTASK_INFO m_stTaskInfoD;//获取到的D层任务信息
     bool m_bStatusSyn;//D层信息是否已同步
 
+    ST_TRIGINFO_SETTASK_INFO m_stTrigInfoGet_TaskToSend;
+    ST_TRIGINFO_GETTASK_INFO m_stTrigInfoD;
+    ST_BFollowSetParameter m_stBFollowTrigSetParameter;
+
 private:
     //自动重发定时器，用于settask指令未回复的情况，重发settask
     static int timeOutValue_setTaskReSend;
     QTimer timer_setTaskReSend;
+    QTimer timer_getTrigInfoTaskReSend;
 
 public slots:
     void setTaskSend();//封装页面的设置指令入链表
     void getTaskSend();//封装查询指令到链表
+    void getTrigInfoTaskSend();//获得硬件保存的触发测距的位置
     void slot_stopSetTaskReSendTimer();
+    void slot_stopGetTrigInfoTaskReSendTimer();
 private slots:
     void slot_timer_setTaskReSend();
+    void slot_timer_getTrigInfoTaskReSend();
 
 signals:
     void signal_UiUpdate();
     void signal_getTaskSend();
     void signal_stopSetTaskReSendTimer();
-
+    void signal_stopGetTrigInfoTaskReSendTimer();
+    void signal_getTrigInfoSend();
 };
 
 #endif // ACTIONTRIGGERSET_H

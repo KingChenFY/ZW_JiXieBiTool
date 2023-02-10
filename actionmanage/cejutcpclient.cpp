@@ -106,9 +106,6 @@ void CeJuTcpClient::Ceju_RecordEnd()
             break;
         }
     }
-
-    uint16_t xlsx_row = 1;
-    uint8_t xlsx_col = 1;
      //目录不存在则先新建目录
     QDir dir(path);
     if (!dir.exists()) {
@@ -117,9 +114,9 @@ void CeJuTcpClient::Ceju_RecordEnd()
     fileName = QString("%1/%2_ExcelCejuData_%3.xlsx").arg(path).arg(name).arg(QDATETIMS);
     //在内存中新建xlsx文件
     QXlsx::Document xlsx;
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_1"));
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_2"));
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_3"));
+    xlsx.write(1, XLSX_COL_LINE_TASK1, QString("Task_1"));
+    xlsx.write(1, XLSX_COL_LINE_TASK2, QString("Task_2"));
+    xlsx.write(1, XLSX_COL_LINE_TASK3, QString("Task_3"));
     while(true)
     {
         if(m_uReadNum1 >= m_uRecordNum)
@@ -137,25 +134,13 @@ void CeJuTcpClient::Ceju_RecordEnd()
             isSucceed = getCejuLogData(m_uReadNum3, m_uAskNum, emCeJuDataTtype_task3, m_uTask3);
         }while(!isSucceed);
     }
-    xlsx_row = 2;
-    xlsx_col = 1;
+    uint16_t xlsx_row = 2;
     for(uint16_t i=0; i<m_uRecordNum; i++)
     {
-        xlsx.write(xlsx_row++, xlsx_col, m_uTask1[i]);
-    }
-
-    xlsx_row = 2;
-    xlsx_col = 2;
-    for(uint16_t i=0; i<m_uRecordNum; i++)
-    {
-        xlsx.write(xlsx_row++, xlsx_col, m_uTask2[i]);
-    }
-
-    xlsx_row = 2;
-    xlsx_col = 3;
-    for(uint16_t i=0; i<m_uRecordNum; i++)
-    {
-        xlsx.write(xlsx_row++, xlsx_col, m_uTask3[i]);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, m_uTask1[i]);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, m_uTask2[i]);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, m_uTask3[i]);
+        xlsx_row++;
     }
     xlsx.saveAs(fileName);
 

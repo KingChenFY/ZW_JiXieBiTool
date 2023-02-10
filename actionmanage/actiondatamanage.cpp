@@ -34,6 +34,10 @@ void ActionDataManage::slot_netRecvData()
 
         emBoardCmdId eCmdId = (emBoardCmdId)packData[WK_BOARD_COMMAND_ID_INDEX];
         emWKCmdType eCmdType;
+        if(EnumBoardId_getExitTrigInfo == eCmdId)
+        {
+            _LOG(QString("slot_netRecvData : EnumBoardId_getExitTrigInfo get!!!"));
+        }
         //对应模块解析指令数据
         cmdParseAgent.parseCmd(eCmdId, &packData[WK_BOARD_COMMAND_ID_INDEX], eCmdType);
         packLength = ntRecvFifo.findOnePackFromFifo();

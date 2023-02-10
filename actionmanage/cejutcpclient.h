@@ -7,6 +7,12 @@
 
 #define WK_CeJuRecordNumMax 4096*14 //测距最大记录个数
 #define WK_CeJuAskNumMax	100//单次取最大个数
+
+#define XLSX_COL_LINE_TASK1   1
+#define XLSX_COL_LINE_TASK2   2
+#define XLSX_COL_LINE_TASK3   3
+#define XLSX_COL_LINE_CEJU1   4
+#define XLSX_COL_LINE_CEJU2   5
 typedef struct
 {
     int32_t task1Value;
@@ -85,6 +91,9 @@ public:
     bool m_bIsRecordOn;
     uint32_t m_uRecordNum;// 当前记录总量
 
+    //Excel文件完整名称
+    QString fileName;
+
 private:
     QTcpSocket *m_socket;
     QString m_strIp;
@@ -95,7 +104,7 @@ private:
     //Excel文件名称
     QString name;
     //Excel文件完整名称
-    QString fileName;
+
     void saveCejuRecordToExcel();
 
     QTimer *m_linkTimer;
