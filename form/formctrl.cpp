@@ -41,6 +41,7 @@ void FormCtrl::initConfig()
     m_pActionMotorV = new ActionMotorV;
     m_pActionMotorXYZ = new ActionMotorXYZ;
     m_pActionTriggerSet = new ActionTriggerSet;
+    m_pActionParameterSet = new ActionParameterSet;
     connect(m_pActionBeltIn, &ActionBeltIn::signal_UiUpdate, this, &FormCtrl::slot_BeltIN_UiUpdate);
     connect(m_pActionBeltOut, &ActionBeltOut::signal_UiUpdate, this, &FormCtrl::slot_BeltOUT_UiUpdate);
     connect(m_pActionPoleIn, &ActionPoleIn::signal_UiUpdate, this, &FormCtrl::slot_PoleIN_UiUpdate);
@@ -54,7 +55,7 @@ void FormCtrl::initConfig()
                                                m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
     connect(m_pActionBTransport, &QThread::finished, this, &FormCtrl::slot_TransportTestThread_Stop);
 
-    m_pActionBFollowMove = new ActionBFollowMove(m_pActionTriggerSet, m_pActionMotorXYZ, formCeju->cejuClient);
+    m_pActionBFollowMove = new ActionBFollowMove(m_pActionTriggerSet, m_pActionMotorXYZ, formCeju->cejuClient, m_pActionParameterSet);
     connect(m_pActionBFollowMove, &QThread::finished, this, &FormCtrl::slot_FollowTestThread_Stop);
 
     //测试跟随测试线程中的 测距结束 的处理放到 测距线程中跑， 看看能不能解决测距网络线程数据处理经常异常

@@ -14,6 +14,7 @@
 #include "actionbtransport.h"
 #include "actionbfollowmove.h"
 #include "actiontriggerset.h"
+#include "actionparameterset.h"
 #include "formceju.h"
 
 namespace Ui {
@@ -56,6 +57,7 @@ public:
     ActionTriggerSet *m_pActionTriggerSet;//触发控制
     ActionBTransport *m_pActionBTransport;//运输仓测试流程
     ActionBFollowMove *m_pActionBFollowMove;//跟随测试流程
+    ActionParameterSet *m_pActionParameterSet;//参数设置流程
 
 private:
     Ui::FormCtrl *ui;

@@ -1,10 +1,7 @@
 #include "cejutcpclient.h"
 #include "global.h"
 #include "quihelperdata.h"
-#include "xlsxdocument.h"
 #include <QThread>
-
-#define QDATETIMS qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd-HH-mm-ss"))
 
 CeJuTcpClient::CeJuTcpClient(QObject *parent)
     : QObject{parent}
@@ -17,14 +14,6 @@ CeJuTcpClient::CeJuTcpClient(QObject *parent)
     m_bIsCejuInitSucceed = false;
     m_bIsCejuRecordStartSucceed = false;
     m_bIsCejuRecordEndSucceed = false;
-
-    //默认取应用程序根目录
-    path = qApp->applicationDirPath() + "/ExcelCejuData";
-    //默认取应用程序可执行文件名称
-    QString str = qApp->applicationFilePath();
-    QStringList list = str.split("/");
-    name = list.at(list.count() - 1).split(".").at(0);
-    fileName = "";
 }
 /***********************************测距任务***********************************/
 void CeJuTcpClient::Ceju_Init()
@@ -106,17 +95,7 @@ void CeJuTcpClient::Ceju_RecordEnd()
             break;
         }
     }
-     //目录不存在则先新建目录
-    QDir dir(path);
-    if (!dir.exists()) {
-        dir.mkdir(path);
-    }
-    fileName = QString("%1/%2_ExcelCejuData_%3.xlsx").arg(path).arg(name).arg(QDATETIMS);
-    //在内存中新建xlsx文件
-    QXlsx::Document xlsx;
-    xlsx.write(1, XLSX_COL_LINE_TASK1, QString("Task_1"));
-    xlsx.write(1, XLSX_COL_LINE_TASK2, QString("Task_2"));
-    xlsx.write(1, XLSX_COL_LINE_TASK3, QString("Task_3"));
+
     while(true)
     {
         if(m_uReadNum1 >= m_uRecordNum)
@@ -134,41 +113,18 @@ void CeJuTcpClient::Ceju_RecordEnd()
             isSucceed = getCejuLogData(m_uReadNum3, m_uAskNum, emCeJuDataTtype_task3, m_uTask3);
         }while(!isSucceed);
     }
-    uint16_t xlsx_row = 2;
-    for(uint16_t i=0; i<m_uRecordNum; i++)
-    {
-        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, m_uTask1[i]);
-        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, m_uTask2[i]);
-        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, m_uTask3[i]);
-        xlsx_row++;
-    }
-    xlsx.saveAs(fileName);
 
     m_bIsCejuRecordEndSucceed = true;
 }
 
-/***********************************测距数据保存***********************************/
-void CeJuTcpClient::saveCejuRecordToExcel()
+void CeJuTcpClient::Ceju_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint32_t& num)
 {
-    uint16_t xlsx_row = 1;
-    uint8_t xlsx_col = 1;
-
-    //目录不存在则先新建目录
-    QDir dir(path);
-    if (!dir.exists()) {
-        dir.mkdir(path);
-    }
-    fileName = QString("%1/%2_ExcelCejuData_%3.xlsx").arg(path).arg(name).arg(QDATETIMS);
-
-    //在内存中新建xlsx文件
-    QXlsx::Document xlsx;
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_1"));
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_2"));
-    xlsx.write(xlsx_row, xlsx_col++, QString("Task_3"));
-    xlsx_row++;
-    xlsx_col = 1;
-    xlsx.saveAs(fileName);
+    num = m_uRecordNum;
+    memcpy(&destArray[emCeJuDataTtype_task1][0], &m_uTask1[0], m_uRecordNum*sizeof(int32_t));
+    memcpy(&destArray[emCeJuDataTtype_task2][0], &m_uTask2[0], m_uRecordNum*sizeof(int32_t));
+    memcpy(&destArray[emCeJuDataTtype_task3][0], &m_uTask3[0], m_uRecordNum*sizeof(int32_t));
 }
+
 /***********************************测距指令发送读取解析***********************************/
 void CeJuTcpClient::slot_readData()
 {

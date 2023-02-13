@@ -11,6 +11,8 @@
 #include "hardselutedef.h"
 
 #define GET_TRIGPOS_PER_MAX 10
+#define FOLLOW_AXIS_NUM     2
+
 typedef struct
 {
     emAxisType m_eAxis;//目标轴
@@ -34,12 +36,13 @@ typedef struct
     uint16_t m_u16TotalNum;     //当前总的触发数量
     uint16_t m_u16RealStartIndex;
     uint16_t m_u16RealGetNum;
-    int32_t m_i32TrigPosArray[2][WK_CeJuRecordNumMax]; //单条数据包保存的数量
+    int32_t m_i32TrigPosArray[FOLLOW_AXIS_NUM][WK_CeJuRecordNumMax]; //单条数据包保存的数量
 }ST_TRIGINFO_GETTASK_INFO;
 
 typedef struct
 {
     uint16_t m_u16NeedTrigPosNum;   //B层需要的触发位置的总量，实际不一定有那么多
+    uint16_t m_u16factGetPosNum;    //B层实际获得的触发总量
     bool m_bIsGetAllNeedNum;        //是否已获得要求的触发位置量
 }ST_BFollowSetParameter;
 
@@ -58,6 +61,8 @@ public:
     ST_TRIGINFO_SETTASK_INFO m_stTrigInfoGet_TaskToSend;
     ST_TRIGINFO_GETTASK_INFO m_stTrigInfoD;
     ST_BFollowSetParameter m_stBFollowTrigSetParameter;
+
+    void Trig_GetTrigPosData(int32_t destArray[FOLLOW_AXIS_NUM][WK_CeJuRecordNumMax], uint32_t& num);
 
 private:
     //自动重发定时器，用于settask指令未回复的情况，重发settask

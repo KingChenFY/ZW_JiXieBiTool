@@ -112,6 +112,7 @@ emWKCmdType ActionTriggerSet::parseCmd(uint8_t* puData)
             if( (_CurCopyAddr >= m_stBFollowTrigSetParameter.m_u16NeedTrigPosNum) ||
                     (_CurCopyAddr >= m_stTrigInfoD.m_u16TotalNum) )
             {//判断拿的数量是否达到B层要求或者拿到硬件的最大数量
+                m_stBFollowTrigSetParameter.m_u16factGetPosNum = _CurCopyAddr;
                 m_stBFollowTrigSetParameter.m_bIsGetAllNeedNum = true;
             }
             else
@@ -128,6 +129,14 @@ emWKCmdType ActionTriggerSet::parseCmd(uint8_t* puData)
         return emCMD_GET;
     }
     _LOG(QString("No such cmd = [%1]").arg(uCmdId));
+}
+
+void ActionTriggerSet::Trig_GetTrigPosData(int32_t destArray[FOLLOW_AXIS_NUM][WK_CeJuRecordNumMax], uint32_t& num)
+{
+    num = m_stBFollowTrigSetParameter.m_u16factGetPosNum;
+    memset(destArray, 0, FOLLOW_AXIS_NUM*num*sizeof(int32_t));
+    memcpy(&destArray[0][0], &m_stTrigInfoD.m_i32TrigPosArray[0][0], num*sizeof(int32_t));
+    memcpy(&destArray[1][0], &m_stTrigInfoD.m_i32TrigPosArray[1][0], num*sizeof(int32_t));
 }
 
 void ActionTriggerSet::getTrigInfoTaskSend()
