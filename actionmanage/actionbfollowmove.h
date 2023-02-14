@@ -113,6 +113,7 @@ protected:
     void run();
 private:
     uint16_t trigPosNeedNum;
+    uint16_t m_u16TrailId;
     double m_dTrailSyn[TRAIL_SYN_MAX_NUM];
     void saveCejuRecordToExcel();
     emFollowMoveStep emActionStep;

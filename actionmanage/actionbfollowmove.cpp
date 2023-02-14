@@ -16,6 +16,7 @@ ActionBFollowMove::ActionBFollowMove(ActionTriggerSet* &objActionTriggerSet, Act
     emActionStep = emFollow_FollowPrepare;
 
     m_dTrailSyn[TRAIL_SYN_MAX_NUM] = {0.0};
+    m_u16TrailId = 0;
 
     //默认取应用程序根目录
     path = qApp->applicationDirPath() + "/ExcelCejuData";
@@ -292,7 +293,8 @@ void ActionBFollowMove::run()
         }
         else if(emFollow_FollowParameterSet == emActionStep)
         {
-            m_objActionParameterSet->m_stTrailInfoToSend.u16TrailId = 6;
+            m_u16TrailId++;
+            m_objActionParameterSet->m_stTrailInfoToSend.u16TrailId = m_u16TrailId;
             m_objActionParameterSet->m_stTrailInfoToSend.u16TrailSynNum = WK_SycNum_FactUse;
             for(uint8_t i=0; i < WK_SycNum_FactUse; i++)
             {
@@ -308,7 +310,8 @@ void ActionBFollowMove::run()
             if(m_objActionParameterSet->m_bISTrailInfoSet)
             {
                 emCurStage = emFStage_Follow;
-                emActionStep = emFollow_YMoveToStart;
+//                emActionStep = emFollow_YMoveToStart;
+                emActionStep = emFollow_TrigParameterSet;
             }
             else
                 emActionStep = emFollow_FollowParameterSet;
@@ -321,8 +324,10 @@ void ActionBFollowMove::run()
             m_objActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
             m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos.m_i32X = m_stAimEdPhyPos.m_i32X;
             m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos.m_i32Y = m_stAimEdPhyPos.m_i32Y;
-            m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos.m_i32Z = m_stAimEdPhyPos.m_i32Z;
+//            m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos.m_i32Z = m_stAimEdPhyPos.m_i32Z;
+            m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos.m_i32Z = m_objActionMotorXYZ->m_stDTaskInfo.m_stCurDPos.m_i32Z;
             m_objActionMotorXYZ->m_stTaskToSend.m_u32MoveTime = m_stMoveTrigData.m_u32MoveInTimeTMin << 1;
+            m_objActionMotorXYZ->m_stTaskToSend.m_u16PathId = m_u16TrailId;
             m_objActionMotorXYZ->convertPhyPosToLogicPos(m_objActionMotorXYZ->m_stTaskToSend.m_stAimDPos,
                                                        m_objActionMotorXYZ->m_stTaskToSend.m_stAimLogicDPos);
             m_objActionMotorXYZ->setTaskSend();
