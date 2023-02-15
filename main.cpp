@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFile>
 #include "quihelper.h"
+#include "appconfig.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,10 @@ int main(int argc, char *argv[])
     qss_file.open(QFile::ReadOnly);
     qApp->setStyleSheet(qss_file.readAll());
     qss_file.close();
+
+    //读取配置文件
+    AppConfig::ConfigFile = QString("%1/%2.ini").arg(QUIHelper::appPath()).arg(QUIHelper::appName());
+    AppConfig::readConfig();
 
     FrmMain w;
     w.setWindowTitle("JXB硬件调试平台 (Author: Yisea)");

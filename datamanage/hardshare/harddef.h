@@ -120,6 +120,33 @@ typedef enum
     emTskDXYZType_end
 }emTaskDXYZType;
 
+//除油任务类型
+typedef enum
+{
+    emTaskDCleanOilType_Start = 0,
+
+    emTaskDCleanOilType_Clean,          // 去油
+    emTaskDCleanOilType_Stop,           // 任务停止
+    emTaskDCleanOilType_PowerOff,       //轴失能
+    emTaskDCleanOilType_Frap,           //收纸
+
+    emTaskDCleanOilType_End
+}emTaskDCleanOilType;
+
+//滴油任务类型
+typedef enum
+{
+    emTaskDDripOil_Start = 0,
+
+    emTaskDDripOil_Drop,        //滴油
+    emTaskDDripOil_Draw,        //加油
+    emTaskDDripOil_Stop,
+    emTaskDDripOil_DrawBack,    //油壶放油
+    emTaskDDripOil_DripOut,     //滴头放油
+
+    emTaskDDripOil_End
+}emTaskDDripOilType;
+
 // 各路传感信号状态枚举
 typedef enum
 {
@@ -241,35 +268,6 @@ typedef enum
     
     emTaskDSetLED_End
 }emTaskDSetLEDType;
-
-//滴油任务类型
-typedef enum 
-{
-    emTaskDDropOil_Start,
-        
-    emTaskDDropOil_Drop,
-    emTaskDDropOil_Draw,
-	emTaskDDropOil_Stop,
-	emTaskDDropOil_DrawBack,
-	emTaskDDropOil_DripOut,
-	
-    
-    emTaskDDropOil_End
-}emTaskDDropOilType;
-
-
-//除油模块任务类型
-typedef enum 
-{
-	emTskDCleanOilType_Start = 0,
-
-	emTskDCleanOilType_Clean, // 去油
- 	emTskDCleanOilType_Stop, // 任务停止
-	emTskDCleanOilType_PowerOff,//轴失能
-	emTskDCleanOilType_Frap,
-
- 	emTskDCleanOilType_End
-}emTskDCleanOilType;
 
 //硬件独立小功能控制
 typedef enum

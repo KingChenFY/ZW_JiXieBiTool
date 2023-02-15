@@ -34,7 +34,7 @@ INCLUDEPATH += $$PWD/3rdparty/qtxlsx
 INCLUDEPATH += $$PWD/3rdparty/qcustomplot
 include ($$PWD/3rdparty/3rd_party.pri)
 
-QMAKE_LFLAGS += "/STACK:6553600,409600" #设置栈保留大小6553600k，提交大小409600k
+#QMAKE_LFLAGS += "/STACK:6553600,409600" #设置栈保留大小6553600k，提交大小409600k
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/3rdparty/qwt/lib/ -lqwt
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/3rdparty/qwt/lib/ -lqwtd

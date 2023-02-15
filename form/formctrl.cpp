@@ -3,6 +3,7 @@
 #include <QMetaEnum>
 #include "quihelper.h"
 #include "global.h"
+#include "appconfig.h"
 
 FormCtrl::FormCtrl(QWidget *parent) :
     QWidget(parent),
@@ -22,12 +23,27 @@ void FormCtrl::initForm()
 {
     formCeju = new FormCeJu;
     ui->tabW_apps->addTab(formCeju, "ZW-5030");
+    m_bIsOilConfigSet = false;
 
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
     ui->ledit_moveX->setEnabled(false);
     ui->ledit_moveY->setEnabled(false);
     ui->ledit_moveZ->setEnabled(false);
+
+    ui->ledit_coXPos->setText(QString::number(AppConfig::coXPos, 'f', 6));
+    connect(ui->ledit_coXPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_coYPos->setText(QString::number(AppConfig::coYPos, 'f', 6));
+    connect(ui->ledit_coYPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_coZPos->setText(QString::number(AppConfig::coZPos, 'f', 6));
+    connect(ui->ledit_coZPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    ui->ledit_doXPos->setText(QString::number(AppConfig::doXPos, 'f', 6));
+    connect(ui->ledit_doXPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_doYPos->setText(QString::number(AppConfig::doYPos, 'f', 6));
+    connect(ui->ledit_doYPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_doZPos->setText(QString::number(AppConfig::doZPos, 'f', 6));
+    connect(ui->ledit_doZPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 }
 
 void FormCtrl::initConfig()
@@ -42,6 +58,8 @@ void FormCtrl::initConfig()
     m_pActionMotorXYZ = new ActionMotorXYZ;
     m_pActionTriggerSet = new ActionTriggerSet;
     m_pActionParameterSet = new ActionParameterSet;
+    m_pActionCleanOil = new ActionCleanOil;
+    m_pActionDripOil = new ActionDripOil;
     connect(m_pActionBeltIn, &ActionBeltIn::signal_UiUpdate, this, &FormCtrl::slot_BeltIN_UiUpdate);
     connect(m_pActionBeltOut, &ActionBeltOut::signal_UiUpdate, this, &FormCtrl::slot_BeltOUT_UiUpdate);
     connect(m_pActionPoleIn, &ActionPoleIn::signal_UiUpdate, this, &FormCtrl::slot_PoleIN_UiUpdate);
@@ -50,18 +68,40 @@ void FormCtrl::initConfig()
     connect(m_pActionMotorV, &ActionMotorV::signal_UiUpdate, this, &FormCtrl::slot_MotorV_UiUpdate);
     connect(m_pActionMotorXYZ, &ActionMotorXYZ::signal_UiUpdate, this, &FormCtrl::slot_MotorXYZ_UiUpdate);
     connect(m_pActionTriggerSet, &ActionTriggerSet::signal_UiUpdate, this, &FormCtrl::slot_TriggerSet_UiUpdate);
+    connect(m_pActionCleanOil, &ActionCleanOil::signal_UiUpdate, this, &FormCtrl::slot_CleanOil_UiUpdate);
+    connect(m_pActionDripOil, &ActionDripOil::signal_UiUpdate, this, &FormCtrl::slot_DripOil_UiUpdate);
 
-    m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn,
-                                               m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
+    //运输仓测试
+    m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn, m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
     connect(m_pActionBTransport, &QThread::finished, this, &FormCtrl::slot_TransportTestThread_Stop);
 
+    //跟随测试
     m_pActionBFollowMove = new ActionBFollowMove(m_pActionTriggerSet, m_pActionMotorXYZ, formCeju->cejuClient, m_pActionParameterSet);
     connect(m_pActionBFollowMove, &QThread::finished, this, &FormCtrl::slot_FollowTestThread_Stop);
-
     //测试跟随测试线程中的 测距结束 的处理放到 测距线程中跑， 看看能不能解决测距网络线程数据处理经常异常
     connect(m_pActionBFollowMove, &ActionBFollowMove::signal_Ceju_RecordStart, formCeju->cejuClient, &CeJuTcpClient::Ceju_RecordStart);
     connect(m_pActionBFollowMove, &ActionBFollowMove::signal_Ceju_RecordEnd, formCeju->cejuClient, &CeJuTcpClient::Ceju_RecordEnd);
+
+    //跟随测试
+    m_pActionBOilTest = new ActionBOilTest(m_pActionMotorXYZ, m_pActionDripOil, m_pActionCleanOil);
+    connect(m_pActionBOilTest, &QThread::finished, this, &FormCtrl::slot_OilTestThread_Stop);
 }
+
+void FormCtrl::saveConfig()
+{
+    m_bIsOilConfigSet = false;
+
+    AppConfig::coXPos = ui->ledit_coXPos->text().toFloat();
+    AppConfig::coYPos = ui->ledit_coYPos->text().toFloat();
+    AppConfig::coZPos = ui->ledit_coZPos->text().toFloat();
+
+    AppConfig::doXPos = ui->ledit_doXPos->text().toFloat();
+    AppConfig::doYPos = ui->ledit_doYPos->text().toFloat();
+    AppConfig::doZPos = ui->ledit_doZPos->text().toFloat();
+
+    AppConfig::writeConfig();
+}
+
 void FormCtrl::slot_netConnected()
 {
     ui->tabW_main->setEnabled(true);
@@ -72,6 +112,106 @@ void FormCtrl::slot_netNoLink()
 {
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
+}
+/*
+ * ******************************************************油测试模块******************************************************
+ */
+void FormCtrl::on_pbtn_cdoPSet_clicked()
+{
+    if("确认位置值" == ui->pbtn_cdoPSet->text())
+    {
+        m_bIsOilConfigSet = true;
+    }
+}
+
+void FormCtrl::on_pbtn_cdoTest_clicked()
+{
+    if("开始测试" == ui->pbtn_cdoTest->text())
+    {
+        //初始化环境检查
+        if(!m_bIsOilConfigSet)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请先确认滴油位置和除油位置后，点击确认位置值"));
+            return;
+        }
+        if(!m_pActionMotorXYZ->isAllLineHasLocated())
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请完成机械臂定位"));
+            return;
+        }
+
+        bool okx = true;
+        bool oky = true;
+        bool okz = true;
+        ST_OILTEST_TAGETPOS m_stOilPosTemp;
+        m_stOilPosTemp.m_stCleanOilPos = {WK_PosNotLimit, WK_PosNotLimit, WK_PosNotLimit};
+        if(!ui->ledit_coXPos->text().isEmpty())
+            m_stOilPosTemp.m_stCleanOilPos.m_fX = ui->ledit_coXPos->text().toFloat(&okx);
+        if(!ui->ledit_coYPos->text().isEmpty())
+            m_stOilPosTemp.m_stCleanOilPos.m_fY = ui->ledit_coYPos->text().toFloat(&oky);
+        if(!ui->ledit_coZPos->text().isEmpty())
+            m_stOilPosTemp.m_stCleanOilPos.m_fZ = ui->ledit_coZPos->text().toFloat(&okz);
+        if(!okx || !oky || !okz)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        if( !m_pActionMotorXYZ->isAimLogicPosOverLimit(m_stOilPosTemp.m_stCleanOilPos))
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入超边界"));
+            return;
+        }
+
+        m_stOilPosTemp.m_stDripOilPos = {WK_PosNotLimit, WK_PosNotLimit, WK_PosNotLimit};
+        if(!ui->ledit_doXPos->text().isEmpty())
+            m_stOilPosTemp.m_stDripOilPos.m_fX = ui->ledit_doXPos->text().toFloat(&okx);
+        if(!ui->ledit_doYPos->text().isEmpty())
+            m_stOilPosTemp.m_stDripOilPos.m_fY = ui->ledit_doYPos->text().toFloat(&oky);
+        if(!ui->ledit_doZPos->text().isEmpty())
+            m_stOilPosTemp.m_stDripOilPos.m_fZ = ui->ledit_doZPos->text().toFloat(&okz);
+        if(!okx || !oky || !okz)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        if( !m_pActionMotorXYZ->isAimLogicPosOverLimit(m_stOilPosTemp.m_stDripOilPos))
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入超边界"));
+            return;
+        }
+
+        ui->ledit_coXPos->setReadOnly(true);
+        ui->ledit_coYPos->setReadOnly(true);
+        ui->ledit_coZPos->setReadOnly(true);
+        ui->ledit_doXPos->setReadOnly(true);
+        ui->ledit_doYPos->setReadOnly(true);
+        ui->ledit_doZPos->setReadOnly(true);
+        m_pActionBOilTest->GetOilConifgPos(m_stOilPosTemp);
+        //启动油测试线程
+        m_pActionBOilTest->m_bNeedStop = false;
+        _LOG("{Oil_Auto_Test}: THREAD START =================================");
+        m_pActionBOilTest->start();
+        ui->pbtn_cdoTest->setText("停止测试");
+    }
+    else if("停止测试" == ui->pbtn_cdoTest->text())
+    {
+        ui->pbtn_cdoTest->setDisabled(true);
+        ui->pbtn_cdoTest->setText("正在停止测试");
+        m_pActionBOilTest->m_bNeedStop = true;
+        _LOG("{Oil_Auto_Test}: STOP THREAD =================================");
+    }
+    else
+    {
+        return;
+    }
+}
+
+void FormCtrl::slot_OilTestThread_Stop()
+{
+    on_pbtn_xyzStop_clicked();
+    ui->pbtn_cdoTest->setText("开始测试");
+    ui->pbtn_cdoTest->setEnabled(true);
+    _LOG("{Oil_Auto_Test}: THREAD FINISH END=================================");
 }
 /*
  * ******************************************************跟随测试模块******************************************************
@@ -421,6 +561,44 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
 void FormCtrl::slot_TriggerSet_UiUpdate()
 {
 //    ui->pbtn_TriggerStart->setEnabled(true);
+}
+void FormCtrl::slot_CleanOil_UiUpdate()
+{
+    //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
+    QMetaEnum emCleanOilSelute = QMetaEnum::fromType<ActionCleanOil::E_SELUTE_CLEANOIL>();
+    ui->lab_COcolor->setText(QString(emCleanOilSelute.valueToKey(m_pActionCleanOil->m_stTaskD.m_eTaskSeluteD)));
+    if((ActionCleanOil::NoErr == m_pActionCleanOil->m_stTaskD.m_eTaskSeluteD) || (ActionCleanOil::Outtime == m_pActionCleanOil->m_stTaskD.m_eTaskSeluteD))
+    {
+        if(emWorkStatus_ask == m_pActionCleanOil->m_stTaskD.m_eTaskStatusD)
+            ui->lab_COcolor->setStyleSheet("background-color:orange");
+        else if (emWorkStatus_run == m_pActionCleanOil->m_stTaskD.m_eTaskStatusD)
+            ui->lab_COcolor->setStyleSheet("background-color:green");
+        else
+            ui->lab_COcolor->setStyleSheet("background-color:transparent");
+    }
+    else
+    {
+        ui->lab_COcolor->setStyleSheet("background-color:red");
+    }
+}
+void FormCtrl::slot_DripOil_UiUpdate()
+{
+    //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
+    QMetaEnum emDripOilSelute = QMetaEnum::fromType<ActionDripOil::E_SELUTE_DRIPOIL>();
+    ui->lab_DOcolor->setText(QString(emDripOilSelute.valueToKey(m_pActionDripOil->m_stDTaskInfo.m_eTaskSeluteD)));
+    if((ActionDripOil::NoErr == m_pActionDripOil->m_stDTaskInfo.m_eTaskSeluteD) || (ActionDripOil::Outtime == m_pActionDripOil->m_stDTaskInfo.m_eTaskSeluteD))
+    {
+        if(emWorkStatus_ask == m_pActionDripOil->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_DOcolor->setStyleSheet("background-color:orange");
+        else if (emWorkStatus_run == m_pActionDripOil->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_DOcolor->setStyleSheet("background-color:green");
+        else
+            ui->lab_DOcolor->setStyleSheet("background-color:transparent");
+    }
+    else
+    {
+        ui->lab_DOcolor->setStyleSheet("background-color:red");
+    }
 }
 /*
  * ******************************************************入皮带******************************************************
@@ -1104,5 +1282,158 @@ void FormCtrl::on_pbtn_logicMoveInTime_clicked()
     _LOG(QString("task is set"));
 
     m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_DOdrip_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDDripOil_Drop == m_pActionDripOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionDripOil->m_stTaskToSend.m_eTaskType = emTaskDDripOil_Drop;
+    m_pActionDripOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionDripOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_DOdraw_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDDripOil_Draw == m_pActionDripOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionDripOil->m_stTaskToSend.m_eTaskType = emTaskDDripOil_Draw;
+    m_pActionDripOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionDripOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_DOdrawback_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDDripOil_DrawBack == m_pActionDripOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionDripOil->m_stTaskToSend.m_eTaskType = emTaskDDripOil_DrawBack;
+    m_pActionDripOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionDripOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rbtn_DOdripout_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDDripOil_DripOut == m_pActionDripOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionDripOil->m_stTaskToSend.m_eTaskType = emTaskDDripOil_DripOut;
+    m_pActionDripOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionDripOil->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_DOstop_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDDripOil_Stop == m_pActionDripOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionDripOil->m_stTaskToSend.m_eTaskType = emTaskDDripOil_Stop;
+    m_pActionDripOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionDripOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rb_COputpaper_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDCleanOilType_Clean == m_pActionCleanOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionCleanOil->m_stTaskToSend.m_eTaskType = emTaskDCleanOilType_Clean;
+    m_pActionCleanOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionCleanOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rb_COfrappaper_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDCleanOilType_Frap == m_pActionCleanOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionCleanOil->m_stTaskToSend.m_eTaskType = emTaskDCleanOilType_Frap;
+    m_pActionCleanOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionCleanOil->setTaskSend();
+}
+
+
+void FormCtrl::on_rb_COpoweroff_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDCleanOilType_PowerOff == m_pActionCleanOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionCleanOil->m_stTaskToSend.m_eTaskType = emTaskDCleanOilType_PowerOff;
+    m_pActionCleanOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionCleanOil->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_COstop_clicked()
+{
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDCleanOilType_Stop == m_pActionCleanOil->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionCleanOil->m_stTaskToSend.m_eTaskType = emTaskDCleanOilType_Stop;
+    m_pActionCleanOil->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionCleanOil->setTaskSend();
 }
 

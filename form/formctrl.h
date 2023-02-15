@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMetaEnum>
 
+#include "formceju.h"
 #include "actionbeltin.h"
 #include "actionbeltout.h"
 #include "actionpolein.h"
@@ -15,7 +16,9 @@
 #include "actionbfollowmove.h"
 #include "actiontriggerset.h"
 #include "actionparameterset.h"
-#include "formceju.h"
+#include "actioncleanoil.h"
+#include "actiondripoil.h"
+#include "actionboiltest.h"
 
 namespace Ui {
 class FormCtrl;
@@ -59,18 +62,25 @@ public:
     ActionBFollowMove *m_pActionBFollowMove;//跟随测试流程
     ActionParameterSet *m_pActionParameterSet;//参数设置流程
 
+    ActionCleanOil *m_pActionCleanOil;//除油流程
+    ActionDripOil *m_pActionDripOil;//滴油流程
+    ActionBOilTest *m_pActionBOilTest;//油测试流程
+
 private:
     Ui::FormCtrl *ui;
 
     QMetaEnum emTaskStatus;
+    bool m_bIsOilConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
 
 private slots:
     void slot_TransportTestThread_Stop();
     void slot_FollowTestThread_Stop();
+    void slot_OilTestThread_Stop();
     bool slot_TriggerParameter_Check();
 private slots:
     void initForm();
     void initConfig();
+    void saveConfig();
     void slot_BeltIN_UiUpdate();
     void slot_BeltOUT_UiUpdate();
     void slot_PoleIN_UiUpdate();
@@ -79,6 +89,8 @@ private slots:
     void slot_MotorV_UiUpdate();
     void slot_MotorXYZ_UiUpdate();
     void slot_TriggerSet_UiUpdate();
+    void slot_CleanOil_UiUpdate();
+    void slot_DripOil_UiUpdate();
 
 private slots:
     //皮带入
@@ -123,6 +135,20 @@ private slots:
     void on_pbtn_logicMoveInTime_clicked();
     void on_pbtn_transportTestStart_clicked();
     void on_pbtn_TriggerStart_clicked();
+    //滴油装置
+    void on_rbtn_DOdrip_clicked();
+    void on_rbtn_DOdraw_clicked();
+    void on_rbtn_DOdrawback_clicked();
+    void on_rbtn_DOdripout_clicked();
+    void on_pbtn_DOstop_clicked();
+    //除油装置
+    void on_rb_COputpaper_clicked();
+    void on_rb_COfrappaper_clicked();
+    void on_rb_COpoweroff_clicked();
+    void on_pbtn_COstop_clicked();
+    //油测试按钮
+    void on_pbtn_cdoTest_clicked();
+    void on_pbtn_cdoPSet_clicked();
 };
 
 #endif // FORMCTRL_H
