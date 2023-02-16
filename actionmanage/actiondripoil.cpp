@@ -43,15 +43,8 @@ emWKCmdType ActionDripOil::parseCmd(uint8_t* puData)
         /*内容：eTskType(U8 emTskDCleanOilType) + uTaskId(U8) + eStatus(U8 emWorkStatus) + eSelute(U8 emSeluteDCleanOil) */
         m_stDTaskInfo.m_eTaskTypeD = (emTaskDDripOilType)puData[uLen];
         uLen += 1;
-
-        m_stDTaskInfo.m_u32DripTime = common_read_u32(&puData[uLen]);
-        uLen += 4;
-        m_stDTaskInfo.m_u32DripSpeed = common_read_u32(&puData[uLen]);
-        uLen += 4;
-
-        m_stDTaskInfo.m_u8DripNum = puData[uLen];
+        m_stDTaskInfo.m_uTaskId = puData[uLen];
         uLen += 1;
-
         // 任务状态
         m_stDTaskInfo.m_eTaskStatusD = (emWorkStatus)puData[uLen];
         uLen += 1;
@@ -59,15 +52,24 @@ emWKCmdType ActionDripOil::parseCmd(uint8_t* puData)
         m_stDTaskInfo.m_eTaskSeluteD = (emSeluteDDropOil)puData[uLen];
         uLen += 1;
 
-        m_stDTaskInfo.m_u8IsRun = puData[uLen];
-        uLen += 1;
-        m_stDTaskInfo.m_u32RunTime = common_read_u32(&puData[uLen]);
-        uLen += 4;
-        m_stDTaskInfo.m_u8OilNums = puData[uLen];
-        uLen += 1;
+//        m_stDTaskInfo.m_u32DripTime = common_read_u32(&puData[uLen]);
+//        uLen += 4;
+//        m_stDTaskInfo.m_u32DripSpeed = common_read_u32(&puData[uLen]);
+//        uLen += 4;
 
-        m_stDTaskInfo.m_uTaskId = puData[uLen];
-        uLen += 1;
+//        m_stDTaskInfo.m_u8DripNum = puData[uLen];
+//        uLen += 1;
+
+
+
+//        m_stDTaskInfo.m_u8IsRun = puData[uLen];
+//        uLen += 1;
+//        m_stDTaskInfo.m_u32RunTime = common_read_u32(&puData[uLen]);
+//        uLen += 4;
+//        m_stDTaskInfo.m_u8OilNums = puData[uLen];
+//        uLen += 1;
+
+
 
 
         // 更新 滴油 界面信息

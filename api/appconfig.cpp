@@ -2,16 +2,14 @@
 #include "quihelper.h"
 
 QString AppConfig::ConfigFile = "config.ini";
-QString AppConfig::SendFileName = "send.txt";
-QString AppConfig::DeviceFileName = "device.txt";
 
-float AppConfig::coXPos = 0;
-float AppConfig::coYPos = 0;
-float AppConfig::coZPos = 0;
+QString AppConfig::coXPos = "2";
+QString AppConfig::coYPos = "100";
+QString AppConfig::coZPos = "500";
 
-float AppConfig::doXPos = 0;
-float AppConfig::doYPos = 0;
-float AppConfig::doZPos = 0;
+QString AppConfig::doXPos = "300";
+QString AppConfig::doYPos = "200";
+QString AppConfig::doZPos = "100";
 
 
 void AppConfig::readConfig()
@@ -19,13 +17,13 @@ void AppConfig::readConfig()
     QSettings set(AppConfig::ConfigFile, QSettings::IniFormat);
 
     set.beginGroup("OilConfig");
-    AppConfig::coXPos = set.value("coXPos", AppConfig::coXPos).toFloat();
-    AppConfig::coYPos = set.value("coYPos", AppConfig::coYPos).toFloat();
-    AppConfig::coZPos = set.value("coZPos", AppConfig::coZPos).toFloat();
+    AppConfig::coXPos = set.value("coXPos", AppConfig::coXPos).toString();
+    AppConfig::coYPos = set.value("coYPos", AppConfig::coYPos).toString();
+    AppConfig::coZPos = set.value("coZPos", AppConfig::coZPos).toString();
 
-    AppConfig::doXPos = set.value("doXPos", AppConfig::doXPos).toFloat();
-    AppConfig::doYPos = set.value("doYPos", AppConfig::doYPos).toFloat();
-    AppConfig::doZPos = set.value("doZPos", AppConfig::doZPos).toFloat();
+    AppConfig::doXPos = set.value("doXPos", AppConfig::doXPos).toString();
+    AppConfig::doYPos = set.value("doYPos", AppConfig::doYPos).toString();
+    AppConfig::doZPos = set.value("doZPos", AppConfig::doZPos).toString();
     set.endGroup();
 
     //配置文件不存在或者不全则重新生成
@@ -48,5 +46,4 @@ void AppConfig::writeConfig()
     set.setValue("doYPos", AppConfig::doYPos);
     set.setValue("doZPos", AppConfig::doZPos);
     set.endGroup();
-
 }

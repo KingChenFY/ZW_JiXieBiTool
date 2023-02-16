@@ -55,8 +55,10 @@ public:
     explicit ActionBOilTest(ActionMotorXYZ* &objActionMotorXYZ, ActionDripOil* &objActionDripOil,
                             ActionCleanOil* &objActionCleanOil, QObject *parent = nullptr);
     bool m_bNeedStop;
+    bool m_bIsSkipDripOil;
 
     void GetOilConifgPos(ST_OILTEST_TAGETPOS &m_stOilUiConfigPos);
+    void InitOilTest();
 protected:
     void run();
 

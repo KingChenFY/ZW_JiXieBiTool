@@ -4,6 +4,7 @@
 #include <QFile>
 #include "quihelper.h"
 #include "appconfig.h"
+#include "savelog.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,9 +15,9 @@ int main(int argc, char *argv[])
     qApp->setStyleSheet(qss_file.readAll());
     qss_file.close();
 
-    //读取配置文件
-    AppConfig::ConfigFile = QString("%1/%2.ini").arg(QUIHelper::appPath()).arg(QUIHelper::appName());
-    AppConfig::readConfig();
+    //启动日志功能
+    SaveLog::Instance()->start();
+    SaveLog::Instance()->setMaxSize(10240);
 
     FrmMain w;
     w.setWindowTitle("JXB硬件调试平台 (Author: Yisea)");

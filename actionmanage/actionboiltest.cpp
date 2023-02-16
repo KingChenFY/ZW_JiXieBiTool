@@ -18,6 +18,12 @@ void ActionBOilTest::GetOilConifgPos(ST_OILTEST_TAGETPOS &m_stOilUiConfigPos)
     m_stOilConfigPos = m_stOilUiConfigPos;
 }
 
+void ActionBOilTest::InitOilTest()
+{
+    emActionStep = emOilTest_MoveToSafePosY;
+    emCurStage = emOilStage_DripOil;
+}
+
 void ActionBOilTest::run()
 {
     while(!m_bNeedStop)
@@ -135,7 +141,15 @@ void ActionBOilTest::run()
             }
             if(emWorkStatus_finish == m_objActionMotorXYZ->m_stDTaskInfo.m_eTaskStatusD)
             {
-                emActionStep = emOilTest_StartDripOil;
+                if(m_bIsSkipDripOil)
+                {
+                    emCurStage = emOilStage_CleanOil;
+                    emActionStep = emOilTest_MoveToSafePosY;
+                }
+                else
+                {
+                    emActionStep = emOilTest_StartDripOil;
+                }
                 _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitMoveToDripPosY]");
             }
             continue;
@@ -157,6 +171,7 @@ void ActionBOilTest::run()
             }
             if(emWorkStatus_finish == m_objActionDripOil->m_stDTaskInfo.m_eTaskStatusD)
             {
+                emCurStage = emOilStage_CleanOil;
                 emActionStep = emOilTest_MoveToSafePosY;
                 _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitDripOilEnd]");
             }

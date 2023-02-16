@@ -17,6 +17,7 @@ ActionBFollowMove::ActionBFollowMove(ActionTriggerSet* &objActionTriggerSet, Act
 
     m_dTrailSyn[TRAIL_SYN_MAX_NUM] = {0.0};
     m_u16TrailId = 0;
+    m_stDealData_Original = NULL;
 
     //默认取应用程序根目录
     path = qApp->applicationDirPath() + "/ExcelCejuData";

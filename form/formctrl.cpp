@@ -23,6 +23,12 @@ void FormCtrl::initForm()
 {
     formCeju = new FormCeJu;
     ui->tabW_apps->addTab(formCeju, "ZW-5030");
+
+    //读取配置文件
+    AppConfig::ConfigFile = QString("%1/%2.ini").arg(QUIHelper::appPath()).arg(QUIHelper::appName());
+    AppConfig::readConfig();
+    BOilTest_iniSet = new QSettings(AppConfig::ConfigFile, QSettings::IniFormat);
+
     m_bIsOilConfigSet = false;
 
     ui->tabW_main->setDisabled(true);
@@ -31,18 +37,18 @@ void FormCtrl::initForm()
     ui->ledit_moveY->setEnabled(false);
     ui->ledit_moveZ->setEnabled(false);
 
-    ui->ledit_coXPos->setText(QString::number(AppConfig::coXPos, 'f', 6));
+    ui->ledit_coXPos->setText(AppConfig::coXPos);
     connect(ui->ledit_coXPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    ui->ledit_coYPos->setText(QString::number(AppConfig::coYPos, 'f', 6));
+    ui->ledit_coYPos->setText(AppConfig::coYPos);
     connect(ui->ledit_coYPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    ui->ledit_coZPos->setText(QString::number(AppConfig::coZPos, 'f', 6));
+    ui->ledit_coZPos->setText(AppConfig::coZPos);
     connect(ui->ledit_coZPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
-    ui->ledit_doXPos->setText(QString::number(AppConfig::doXPos, 'f', 6));
+    ui->ledit_doXPos->setText(AppConfig::doXPos);
     connect(ui->ledit_doXPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    ui->ledit_doYPos->setText(QString::number(AppConfig::doYPos, 'f', 6));
+    ui->ledit_doYPos->setText(AppConfig::doYPos);
     connect(ui->ledit_doYPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    ui->ledit_doZPos->setText(QString::number(AppConfig::doZPos, 'f', 6));
+    ui->ledit_doZPos->setText(AppConfig::doZPos);
     connect(ui->ledit_doZPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 }
 
@@ -89,17 +95,25 @@ void FormCtrl::initConfig()
 
 void FormCtrl::saveConfig()
 {
+//    AppConfig::coXPos = ui->ledit_coXPos->text();
+//    AppConfig::coYPos = ui->ledit_coYPos->text();
+//    AppConfig::coZPos = ui->ledit_coZPos->text();
+
+//    AppConfig::doXPos = ui->ledit_doXPos->text();
+//    AppConfig::doYPos = ui->ledit_doYPos->text();
+//    AppConfig::doZPos = ui->ledit_doZPos->text();
+
+    BOilTest_iniSet->beginGroup("OilConfig");
+    BOilTest_iniSet->setValue("coXPos", ui->ledit_coXPos->text());
+    BOilTest_iniSet->setValue("coYPos", ui->ledit_coYPos->text());
+    BOilTest_iniSet->setValue("coZPos", ui->ledit_coZPos->text());
+
+    BOilTest_iniSet->setValue("doXPos", ui->ledit_doXPos->text());
+    BOilTest_iniSet->setValue("doYPos", ui->ledit_doYPos->text());
+    BOilTest_iniSet->setValue("doZPos", ui->ledit_doZPos->text());
+    BOilTest_iniSet->endGroup();
     m_bIsOilConfigSet = false;
-
-    AppConfig::coXPos = ui->ledit_coXPos->text().toFloat();
-    AppConfig::coYPos = ui->ledit_coYPos->text().toFloat();
-    AppConfig::coZPos = ui->ledit_coZPos->text().toFloat();
-
-    AppConfig::doXPos = ui->ledit_doXPos->text().toFloat();
-    AppConfig::doYPos = ui->ledit_doYPos->text().toFloat();
-    AppConfig::doZPos = ui->ledit_doZPos->text().toFloat();
-
-    AppConfig::writeConfig();
+//    AppConfig::writeConfig();
 }
 
 void FormCtrl::slot_netConnected()
@@ -116,6 +130,11 @@ void FormCtrl::slot_netNoLink()
 /*
  * ******************************************************油测试模块******************************************************
  */
+void FormCtrl::on_cb_skipDripOil_clicked(bool checked)
+{
+    m_pActionBOilTest->m_bIsSkipDripOil = checked;
+}
+
 void FormCtrl::on_pbtn_cdoPSet_clicked()
 {
     if("确认位置值" == ui->pbtn_cdoPSet->text())
@@ -189,6 +208,7 @@ void FormCtrl::on_pbtn_cdoTest_clicked()
         m_pActionBOilTest->GetOilConifgPos(m_stOilPosTemp);
         //启动油测试线程
         m_pActionBOilTest->m_bNeedStop = false;
+        m_pActionBOilTest->InitOilTest();
         _LOG("{Oil_Auto_Test}: THREAD START =================================");
         m_pActionBOilTest->start();
         ui->pbtn_cdoTest->setText("停止测试");
@@ -1436,4 +1456,7 @@ void FormCtrl::on_pbtn_COstop_clicked()
 
     m_pActionCleanOil->setTaskSend();
 }
+
+
+
 

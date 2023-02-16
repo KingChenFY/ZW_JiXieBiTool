@@ -20,6 +20,9 @@
 #include "actiondripoil.h"
 #include "actionboiltest.h"
 
+#include <QSettings>
+
+
 namespace Ui {
 class FormCtrl;
 }
@@ -71,6 +74,9 @@ private:
 
     QMetaEnum emTaskStatus;
     bool m_bIsOilConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
+
+    //ini写入崩溃测试
+    QSettings *BOilTest_iniSet;
 
 private slots:
     void slot_TransportTestThread_Stop();
@@ -149,6 +155,7 @@ private slots:
     //油测试按钮
     void on_pbtn_cdoTest_clicked();
     void on_pbtn_cdoPSet_clicked();
+    void on_cb_skipDripOil_clicked(bool checked);
 };
 
 #endif // FORMCTRL_H

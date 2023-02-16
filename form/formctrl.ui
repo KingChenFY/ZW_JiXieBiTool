@@ -1014,7 +1014,7 @@
     <enum>QTabWidget::North</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page_transport">
     <property name="sizePolicy">
@@ -2117,7 +2117,17 @@ hr { height: 1px; border-width: 0; }
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_15">
+       <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,4,4">
+        <property name="spacing">
+         <number>20</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="cb_skipDripOil">
+          <property name="text">
+           <string>跳过滴油</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QPushButton" name="pbtn_cdoPSet">
           <property name="sizePolicy">
