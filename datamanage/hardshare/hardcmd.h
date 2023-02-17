@@ -357,6 +357,7 @@ typedef enum
     EnumBoardObject_MotorXYZ            = 6,
     EnumBoardObject_CleanOil            = 7,
     EnumBoardObject_DripOil             = 8,
+    EnumBoardObject_Claw                = 9,
 
     EnumBoardObject_End,
 }emBoardObject;

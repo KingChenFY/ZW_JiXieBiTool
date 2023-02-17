@@ -19,6 +19,7 @@
 #include "actioncleanoil.h"
 #include "actiondripoil.h"
 #include "actionboiltest.h"
+#include "actionclaw.h"
 
 #include <QSettings>
 
@@ -64,10 +65,10 @@ public:
     ActionBTransport *m_pActionBTransport;//运输仓测试流程
     ActionBFollowMove *m_pActionBFollowMove;//跟随测试流程
     ActionParameterSet *m_pActionParameterSet;//参数设置流程
-
     ActionCleanOil *m_pActionCleanOil;//除油流程
     ActionDripOil *m_pActionDripOil;//滴油流程
     ActionBOilTest *m_pActionBOilTest;//油测试流程
+    ActionClaw *m_pActionClaw;//夹爪模块控制
 
 private:
     Ui::FormCtrl *ui;
@@ -97,7 +98,7 @@ private slots:
     void slot_TriggerSet_UiUpdate();
     void slot_CleanOil_UiUpdate();
     void slot_DripOil_UiUpdate();
-
+    void slot_Claw_UiUpdate();
 private slots:
     //皮带入
     void on_rbtn_BIin_clicked();
@@ -156,6 +157,10 @@ private slots:
     void on_pbtn_cdoTest_clicked();
     void on_pbtn_cdoPSet_clicked();
     void on_cb_skipDripOil_clicked(bool checked);
+    //夹爪模块
+    void on_pbtn_CWctrl_clicked();
+    void on_rbtn_CWslideno_clicked(bool checked);
+    void on_rbtn_CWslidein_clicked(bool checked);
 };
 
 #endif // FORMCTRL_H

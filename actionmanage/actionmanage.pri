@@ -4,6 +4,7 @@ HEADERS += \
     $$PWD/actionbfollowmove.h \
     $$PWD/actionboiltest.h \
     $$PWD/actionbtransport.h \
+    $$PWD/actionclaw.h \
     $$PWD/actioncleanoil.h \
     $$PWD/actiondatamanage.h \
     $$PWD/actiondripoil.h \
@@ -24,6 +25,7 @@ SOURCES += \
     $$PWD/actionbfollowmove.cpp \
     $$PWD/actionboiltest.cpp \
     $$PWD/actionbtransport.cpp \
+    $$PWD/actionclaw.cpp \
     $$PWD/actioncleanoil.cpp \
     $$PWD/actiondatamanage.cpp \
     $$PWD/actiondripoil.cpp \

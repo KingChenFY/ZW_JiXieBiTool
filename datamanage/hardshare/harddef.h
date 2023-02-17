@@ -147,6 +147,16 @@ typedef enum
     emTaskDDripOil_End
 }emTaskDDripOilType;
 
+//夹爪模块任务类型
+typedef enum
+{
+    emTaskDGripperType_Start = 0,
+
+    emTaskDGripperType_Control,       // 夹爪控制
+    emTaskDGripperType_SynSlide,      // 同步玻片状态
+    emTaskDGripperType_End
+}emTaskDGripperType;
+
 // 各路传感信号状态枚举
 typedef enum
 {
@@ -221,19 +231,6 @@ typedef enum
     
     emTaskDQRScanner_End
 }emTaskDQRScannerType;
-
-
-
-//夹爪模块任务类型
-typedef enum 
-{
-	emTskDGripperType_Start = 0,
-
-	emTskDGripperType_Control, // 夹爪控制
-	emTskDGripperType_CheckLength,//测量总行程
-	emTskDGripperType_CheckEdge,//确定边界
-	emTskDGripperType_End
-}emTskDGripperType;
 
 //夹爪旋转模块任务类型
 typedef enum 

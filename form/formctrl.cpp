@@ -66,6 +66,7 @@ void FormCtrl::initConfig()
     m_pActionParameterSet = new ActionParameterSet;
     m_pActionCleanOil = new ActionCleanOil;
     m_pActionDripOil = new ActionDripOil;
+    m_pActionClaw = new ActionClaw;
     connect(m_pActionBeltIn, &ActionBeltIn::signal_UiUpdate, this, &FormCtrl::slot_BeltIN_UiUpdate);
     connect(m_pActionBeltOut, &ActionBeltOut::signal_UiUpdate, this, &FormCtrl::slot_BeltOUT_UiUpdate);
     connect(m_pActionPoleIn, &ActionPoleIn::signal_UiUpdate, this, &FormCtrl::slot_PoleIN_UiUpdate);
@@ -76,6 +77,7 @@ void FormCtrl::initConfig()
     connect(m_pActionTriggerSet, &ActionTriggerSet::signal_UiUpdate, this, &FormCtrl::slot_TriggerSet_UiUpdate);
     connect(m_pActionCleanOil, &ActionCleanOil::signal_UiUpdate, this, &FormCtrl::slot_CleanOil_UiUpdate);
     connect(m_pActionDripOil, &ActionDripOil::signal_UiUpdate, this, &FormCtrl::slot_DripOil_UiUpdate);
+    connect(m_pActionClaw, &ActionClaw::signal_UiUpdate, this, &FormCtrl::slot_Claw_UiUpdate);
 
     //运输仓测试
     m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn, m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
@@ -618,6 +620,31 @@ void FormCtrl::slot_DripOil_UiUpdate()
     else
     {
         ui->lab_DOcolor->setStyleSheet("background-color:red");
+    }
+}
+void FormCtrl::slot_Claw_UiUpdate()
+{
+    //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
+    QMetaEnum emClawSelute = QMetaEnum::fromType<ActionClaw::E_SELUTE_CLAW>();
+    ui->lab_CWcolor->setText(QString(emClawSelute.valueToKey(m_pActionClaw->m_stDTaskInfo.m_eTaskSeluteD)));
+    if(emSlide_In == m_pActionClaw->m_stDTaskInfo.m_u8IsSlideIn)
+        ui->lab_CWslide->setText("有");
+    else
+        ui->lab_CWslide->setText("无");
+    ui->lab_CWlen->setText(QString("0-%1").arg(m_pActionClaw->m_stDTaskInfo.m_u16MaxOpenPos));
+    ui->lab_CWpos->setText(QString("%1").arg(m_pActionClaw->m_stDTaskInfo.m_i32CurPosD));
+    if((ActionClaw::NoErr == m_pActionClaw->m_stDTaskInfo.m_eTaskSeluteD) || (ActionClaw::Outtime == m_pActionClaw->m_stDTaskInfo.m_eTaskSeluteD))
+    {
+        if(emWorkStatus_ask == m_pActionClaw->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_CWcolor->setStyleSheet("background-color:orange");
+        else if (emWorkStatus_run == m_pActionClaw->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_CWcolor->setStyleSheet("background-color:green");
+        else
+            ui->lab_CWcolor->setStyleSheet("background-color:transparent");
+    }
+    else
+    {
+        ui->lab_CWcolor->setStyleSheet("background-color:red");
     }
 }
 /*
@@ -1458,5 +1485,85 @@ void FormCtrl::on_pbtn_COstop_clicked()
 }
 
 
+void FormCtrl::on_pbtn_CWctrl_clicked()
+{
+    bool okx = true;
+    uint16_t m_u16ClawPosTemp = 0;
+    uint8_t m_u8NeedBrake = 0;
+    if(!m_pActionClaw->moveEnvironmentCheck())
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("夹爪玻片上电信息未同步"));
+        return;
+    }
+    if(ui->ledit_CWpos->text().isEmpty())
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("夹爪目标位置不能为空"));
+        return;
+    }
+    m_u16ClawPosTemp = ui->ledit_CWpos->text().toUInt(&okx);
+    if(!okx)
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("坐标输入有误"));
+        return;
+    }
+    if(!m_pActionClaw->movePosIsValid(m_u16ClawPosTemp))
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("坐标输入超边界"));
+        return;
+    }
 
+    m_u8NeedBrake = ui->cb_CWbrake->isChecked();
+    //检查是否重复任务
+    if( (emTaskDGripperType_Control == m_pActionClaw->m_stTaskToSend.m_eTaskType) &&
+            (m_u16ClawPosTemp == m_pActionClaw->m_stTaskToSend.m_AimPos) &&
+            (m_u8NeedBrake == m_pActionClaw->m_stTaskToSend.m_u8IsBrake) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionClaw->m_stTaskToSend.m_eTaskType = emTaskDGripperType_Control;
+    m_pActionClaw->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    m_pActionClaw->m_stTaskToSend.m_AimPos = m_u16ClawPosTemp;
+    m_pActionClaw->m_stTaskToSend.m_u8IsBrake = m_u8NeedBrake;
+    _LOG(QString("task is set"));
+
+    m_pActionClaw->setTaskSend();
+}
+
+void FormCtrl::on_rbtn_CWslideno_clicked(bool checked)
+{
+    //检查是否重复任务
+    if( (emTaskDGripperType_SynSlide == m_pActionClaw->m_stTaskToSend.m_eTaskType) &&
+            (emSlide_No == m_pActionClaw->m_stTaskToSend.m_u8IsSlideIn))
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionClaw->m_stTaskToSend.m_eTaskType = emTaskDGripperType_SynSlide;
+    m_pActionClaw->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    m_pActionClaw->m_stTaskToSend.m_u8IsSlideIn = emSlide_No;
+    _LOG(QString("task is set"));
+
+    m_pActionClaw->setTaskSend();
+}
+
+void FormCtrl::on_rbtn_CWslidein_clicked(bool checked)
+{
+    //检查是否重复任务
+    if( (emTaskDGripperType_SynSlide == m_pActionClaw->m_stTaskToSend.m_eTaskType) &&
+            (emSlide_In == m_pActionClaw->m_stTaskToSend.m_u8IsSlideIn))
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionClaw->m_stTaskToSend.m_eTaskType = emTaskDGripperType_SynSlide;
+    m_pActionClaw->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    m_pActionClaw->m_stTaskToSend.m_u8IsSlideIn = emSlide_In;
+    _LOG(QString("task is set"));
+
+    m_pActionClaw->setTaskSend();
+}
 
