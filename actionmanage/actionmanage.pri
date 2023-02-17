@@ -8,6 +8,7 @@ HEADERS += \
     $$PWD/actioncleanoil.h \
     $$PWD/actiondatamanage.h \
     $$PWD/actiondripoil.h \
+    $$PWD/actionfourpostest.h \
     $$PWD/actionmotorv.h \
     $$PWD/actionmotorxyz.h \
     $$PWD/actionparameterset.h \
@@ -29,6 +30,7 @@ SOURCES += \
     $$PWD/actioncleanoil.cpp \
     $$PWD/actiondatamanage.cpp \
     $$PWD/actiondripoil.cpp \
+    $$PWD/actionfourpostest.cpp \
     $$PWD/actionmotorv.cpp \
     $$PWD/actionmotorxyz.cpp \
     $$PWD/actionparameterset.cpp \

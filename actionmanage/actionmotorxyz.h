@@ -121,7 +121,7 @@ public:
 
     enum E_TASKTPYE_MOTORXYZ
     {
-       E_TASKTPYE_MOTORXYZ_start = 0,
+       E_TASKTPYE_start = 0,
        zeroXCheck,       //X轴原点校验1
        setXPosZero,      //设置X轴原点2
        minPosYSet,       //里边界定位3
@@ -143,7 +143,7 @@ public:
     // XYZ平台移动功能D层任务执行结果定义
     enum E_SELUTE_MOTORXYZ
     {
-        E_SELUTE_MOTORXYZ_start,
+        E_SELUTE_start,
         NoErr, // 正常
         Outtime,//动作超时（动作次数）
         DCfgErr,//配置参数错误
