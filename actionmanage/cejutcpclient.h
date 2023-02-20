@@ -41,6 +41,14 @@ typedef enum
     emCeJuOutputFormat_End
 }emCeJuOutputFormat;
 
+typedef struct
+{
+    uint16_t m_u16OnePointReadNum;  //一个点需要采样的数量，最多WK_CeJuRecordNumMax个
+    uint16_t m_u16SampleFreq;       //测量频率
+
+    uint16_t m_u16CurIndex;//记录当前是第几个点
+}ST_CEJU_FP_TEST_SET;
+
 class CeJuTcpClient : public QObject
 {
     Q_OBJECT
@@ -72,14 +80,19 @@ public:
     void slot_clearCejuRecord();
     void slot_setCejuTriggerModeExternal();
     void slot_setCejuTriggerModeInternal();
+    void slot_Ceju_FourPoint_RecordStart(uint16_t num, uint16_t freq);
+    void Ceju_FourPoint_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint16_t& num);
 
     void Ceju_Init();
+    void Ceju_FourPoint_Init();
     void Ceju_RecordStart();
     void Ceju_RecordEnd();
     void Ceju_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint32_t& num);
 
     bool isConnect;
     bool m_bIsCejuInitSucceed;
+    bool m_bIsFourPointCejuInitSucceed;
+    bool m_bIsOnePointRecordComplete;
     bool m_bIsCejuRecordStartSucceed;
     bool m_bIsCejuRecordEndSucceed;
 
@@ -94,6 +107,7 @@ private:
 
     QTimer *m_linkTimer;
     QTimer *m_autoMeasureTimer;
+    ST_CEJU_FP_TEST_SET m_stFPParam;
 
     uint32_t m_uAskNum;// 一次读取数量
 

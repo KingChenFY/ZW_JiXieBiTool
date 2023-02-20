@@ -77,6 +77,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToDripPosX;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToDripPosX]");
+            continue;
         }
         else if(emOilTest_WaitMoveToDripPosX == emActionStep)
         {
@@ -104,6 +105,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToDripPosZ;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToDripPosZ]");
+            continue;
         }
         else if(emOilTest_WaitMoveToDripPosZ == emActionStep)
         {
@@ -131,6 +133,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToDripPosY;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToDripPosY]");
+            continue;
         }
         else if(emOilTest_WaitMoveToDripPosY == emActionStep)
         {
@@ -161,6 +164,7 @@ void ActionBOilTest::run()
             m_objActionDripOil->setTaskSend();
             emActionStep = emOilTest_WaitDripOilEnd;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_StartDripOil]");
+            continue;
         }
         else if(emOilTest_WaitDripOilEnd == emActionStep)
         {
@@ -189,6 +193,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToCleanPosX;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToCleanPosX]");
+            continue;
         }
         else if(emOilTest_WaitMoveToCleanPosX == emActionStep)
         {
@@ -216,6 +221,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToCleanPosZ;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToCleanPosZ]");
+            continue;
         }
         else if(emOilTest_WaitMoveToCleanPosZ == emActionStep)
         {
@@ -243,6 +249,7 @@ void ActionBOilTest::run()
             m_objActionMotorXYZ->setTaskSend();
             emActionStep = emOilTest_WaitMoveToCleanPosY;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_MoveToCleanPosY]");
+            continue;
         }
         else if(emOilTest_WaitMoveToCleanPosY == emActionStep)
         {
@@ -265,6 +272,7 @@ void ActionBOilTest::run()
             m_objActionCleanOil->setTaskSend();
             emActionStep = emOilTest_WaitCleanPutPaper;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_StartCleanPutPaper]");
+            continue;
         }
         else if(emOilTest_WaitCleanPutPaper == emActionStep)
         {
@@ -297,6 +305,7 @@ void ActionBOilTest::run()
             m_objActionCleanOil->setTaskSend();
             emActionStep = emOilTest_WaitCleanFrapPaper;
             _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_StartCleanFrapPaper]");
+            continue;
         }
         else if(emOilTest_WaitCleanFrapPaper == emActionStep)
         {

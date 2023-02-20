@@ -27,9 +27,10 @@ void FormCtrl::initForm()
     //读取配置文件
     AppConfig::ConfigFile = QString("%1/%2.ini").arg(QUIHelper::appPath()).arg(QUIHelper::appName());
     AppConfig::readConfig();
-    BOilTest_iniSet = new QSettings(AppConfig::ConfigFile, QSettings::IniFormat);
+    iniSet = new QSettings(AppConfig::ConfigFile, QSettings::IniFormat);
 
     m_bIsOilConfigSet = false;
+    m_bIsFourPointConfigSet = false;
 
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
@@ -50,6 +51,21 @@ void FormCtrl::initForm()
     connect(ui->ledit_doYPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
     ui->ledit_doZPos->setText(AppConfig::doZPos);
     connect(ui->ledit_doZPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    ui->ledit_stposX->setText(AppConfig::fourStPosX);
+    connect(ui->ledit_stposX, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_stposY->setText(AppConfig::fourStPosY);
+    connect(ui->ledit_stposY, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_towardsposX->setText(AppConfig::fourToPosX);
+    connect(ui->ledit_towardsposX, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_towardsposY->setText(AppConfig::fourToPosY);
+    connect(ui->ledit_towardsposY, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_posHeight->setText(AppConfig::fourPointH);
+    connect(ui->ledit_posHeight, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_onePosTime->setText(AppConfig::fourPointT);
+    connect(ui->ledit_onePosTime, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_changePosTime->setText(AppConfig::fourPointTurnT);
+    connect(ui->ledit_changePosTime, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 }
 
 void FormCtrl::initConfig()
@@ -93,6 +109,12 @@ void FormCtrl::initConfig()
     //跟随测试
     m_pActionBOilTest = new ActionBOilTest(m_pActionMotorXYZ, m_pActionDripOil, m_pActionCleanOil);
     connect(m_pActionBOilTest, &QThread::finished, this, &FormCtrl::slot_OilTestThread_Stop);
+
+    //四点稳定性测试
+    m_pActionFourPosTest = new ActionFourPosTest(m_pActionMotorXYZ, formCeju->cejuClient);
+    connect(m_pActionFourPosTest, &QThread::finished, this, &FormCtrl::slot_FourPosTestThread_Stop);
+    connect(m_pActionFourPosTest, &ActionFourPosTest::signal_FourPoint_CejuInit, formCeju->cejuClient, &CeJuTcpClient::Ceju_FourPoint_Init);
+    connect(m_pActionFourPosTest, &ActionFourPosTest::signal_Ceju_RecordStart, formCeju->cejuClient, &CeJuTcpClient::slot_Ceju_FourPoint_RecordStart);
 }
 
 void FormCtrl::saveConfig()
@@ -105,16 +127,27 @@ void FormCtrl::saveConfig()
 //    AppConfig::doYPos = ui->ledit_doYPos->text();
 //    AppConfig::doZPos = ui->ledit_doZPos->text();
 
-    BOilTest_iniSet->beginGroup("OilConfig");
-    BOilTest_iniSet->setValue("coXPos", ui->ledit_coXPos->text());
-    BOilTest_iniSet->setValue("coYPos", ui->ledit_coYPos->text());
-    BOilTest_iniSet->setValue("coZPos", ui->ledit_coZPos->text());
+    iniSet->beginGroup("OilConfig");
+    iniSet->setValue("coXPos", ui->ledit_coXPos->text());
+    iniSet->setValue("coYPos", ui->ledit_coYPos->text());
+    iniSet->setValue("coZPos", ui->ledit_coZPos->text());
 
-    BOilTest_iniSet->setValue("doXPos", ui->ledit_doXPos->text());
-    BOilTest_iniSet->setValue("doYPos", ui->ledit_doYPos->text());
-    BOilTest_iniSet->setValue("doZPos", ui->ledit_doZPos->text());
-    BOilTest_iniSet->endGroup();
+    iniSet->setValue("doXPos", ui->ledit_doXPos->text());
+    iniSet->setValue("doYPos", ui->ledit_doYPos->text());
+    iniSet->setValue("doZPos", ui->ledit_doZPos->text());
+    iniSet->endGroup();
     m_bIsOilConfigSet = false;
+
+    iniSet->beginGroup("FourPointConfig");
+    iniSet->setValue("fourStPosX", ui->ledit_stposX->text());
+    iniSet->setValue("fourStPosY", ui->ledit_stposY->text());
+    iniSet->setValue("fourToPosX", ui->ledit_towardsposX->text());
+    iniSet->setValue("fourToPosY", ui->ledit_towardsposY->text());
+    iniSet->setValue("fourPointH", ui->ledit_posHeight->text());
+    iniSet->setValue("fourPointT", ui->ledit_onePosTime->text());
+    iniSet->setValue("fourPointTurnT", ui->ledit_changePosTime->text());
+    iniSet->endGroup();
+    m_bIsFourPointConfigSet = false;
 //    AppConfig::writeConfig();
 }
 
@@ -128,6 +161,128 @@ void FormCtrl::slot_netNoLink()
 {
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
+}
+/*
+ * ******************************************************四点测试模块******************************************************
+ */
+void FormCtrl::on_pbtn_fourPConfirm_clicked()
+{
+    if("确认测试参数" == ui->pbtn_fourPConfirm->text())
+    {
+        m_bIsFourPointConfigSet = true;
+    }
+}
+
+
+void FormCtrl::on_pbtn_fourPTest_clicked()
+{
+    if("开始测试" == ui->pbtn_fourPTest->text())
+    {
+        //初始化环境检查
+        if(!m_bIsFourPointConfigSet)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请在确认四点测试参数后，点击确认测试参数"));
+            return;
+        }
+        if(!formCeju->cejuClient->m_bIsCejuInitSucceed)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请等待测距初始化完成"));
+            return;
+        }
+        if(!m_pActionMotorXYZ->isAllLineHasLocated())
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请完成机械臂定位"));
+            return;
+        }
+
+        bool okx = true;
+        bool oky = true;
+        bool okz = true;
+        ST_FOURPOINT_TEST_INFO m_stFpInfoTemp;
+        ST_XYZ_DPOS m_stPosTemp = {WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit};
+        if(!ui->ledit_stposX->text().isEmpty())
+            m_stPosTemp.m_i32X = ui->ledit_stposX->text().toInt(&okx);
+        if(!ui->ledit_stposY->text().isEmpty())
+            m_stPosTemp.m_i32Y = ui->ledit_stposY->text().toInt(&oky);
+        if(!ui->ledit_posHeight->text().isEmpty())
+            m_stPosTemp.m_i32Z = ui->ledit_posHeight->text().toInt(&oky);
+        if(!okx || !oky || !okz)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        if( !m_pActionMotorXYZ->isAimPhyPosOverLimit(m_stPosTemp))
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入超边界"));
+            return;
+        }
+        m_stFpInfoTemp.m_i32StPosX = m_stPosTemp.m_i32X;
+        m_stFpInfoTemp.m_i32StPosY = m_stPosTemp.m_i32Y;
+        m_stFpInfoTemp.m_i32Height = m_stPosTemp.m_i32Z;
+
+        m_stPosTemp = {WK_PhyPosNotLimit, WK_PhyPosNotLimit, WK_PhyPosNotLimit};
+        if(!ui->ledit_towardsposX->text().isEmpty())
+            m_stPosTemp.m_i32X = ui->ledit_towardsposX->text().toInt(&okx);
+        if(!ui->ledit_towardsposY->text().isEmpty())
+            m_stPosTemp.m_i32Y = ui->ledit_towardsposY->text().toInt(&oky);
+        if(!okx || !oky)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        if( !m_pActionMotorXYZ->isAimPhyPosOverLimit(m_stPosTemp))
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入超边界"));
+            return;
+        }
+        m_stFpInfoTemp.m_i32ToPosX = m_stPosTemp.m_i32X;
+        m_stFpInfoTemp.m_i32ToPosY = m_stPosTemp.m_i32Y;
+
+        uint16_t m_u16TimeTemp;
+        if(!ui->ledit_onePosTime->text().isEmpty())
+            m_u16TimeTemp = ui->ledit_onePosTime->text().toUInt(&okx);
+        if(!okx)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        m_stFpInfoTemp.m_u16PointT = m_u16TimeTemp;
+
+        if(!ui->ledit_changePosTime->text().isEmpty())
+            m_u16TimeTemp = ui->ledit_changePosTime->text().toUInt(&oky);
+        if(!oky)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
+            return;
+        }
+        m_stFpInfoTemp.m_u16ReadFreq = m_u16TimeTemp;
+
+        m_pActionFourPosTest->getPointSetInfo(m_stFpInfoTemp);
+        //启动四点测试线程
+        m_pActionFourPosTest->m_bNeedStop = false;
+        m_pActionFourPosTest->InitFourPointTest();
+        _LOG("{Four_Point_Test}: THREAD START =================================");
+        m_pActionFourPosTest->start();
+        ui->pbtn_fourPTest->setText("停止测试");
+    }
+    else if("停止测试" == ui->pbtn_fourPTest->text())
+    {
+        ui->pbtn_fourPTest->setDisabled(true);
+        ui->pbtn_fourPTest->setText("正在停止测试");
+        m_pActionFourPosTest->m_bNeedStop = true;
+        _LOG("{Four_Point_Test}: STOP THREAD =================================");
+    }
+    else
+    {
+        return;
+    }
+}
+void FormCtrl::slot_FourPosTestThread_Stop()
+{
+    on_pbtn_xyzStop_clicked();
+    ui->pbtn_fourPTest->setText("开始测试");
+    ui->pbtn_fourPTest->setEnabled(true);
+    _LOG("{Four_Point_Test}: THREAD FINISH END=================================");
 }
 /*
  * ******************************************************油测试模块******************************************************
@@ -1566,4 +1721,7 @@ void FormCtrl::on_rbtn_CWslidein_clicked(bool checked)
 
     m_pActionClaw->setTaskSend();
 }
+
+
+
 

@@ -12,8 +12,60 @@ CeJuTcpClient::CeJuTcpClient(QObject *parent)
 //      m_u16Port = 8888;
     isConnect = false;
     m_bIsCejuInitSucceed = false;
+    m_bIsFourPointCejuInitSucceed = false;
     m_bIsCejuRecordStartSucceed = false;
     m_bIsCejuRecordEndSucceed = false;
+}
+/***********************************四点测距测试任务***********************************/
+void CeJuTcpClient::Ceju_FourPoint_Init()
+{
+    bool isSucceed;
+    do{
+        isSucceed = setCejuTriggerMode(emCeJuTrigMode_internal);
+    }while(!isSucceed);
+
+    m_bIsFourPointCejuInitSucceed = true;
+}
+void CeJuTcpClient::slot_Ceju_FourPoint_RecordStart(uint16_t num, uint16_t freq)
+{
+    m_stFPParam.m_u16OnePointReadNum = num;
+    m_stFPParam.m_u16SampleFreq = freq;
+    m_stFPParam.m_u16CurIndex = 0;
+    memset(m_uTask1, 0, sizeof(int32_t)*WK_CeJuRecordNumMax);
+    memset(m_uTask2, 0, sizeof(int32_t)*WK_CeJuRecordNumMax);
+    memset(m_uTask3, 0, sizeof(int32_t)*WK_CeJuRecordNumMax);
+    m_bIsOnePointRecordComplete = false;
+    m_autoMeasureTimer->start(m_stFPParam.m_u16SampleFreq*1000);
+}
+void CeJuTcpClient::slot_AutoMeasureTimerOut()
+{
+    if(getCejuCurValue(stCurTaskValue))
+    {
+        emit signal_cejuValueUpdate();
+        //如果采集的数量达到了要求，停止记录
+        if(m_stFPParam.m_u16CurIndex < m_stFPParam.m_u16OnePointReadNum)
+        {
+            m_uTask1[m_stFPParam.m_u16CurIndex] = stCurTaskValue.task1Value;
+            m_uTask2[m_stFPParam.m_u16CurIndex] = stCurTaskValue.task2Value;
+            m_uTask3[m_stFPParam.m_u16CurIndex] = stCurTaskValue.task3Value;
+            m_stFPParam.m_u16CurIndex++;
+        }
+        else
+        {
+            m_bIsOnePointRecordComplete = true;
+        }
+    }
+    else
+    {
+        qDebug()<< QString("{CeJu}: AutoMeasure Fail");
+    }
+}
+void CeJuTcpClient::Ceju_FourPoint_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint16_t& num)
+{
+    num = m_stFPParam.m_u16CurIndex;
+    memcpy(&destArray[emCeJuDataTtype_task1][0], &m_uTask1[0], num*sizeof(int32_t));
+    memcpy(&destArray[emCeJuDataTtype_task2][0], &m_uTask2[0], num*sizeof(int32_t));
+    memcpy(&destArray[emCeJuDataTtype_task3][0], &m_uTask3[0], num*sizeof(int32_t));
 }
 /***********************************测距任务***********************************/
 void CeJuTcpClient::Ceju_Init()
@@ -423,14 +475,6 @@ bool CeJuTcpClient::getCejuLogData(uint32_t &u32StartId, uint32_t &u32AskNum, em
     return false;
 }
 
-
-void CeJuTcpClient::slot_AutoMeasureTimerOut()
-{
-    if(getCejuCurValue(stCurTaskValue))
-        emit signal_cejuValueUpdate();
-    else
-        qDebug()<< QString("{CeJu}: AutoMeasure Fail");
-}
 /***********************************响应测距ui线程的槽***********************************/
 void CeJuTcpClient::slot_getCejuLogInfo()
 {

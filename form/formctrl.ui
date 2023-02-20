@@ -2287,7 +2287,7 @@
        <x>10</x>
        <y>10</y>
        <width>371</width>
-       <height>281</height>
+       <height>293</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_37">
@@ -2300,7 +2300,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>滴油除油测试</string>
+         <string>滴油除油测试（逻辑值）</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_23">
          <property name="leftMargin">
@@ -2515,7 +2515,7 @@
       <item>
        <widget class="QGroupBox" name="gb_fourPointTest">
         <property name="title">
-         <string>四点稳定测试</string>
+         <string>四点稳定测试（物理值）</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_36">
          <property name="leftMargin">
@@ -2557,12 +2557,12 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_22">
                <property name="text">
-                <string>起点：</string>
+                <string>左下起点：</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit">
+              <widget class="QLineEdit" name="ledit_stposX">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2572,7 +2572,7 @@
               </widget>
              </item>
              <item row="1" column="2">
-              <widget class="QLineEdit" name="lineEdit_4">
+              <widget class="QLineEdit" name="ledit_stposY">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2584,12 +2584,12 @@
              <item row="2" column="0">
               <widget class="QLabel" name="label_24">
                <property name="text">
-                <string>对角点：</string>
+                <string>右上点位：</string>
                </property>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="lineEdit_2">
+              <widget class="QLineEdit" name="ledit_towardsposX">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2599,7 +2599,7 @@
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QLineEdit" name="lineEdit_5">
+              <widget class="QLineEdit" name="ledit_towardsposY">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2634,7 +2634,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_12">
+              <widget class="QLineEdit" name="ledit_posHeight">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2651,7 +2651,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_3">
+              <widget class="QLineEdit" name="ledit_onePosTime">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2663,12 +2663,12 @@
              <item row="2" column="0">
               <widget class="QLabel" name="label_37">
                <property name="text">
-                <string>换点间隔：</string>
+                <string>采集频率：</string>
                </property>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="lineEdit_6">
+              <widget class="QLineEdit" name="ledit_changePosTime">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2693,7 +2693,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="pbtn_fourPConfirm">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -2701,12 +2701,12 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>确认点位置</string>
+              <string>确认测试参数</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="pbtn_fourPTest">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>

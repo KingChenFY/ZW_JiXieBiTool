@@ -20,7 +20,7 @@ ActionBFollowMove::ActionBFollowMove(ActionTriggerSet* &objActionTriggerSet, Act
     m_stDealData_Original = NULL;
 
     //默认取应用程序根目录
-    path = qApp->applicationDirPath() + "/ExcelCejuData";
+    path = qApp->applicationDirPath() + "/FollowTest";
     //默认取应用程序可执行文件名称
     QString str = qApp->applicationFilePath();
     QStringList list = str.split("/");

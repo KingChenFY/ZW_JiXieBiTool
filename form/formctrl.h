@@ -20,6 +20,7 @@
 #include "actiondripoil.h"
 #include "actionboiltest.h"
 #include "actionclaw.h"
+#include "actionfourpostest.h"
 
 #include <QSettings>
 
@@ -69,21 +70,24 @@ public:
     ActionDripOil *m_pActionDripOil;//滴油流程
     ActionBOilTest *m_pActionBOilTest;//油测试流程
     ActionClaw *m_pActionClaw;//夹爪模块控制
+    ActionFourPosTest *m_pActionFourPosTest;//四点稳定性测试
 
 private:
     Ui::FormCtrl *ui;
 
     QMetaEnum emTaskStatus;
     bool m_bIsOilConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
+    bool m_bIsFourPointConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
 
     //ini写入崩溃测试
-    QSettings *BOilTest_iniSet;
+    QSettings *iniSet;
 
 private slots:
     void slot_TransportTestThread_Stop();
     void slot_FollowTestThread_Stop();
     void slot_OilTestThread_Stop();
     bool slot_TriggerParameter_Check();
+    void slot_FourPosTestThread_Stop();
 private slots:
     void initForm();
     void initConfig();
@@ -161,6 +165,8 @@ private slots:
     void on_pbtn_CWctrl_clicked();
     void on_rbtn_CWslideno_clicked(bool checked);
     void on_rbtn_CWslidein_clicked(bool checked);
+    void on_pbtn_fourPConfirm_clicked();
+    void on_pbtn_fourPTest_clicked();
 };
 
 #endif // FORMCTRL_H
