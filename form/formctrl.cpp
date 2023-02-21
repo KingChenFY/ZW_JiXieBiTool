@@ -241,6 +241,11 @@ void FormCtrl::on_pbtn_fourPTest_clicked()
         uint16_t m_u16TimeTemp;
         if(!ui->ledit_onePosTime->text().isEmpty())
             m_u16TimeTemp = ui->ledit_onePosTime->text().toUInt(&okx);
+        else
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入单点时长为空"));
+            return;
+        }
         if(!okx)
         {
             QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));
@@ -250,6 +255,11 @@ void FormCtrl::on_pbtn_fourPTest_clicked()
 
         if(!ui->ledit_changePosTime->text().isEmpty())
             m_u16TimeTemp = ui->ledit_changePosTime->text().toUInt(&oky);
+        else
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("输入采集频率为空"));
+            return;
+        }
         if(!oky)
         {
             QMessageBox::warning(this, tr("警告对话框"), tr("输入不合法"));

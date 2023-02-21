@@ -1,7 +1,7 @@
 #include "actionfourpostest.h"
 #include "quihelper.h"
 #include "global.h"
-#include "xlsxdocument.h"
+
 
 #define QDATETIMS qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd-HH-mm-ss"))
 
@@ -12,6 +12,8 @@ ActionFourPosTest::ActionFourPosTest(ActionMotorXYZ* &objActionMotorXYZ,
     m_eCurPoint = emPointPos_One;
     emActionStep = emFPTest_CejuConfigAdjust;
     m_bNeedStop = true;
+
+    m_u16SleepTime = FOURTEST_SLEEP_TIME;
 
     //默认取应用程序根目录
     path = qApp->applicationDirPath() + "/FourPointTest";
@@ -28,6 +30,36 @@ ActionFourPosTest::ActionFourPosTest(ActionMotorXYZ* &objActionMotorXYZ,
    }
 }
 
+void ActionFourPosTest::slot_m_AutoReadTimerOut()
+{
+    ST_CeJuCurValue stCejuPosTemp;
+    ST_XYZ_DPOS stXYZPosTemp;
+    m_objCeJuTcpClient->Ceju_GetOneData(stCejuPosTemp);
+    m_objActionMotorXYZ->getPhyPos(stXYZPosTemp);
+    if(m_u16ReadIndex < m_u16ReadNumPerPoint)
+    {
+        //读取fileName路径的xlsx文件写入
+        QXlsx::Document xlsx(fileName);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_X, stXYZPosTemp.m_i32X);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_Y, stXYZPosTemp.m_i32Y);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_Z, stXYZPosTemp.m_i32Z);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, stCejuPosTemp.task1Value);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, stCejuPosTemp.task2Value);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, stCejuPosTemp.task3Value);
+        xlsx_row++;
+        xlsx.save();
+        m_u16ReadIndex++;
+    }
+    else
+    {
+//        SampleTimer->stop();
+//        delete SampleTimer;
+//        SampleTimer = nullptr;
+        m_bIsReadComplete = true;
+//        this->exit(1);
+    }
+}
+
 void ActionFourPosTest::InitFourPointTest()
 {
     m_eCurPoint = emPointPos_One;
@@ -38,7 +70,7 @@ void ActionFourPosTest::run()
 {
     while(!m_bNeedStop)
     {
-        msleep(500);
+        msleep(m_u16SleepTime);
         if(emFPTest_CejuConfigAdjust == emActionStep)
         {
             m_objCeJuTcpClient->m_bIsFourPointCejuInitSucceed = false;
@@ -173,34 +205,62 @@ void ActionFourPosTest::run()
         }
         else if(emFPTest_CejuRecordStart == emActionStep)
         {
-            m_objCeJuTcpClient->m_bIsOnePointRecordComplete = false;
-            emit signal_Ceju_RecordStart(m_u16ReadNumPerPoint, m_u16ReadFreq);
+            //初始化Excel
+            fileName = QString("%1/%2_Pont%3_%4.xlsx").arg(path).arg(name).arg(m_eCurPoint).arg(QDATETIMS);
+            QXlsx::Document xlsx;
+            xlsx_row = XLSX_ROW_LINE_TITLE;
+            xlsx.write(xlsx_row, XLSX_COL_LINE_X, QString("POS_X"));
+            xlsx.write(xlsx_row, XLSX_COL_LINE_Y, QString("POS_Y"));
+            xlsx.write(xlsx_row, XLSX_COL_LINE_Z, QString("POS_Z"));
+            xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, QString("Task_1"));
+            xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, QString("Task_2"));
+            xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, QString("Task_3"));
+            xlsx.saveAs(fileName);
+            xlsx_row = XLSX_ROW_LINE_DATA;
+
+            m_u16ReadIndex = 0;
+            m_bIsReadComplete = false;
+            //如果1s读一次数据那么测距采样周期就是10ms，m_u16ReadNumPerPoint未使用，随便填10
+            emit signal_Ceju_RecordStart(10, m_u16ReadFreq*10);
+            m_u16SleepTime = m_u16ReadFreq*1000;
+//            m_objCeJuTcpClient->m_bIsOnePointRecordComplete = false;
+//            emit signal_Ceju_RecordStart(m_u16ReadNumPerPoint, m_u16ReadFreq);
             emActionStep = emFPTest_WaitCejuRecordEnd;
             _LOG("{Four_Point_Test}: emActionStep [emFPTest_CejuRecordStart]");
+
             continue;
         }
         else if(emFPTest_WaitCejuRecordEnd == emActionStep)
         {
-            if(m_objCeJuTcpClient->m_bIsOnePointRecordComplete)
+//            SampleTimer = new QTimer();
+//            connect(SampleTimer, &QTimer::timeout, this, &ActionFourPosTest::slot_m_AutoReadTimerOut);
+//            SampleTimer->start(m_u16SleepTime);
+//            uint8_t rr = this->exec();
+//            if(rr)
+
+            slot_m_AutoReadTimerOut();
+            if(m_bIsReadComplete)
             {
-                //在这里取测距数据记录excel
-                fileName = QString("%1/%2_Pont%3_%4.xlsx").arg(path).arg(name).arg(m_eCurPoint).arg(QDATETIMS);
-                //在内存中新建xlsx文件
-                QXlsx::Document xlsx;
-                xlsx_row = XLSX_ROW_LINE_TITLE;
-                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, QString("Task_1"));
-                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, QString("Task_2"));
-                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, QString("Task_3"));
-                xlsx_row = XLSX_ROW_LINE_DATA;
-                m_objCeJuTcpClient->Ceju_FourPoint_GetRecordData(m_i32CejuData, m_u16ActualNum);
-                for(uint16_t i=0; i<m_u16ActualNum; i++)
-                {
-                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, m_i32CejuData[emCeJuDataTtype_task1][i]);
-                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, m_i32CejuData[emCeJuDataTtype_task2][i]);
-                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, m_i32CejuData[emCeJuDataTtype_task3][i]);
-                    xlsx_row++;
-                }
-                xlsx.saveAs(fileName);
+//            if(m_objCeJuTcpClient->m_bIsOnePointRecordComplete)
+//            {
+//                //在这里取测距数据记录excel
+//                fileName = QString("%1/%2_Pont%3_%4.xlsx").arg(path).arg(name).arg(m_eCurPoint).arg(QDATETIMS);
+//                //在内存中新建xlsx文件
+//                QXlsx::Document xlsx;
+//                xlsx_row = XLSX_ROW_LINE_TITLE;
+//                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, QString("Task_1"));
+//                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, QString("Task_2"));
+//                xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, QString("Task_3"));
+//                xlsx_row = XLSX_ROW_LINE_DATA;
+//                m_objCeJuTcpClient->Ceju_FourPoint_GetRecordData(m_i32CejuData, m_u16ActualNum);
+//                for(uint16_t i=0; i<m_u16ActualNum; i++)
+//                {
+//                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK1, m_i32CejuData[emCeJuDataTtype_task1][i]);
+//                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK2, m_i32CejuData[emCeJuDataTtype_task2][i]);
+//                    xlsx.write(xlsx_row, XLSX_COL_LINE_TASK3, m_i32CejuData[emCeJuDataTtype_task3][i]);
+//                    xlsx_row++;
+//                }
+//                xlsx.saveAs(fileName);
 
                 //切换点位置
                 if(emPointPos_One == m_eCurPoint)
@@ -214,6 +274,7 @@ void ActionFourPosTest::run()
                 else
                     break;
                 emActionStep = emFPTest_MoveToTestPointX;
+                m_u16SleepTime = FOURTEST_SLEEP_TIME;
             }
             _LOG("{Four_Point_Test}: emActionStep [emFPTest_WaitCejuRecordEnd]");
             continue;

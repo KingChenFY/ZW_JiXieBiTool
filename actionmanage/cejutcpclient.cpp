@@ -35,8 +35,10 @@ void CeJuTcpClient::slot_Ceju_FourPoint_RecordStart(uint16_t num, uint16_t freq)
     memset(m_uTask2, 0, sizeof(int32_t)*WK_CeJuRecordNumMax);
     memset(m_uTask3, 0, sizeof(int32_t)*WK_CeJuRecordNumMax);
     m_bIsOnePointRecordComplete = false;
-    m_autoMeasureTimer->start(m_stFPParam.m_u16SampleFreq*1000);
+//    m_autoMeasureTimer->start(m_stFPParam.m_u16SampleFreq*1000);
+    m_autoMeasureTimer->start(m_stFPParam.m_u16SampleFreq);
 }
+
 void CeJuTcpClient::slot_AutoMeasureTimerOut()
 {
     if(getCejuCurValue(stCurTaskValue))
@@ -175,6 +177,10 @@ void CeJuTcpClient::Ceju_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK
     memcpy(&destArray[emCeJuDataTtype_task1][0], &m_uTask1[0], m_uRecordNum*sizeof(int32_t));
     memcpy(&destArray[emCeJuDataTtype_task2][0], &m_uTask2[0], m_uRecordNum*sizeof(int32_t));
     memcpy(&destArray[emCeJuDataTtype_task3][0], &m_uTask3[0], m_uRecordNum*sizeof(int32_t));
+}
+void CeJuTcpClient::Ceju_GetOneData(ST_CeJuCurValue &stData)
+{
+    stData = stCurTaskValue;
 }
 
 /***********************************测距指令发送读取解析***********************************/

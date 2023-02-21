@@ -12,13 +12,13 @@ QString AppConfig::doYPos = "200";
 QString AppConfig::doZPos = "100";
 
 
-QString AppConfig::fourStPosX = "1111";  //起点
-QString AppConfig::fourStPosY = "1111";  //起点
-QString AppConfig::fourToPosX = "1111";  //对角点
-QString AppConfig::fourToPosY = "1111";  //对角点
-QString AppConfig::fourPointH = "1111";  //测试高度
-QString AppConfig::fourPointT = "1111";  //单点时长
-QString AppConfig::fourPointTurnT = "1111";  //换点间隔
+QString AppConfig::fourStPosX = "62310";  //起点
+QString AppConfig::fourStPosY = "1665853";  //起点
+QString AppConfig::fourToPosX = "56340";  //对角点
+QString AppConfig::fourToPosY = "713525";  //对角点
+QString AppConfig::fourPointH = "343870";  //测试高度
+QString AppConfig::fourPointT = "10";  //单点时长
+QString AppConfig::fourPointTurnT = "1";  //换点间隔
 
 void AppConfig::readConfig()
 {

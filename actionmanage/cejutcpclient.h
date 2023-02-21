@@ -87,7 +87,9 @@ public:
     void Ceju_FourPoint_Init();
     void Ceju_RecordStart();
     void Ceju_RecordEnd();
-    void Ceju_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint32_t& num);
+    void Ceju_GetRecordData(int32_t destArray[emCeJuDataTtype_End][WK_CeJuRecordNumMax], uint32_t& num);//一次性读取方式
+    void Ceju_GetOneData(ST_CeJuCurValue &stData);//读一次数据立马记录数据
+    void slot_StartAutoMeasure();
 
     bool isConnect;
     bool m_bIsCejuInitSucceed;

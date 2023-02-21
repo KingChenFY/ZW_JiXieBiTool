@@ -201,6 +201,7 @@ public:
     void convertPhyPosToLogicPos(ST_XYZ_DPOS &phyPos, ST_XYZ_CPOS &logicPos);//把物理坐标转换到0.00-1000.00的逻辑坐标_______m_stDTaskInfo
     bool isAimLogicPosOverLimit(ST_XYZ_CPOS &logicPos);
     bool isAimPhyPosOverLimit(ST_XYZ_DPOS &phyPos);
+    void getPhyPos(ST_XYZ_DPOS &phyPos);
 
     static uint32_t u32MaxReadNum_to_reSend;
     ST_MOTORXYZ_SETTASK_INFO m_stTaskToSend;//准备设置的任务信息/之前设置的任务信息

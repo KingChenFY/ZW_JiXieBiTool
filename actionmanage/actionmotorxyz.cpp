@@ -404,3 +404,8 @@ bool ActionMotorXYZ::isAimPhyPosOverLimit(ST_XYZ_DPOS &phyPos)
         return true;
     return false;
 }
+
+void ActionMotorXYZ::getPhyPos(ST_XYZ_DPOS &phyPos)
+{
+    phyPos = m_stDTaskInfo.m_stCurDPos;
+}
