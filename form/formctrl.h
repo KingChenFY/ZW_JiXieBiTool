@@ -77,7 +77,9 @@ private:
 
     QMetaEnum emTaskStatus;
     bool m_bIsOilConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
-    bool m_bIsFourPointConfigSet;     //用户是否确认滴油除油位置，确认后可使能开始测试按钮
+    bool m_bIsFourPointConfigSet;     //四点稳定性参数配置标志
+    bool m_bIsFourPointSavePathSet;
+    QString fp_savePath;
 
     //ini写入崩溃测试
     QSettings *iniSet;
@@ -167,6 +169,7 @@ private slots:
     void on_rbtn_CWslidein_clicked(bool checked);
     void on_pbtn_fourPConfirm_clicked();
     void on_pbtn_fourPTest_clicked();
+    void on_cb_FpSave_clicked(bool checked);
 };
 
 #endif // FORMCTRL_H

@@ -36,10 +36,11 @@ void ActionFourPosTest::slot_m_AutoReadTimerOut()
     ST_XYZ_DPOS stXYZPosTemp;
     m_objCeJuTcpClient->Ceju_GetOneData(stCejuPosTemp);
     m_objActionMotorXYZ->getPhyPos(stXYZPosTemp);
-    if(m_u16ReadIndex < m_u16ReadNumPerPoint)
+    if(m_u16ReadIndex <= m_u16ReadNumPerPoint)
     {
         //读取fileName路径的xlsx文件写入
         QXlsx::Document xlsx(fileName);
+        xlsx.write(xlsx_row, XLSX_COL_LINE_ID, m_u16ReadIndex);
         xlsx.write(xlsx_row, XLSX_COL_LINE_X, stXYZPosTemp.m_i32X);
         xlsx.write(xlsx_row, XLSX_COL_LINE_Y, stXYZPosTemp.m_i32Y);
         xlsx.write(xlsx_row, XLSX_COL_LINE_Z, stXYZPosTemp.m_i32Z);
@@ -64,6 +65,11 @@ void ActionFourPosTest::InitFourPointTest()
 {
     m_eCurPoint = emPointPos_One;
     emActionStep = emFPTest_CejuConfigAdjust;
+}
+
+void ActionFourPosTest::FourPointSavePathSet(QString sPath)
+{
+    path = sPath;
 }
 
 void ActionFourPosTest::run()
@@ -209,6 +215,7 @@ void ActionFourPosTest::run()
             fileName = QString("%1/%2_Pont%3_%4.xlsx").arg(path).arg(name).arg(m_eCurPoint).arg(QDATETIMS);
             QXlsx::Document xlsx;
             xlsx_row = XLSX_ROW_LINE_TITLE;
+            xlsx.write(xlsx_row, XLSX_COL_LINE_ID, QString("Data_ID"));
             xlsx.write(xlsx_row, XLSX_COL_LINE_X, QString("POS_X"));
             xlsx.write(xlsx_row, XLSX_COL_LINE_Y, QString("POS_Y"));
             xlsx.write(xlsx_row, XLSX_COL_LINE_Z, QString("POS_Z"));
@@ -218,7 +225,7 @@ void ActionFourPosTest::run()
             xlsx.saveAs(fileName);
             xlsx_row = XLSX_ROW_LINE_DATA;
 
-            m_u16ReadIndex = 0;
+            m_u16ReadIndex = 1;
             m_bIsReadComplete = false;
             //如果1s读一次数据那么测距采样周期就是10ms，m_u16ReadNumPerPoint未使用，随便填10
             emit signal_Ceju_RecordStart(10, m_u16ReadFreq*10);

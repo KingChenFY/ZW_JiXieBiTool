@@ -31,6 +31,7 @@ void FormCtrl::initForm()
 
     m_bIsOilConfigSet = false;
     m_bIsFourPointConfigSet = false;
+    m_bIsFourPointSavePathSet = false;
 
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
@@ -165,6 +166,27 @@ void FormCtrl::slot_netNoLink()
 /*
  * ******************************************************四点测试模块******************************************************
  */
+void FormCtrl::on_cb_FpSave_clicked(bool checked)
+{
+    if(checked)
+    {
+        fp_savePath = QFileDialog::getExistingDirectory(this, "选择四点测试保存路径");
+        if (!fp_savePath.isEmpty())
+        {
+            m_bIsFourPointSavePathSet = true;
+            m_pActionFourPosTest->FourPointSavePathSet(fp_savePath);
+        }
+        else
+        {
+            m_bIsFourPointSavePathSet = false;
+            ui->cb_FpSave->setCheckState(Qt::Unchecked);
+        }
+    }
+    else
+        m_bIsFourPointSavePathSet = false;
+}
+
+
 void FormCtrl::on_pbtn_fourPConfirm_clicked()
 {
     if("确认测试参数" == ui->pbtn_fourPConfirm->text())
@@ -192,6 +214,11 @@ void FormCtrl::on_pbtn_fourPTest_clicked()
         if(!m_pActionMotorXYZ->isAllLineHasLocated())
         {
             QMessageBox::warning(this, tr("警告对话框"), tr("请完成机械臂定位"));
+            return;
+        }
+        if(!m_bIsFourPointSavePathSet)
+        {
+            QMessageBox::warning(this, tr("警告对话框"), tr("请选择保存路径"));
             return;
         }
 
@@ -1731,7 +1758,3 @@ void FormCtrl::on_rbtn_CWslidein_clicked(bool checked)
 
     m_pActionClaw->setTaskSend();
 }
-
-
-
-

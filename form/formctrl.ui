@@ -49,7 +49,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -2329,6 +2329,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_10">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>X</string>
              </property>
@@ -2349,6 +2354,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_11">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Y</string>
              </property>
@@ -2369,6 +2379,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_12">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Z</string>
              </property>
@@ -2403,6 +2418,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_3">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>X</string>
              </property>
@@ -2423,6 +2443,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_4">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Y</string>
              </property>
@@ -2443,6 +2468,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_7">
+             <property name="font">
+              <font>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Z</string>
              </property>
@@ -2518,6 +2548,9 @@
          <string>四点稳定测试（物理值）</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_36">
+         <property name="spacing">
+          <number>8</number>
+         </property>
          <property name="leftMargin">
           <number>8</number>
          </property>
@@ -2531,11 +2564,19 @@
           <number>8</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_26" stretch="1,1,1">
+          <layout class="QHBoxLayout" name="horizontalLayout_26" stretch="2,1,1">
            <item>
-            <layout class="QGridLayout" name="gridLayout_3">
+            <layout class="QGridLayout" name="gridLayout_3" rowstretch="2,3,3">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
              <item row="0" column="1">
               <widget class="QLabel" name="label_30">
+               <property name="font">
+                <font>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>X</string>
                </property>
@@ -2546,6 +2587,11 @@
              </item>
              <item row="0" column="2">
               <widget class="QLabel" name="label_29">
+               <property name="font">
+                <font>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Y</string>
                </property>
@@ -2611,7 +2657,10 @@
              <item row="0" column="0">
               <widget class="QLabel" name="label_31">
                <property name="text">
-                <string>点位置</string>
+                <string>点位</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -2626,37 +2675,16 @@
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_28">
-               <property name="text">
-                <string>测试高度：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="ledit_posHeight">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item row="1" column="0">
               <widget class="QLabel" name="label_36">
                <property name="text">
                 <string>单点时长：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="ledit_onePosTime">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
                </property>
               </widget>
              </item>
@@ -2677,12 +2705,53 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="ledit_onePosTime">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_28">
+               <property name="text">
+                <string>测试高度：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_38">
+               <property name="text">
+                <string>秒</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_39">
+               <property name="text">
+                <string>秒</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" colspan="2">
+              <widget class="QLineEdit" name="ledit_posHeight">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_27">
+          <layout class="QHBoxLayout" name="horizontalLayout_27" stretch="1,4,4">
            <property name="spacing">
             <number>8</number>
            </property>
@@ -2692,6 +2761,19 @@
            <property name="rightMargin">
             <number>0</number>
            </property>
+           <item>
+            <widget class="QCheckBox" name="cb_FpSave">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>选择路径</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QPushButton" name="pbtn_fourPConfirm">
              <property name="sizePolicy">

@@ -13,12 +13,13 @@
 #define XLSX_ROW_LINE_TITLE   1
 #define XLSX_ROW_LINE_DATA    2
 
-#define XLSX_COL_LINE_X       1
-#define XLSX_COL_LINE_Y       2
-#define XLSX_COL_LINE_Z       3
-#define XLSX_COL_LINE_TASK1   4
-#define XLSX_COL_LINE_TASK2   5
-#define XLSX_COL_LINE_TASK3   6
+#define XLSX_COL_LINE_ID      1
+#define XLSX_COL_LINE_X       2
+#define XLSX_COL_LINE_Y       3
+#define XLSX_COL_LINE_Z       4
+#define XLSX_COL_LINE_TASK1   5
+#define XLSX_COL_LINE_TASK2   6
+#define XLSX_COL_LINE_TASK3   7
 
 #define FOURTEST_SLEEP_TIME     500
 
@@ -68,6 +69,7 @@ public:
     bool m_bNeedStop;
     void getPointSetInfo(ST_FOURPOINT_TEST_INFO &point);
     void InitFourPointTest();
+    void FourPointSavePathSet(QString sPath);
 protected:
     void run();
 private:
