@@ -84,6 +84,8 @@ private:
     //ini写入崩溃测试
     QSettings *iniSet;
 
+    void SfScan_SlideInfo_Show();
+
 private slots:
     void slot_TransportTestThread_Stop();
     void slot_FollowTestThread_Stop();
@@ -170,6 +172,9 @@ private slots:
     void on_pbtn_fourPConfirm_clicked();
     void on_pbtn_fourPTest_clicked();
     void on_cb_FpSave_clicked(bool checked);
+    void on_pbtn_motorOn_clicked();
+    void on_pbtn_motorOff_clicked();
+    void on_pbtn_motorClear_clicked();
 };
 
 #endif // FORMCTRL_H

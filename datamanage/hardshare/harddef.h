@@ -112,10 +112,14 @@ typedef enum
     emTskDXYZType_moveInTime,       //一定时间内移动到指定点9
     emTskDXYZType_moveTogether,     //连轴移动10
     emTskDXYZType_moveTwoPos,       //两点移动(移动到起点，定时移动到终点)11
-    emTskDXYZType_enableAxis,       //使能轴12
-    emTskDXYZType_disableAxis,      //失能轴13
+    emTskDXYZType_enableAxisY,      //使能Y轴12
+    emTskDXYZType_disableAxisY,     //失能Y轴13
     emTskDXYZType_adaptive,         //自适应轴参数14
     emTskDXYZType_zeroXMoveCheck,   //设置不同的移动速度进行移动测试15
+    emTskDXYZType_enableAxisX,      //使能X轴16
+    emTskDXYZType_disableAxisX,     //失能X轴17
+    emTskDXYZType_clearXAlarm,      //清除X轴Alarm18
+    emTskDXYZType_clearYAlarm,      //清除Y轴Alarm19
 
     emTskDXYZType_end
 }emTaskDXYZType;

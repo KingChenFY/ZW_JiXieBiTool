@@ -281,11 +281,18 @@ void ActionBOilTest::run()
             {
                 break;//除油模块任务结论异常
             }
-            if(emWorkStatus_finish == m_objActionCleanOil->m_stTaskD.m_eTaskStatusD)
+            if(emTaskDCleanOilType_Clean == m_objActionCleanOil->m_stTaskD.m_eTaskTypeD)
             {
-                m_u64WaitSleepCount = 0;
-                emActionStep = emOilTest_WaitCleanOilSomeTime;
-                _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitCleanPutPaper]");
+                if(emWorkStatus_finish == m_objActionCleanOil->m_stTaskD.m_eTaskStatusD)
+                {
+                    m_u64WaitSleepCount = 0;
+                    emActionStep = emOilTest_WaitCleanOilSomeTime;
+                    _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitCleanPutPaper]");
+                }
+            }
+            else
+            {
+                emActionStep = emOilTest_StartCleanPutPaper;//等了500ms任务没设置下去，重新设置除油任务
             }
             continue;
         }
@@ -314,11 +321,19 @@ void ActionBOilTest::run()
             {
                 break;//除油模块任务结论异常
             }
-            if(emWorkStatus_finish == m_objActionCleanOil->m_stTaskD.m_eTaskStatusD)
+
+            if(emTaskDCleanOilType_Frap == m_objActionCleanOil->m_stTaskD.m_eTaskTypeD)
             {
-                emCurStage = emOilStage_DripOil;
-                emActionStep = emOilTest_MoveToSafePosY;
-                _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitCleanFrapPaper]");
+                if(emWorkStatus_finish == m_objActionCleanOil->m_stTaskD.m_eTaskStatusD)
+                {
+                    emCurStage = emOilStage_DripOil;
+                    emActionStep = emOilTest_MoveToSafePosY;
+                    _LOG("{Oil_Auto_Test}: emActionStep [emOilTest_WaitCleanFrapPaper]");
+                }
+            }
+            else
+            {
+                emActionStep = emOilTest_StartCleanFrapPaper;//等了500ms任务没设置下去，重新设置收纸任务
             }
             continue;
         }

@@ -67,6 +67,9 @@ void FormCtrl::initForm()
     connect(ui->ledit_onePosTime, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
     ui->ledit_changePosTime->setText(AppConfig::fourPointTurnT);
     connect(ui->ledit_changePosTime, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+
+    //test
+    SfScan_SlideInfo_Show();
 }
 
 void FormCtrl::initConfig()
@@ -734,6 +737,10 @@ void FormCtrl::slot_MotorXYZ_UiUpdate()
 //        ui->lab_taskInfo_status->setStyleSheet("background-color:transparent");
 //        ui->lab_taskInfo_status->setText( QString(emTaskStatus.valueToKey(m_pActionMotorXYZ->m_stDTaskInfo.m_eTaskStatusD)) );
 //    }
+//    ui->lab_ErrCodeX->setText(QString("%1").arg(m_pActionMotorXYZ->m_stDTaskInfo.m_u32XErrCode));
+//    ui->lab_ErrCodeY->setText(QString("%1").arg(m_pActionMotorXYZ->m_stDTaskInfo.m_u32YErrCode));
+    ui->lab_ErrCodeX->setNum((int)m_pActionMotorXYZ->m_stDTaskInfo.m_u32YErrCode);
+    ui->lab_ErrCodeY->setNum((int)m_pActionMotorXYZ->m_stDTaskInfo.m_u32YErrCode);
     ui->lab_taskInfo_selute->setText( QString(emMotorXYZSelute.valueToKey(m_pActionMotorXYZ->m_stDTaskInfo.m_eTaskSeluteD)) );
     //显示边界
     ui->lab_lineXMin->setNum(m_pActionMotorXYZ->m_stDTaskInfo.m_stLinePos.m_i32XLineLeft);
@@ -837,6 +844,101 @@ void FormCtrl::slot_Claw_UiUpdate()
     else
     {
         ui->lab_CWcolor->setStyleSheet("background-color:red");
+    }
+}
+
+void FormCtrl::SfScan_SlideInfo_Show()
+{
+    uint8_t m_u8Edge = SmearCoverFlagTurnOff;
+    int32_t m_i32Pos = 48987;
+
+    QStringList headText;
+    headText << "边沿" << "等待列" << "边沿" << "完成列";
+    QList<int> columnWidth;
+    columnWidth << 50 << 80 << 50 << 80;
+
+    int columnCount = headText.count();
+    ui->tbw_SlideInfo->setColumnCount(columnCount);
+    ui->tbw_SlideInfo->setHorizontalHeaderLabels(headText);
+    ui->tbw_SlideInfo->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tbw_SlideInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tbw_SlideInfo->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tbw_SlideInfo->verticalHeader()->setVisible(true);
+    ui->tbw_SlideInfo->horizontalHeader()->setStretchLastSection(false);
+    ui->tbw_SlideInfo->horizontalHeader()->setHighlightSections(false);
+    ui->tbw_SlideInfo->verticalHeader()->setDefaultSectionSize(20);
+    ui->tbw_SlideInfo->verticalHeader()->setHighlightSections(false);
+    for (int i = 0; i < columnCount; i++) {
+        ui->tbw_SlideInfo->setColumnWidth(i, columnWidth.at(i));
+    }
+
+    ui->tbw_SlideInfo->setRowCount(50);
+
+    for(int j=0; j<2; j++)
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            QTableWidgetItem *edgeWait = new QTableWidgetItem;
+            if(SmearCoverFlagTurnOff == m_u8Edge)
+                edgeWait->setText("上沿");
+            else if(SmearCoverFlagTurnOn == m_u8Edge)
+                edgeWait->setText("下沿");
+            else
+                edgeWait->setText("异常");
+
+            QTableWidgetItem *posWait = new QTableWidgetItem;
+            posWait->setText(QString::number(m_i32Pos));
+
+            edgeWait->setTextAlignment(Qt::AlignCenter);
+            posWait->setTextAlignment(Qt::AlignCenter);
+
+            ui->tbw_SlideInfo->setItem(i, 0+2*j, edgeWait);
+            ui->tbw_SlideInfo->setItem(i, 1+2*j, posWait);
+
+            if (i % 100 == 0) {
+                qApp->processEvents();
+            }
+        }
+    }
+
+    QStringList headCnt;
+    headCnt << "等待厚度" << "完成厚度";
+    QList<int> columnWidthCnt;
+    columnWidthCnt << 80 << 80;
+    columnCount = headCnt.count();
+
+    ui->tbw_SlideCnt->setColumnCount(columnCount);
+    ui->tbw_SlideCnt->setHorizontalHeaderLabels(headCnt);
+    ui->tbw_SlideCnt->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tbw_SlideCnt->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tbw_SlideCnt->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tbw_SlideCnt->verticalHeader()->setVisible(true);
+    ui->tbw_SlideCnt->horizontalHeader()->setStretchLastSection(false);
+    ui->tbw_SlideCnt->horizontalHeader()->setHighlightSections(false);
+    ui->tbw_SlideCnt->verticalHeader()->setDefaultSectionSize(20);
+    ui->tbw_SlideCnt->verticalHeader()->setHighlightSections(false);
+    for (int i = 0; i < columnCount; i++) {
+        ui->tbw_SlideCnt->setColumnWidth(i, columnWidthCnt.at(i));
+    }
+
+    ui->tbw_SlideCnt->setRowCount(50);
+    for (int i = 0; i < 50; i++)
+    {
+        QTableWidgetItem *thickWait = new QTableWidgetItem;
+        thickWait->setText(QString::number(m_i32Pos));
+
+        QTableWidgetItem *thickFinish = new QTableWidgetItem;
+        thickFinish->setText(QString::number(m_i32Pos));
+
+        thickWait->setTextAlignment(Qt::AlignCenter);
+        thickFinish->setTextAlignment(Qt::AlignCenter);
+
+        ui->tbw_SlideCnt->setItem(i, 0, thickWait);
+        ui->tbw_SlideCnt->setItem(i, 1, thickFinish);
+
+        if (i % 100 == 0) {
+            qApp->processEvents();
+        }
     }
 }
 /*
@@ -1758,3 +1860,81 @@ void FormCtrl::on_rbtn_CWslidein_clicked(bool checked)
 
     m_pActionClaw->setTaskSend();
 }
+
+void FormCtrl::on_pbtn_motorOn_clicked()
+{
+    emTaskDXYZType emTaskTemp;
+
+    if(ui->rbtn_selX->isChecked())
+        emTaskTemp = emTskDXYZType_enableAxisX;
+    else if(ui->rbtn_selY->isChecked())
+        emTaskTemp = emTskDXYZType_enableAxisY;
+    else
+        return;
+
+    //上一次任务与这次相同，重复任务
+    if( (emTaskTemp == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTaskTemp;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_motorOff_clicked()
+{
+    emTaskDXYZType emTaskTemp;
+
+    if(ui->rbtn_selX->isChecked())
+        emTaskTemp = emTskDXYZType_disableAxisX;
+    else if(ui->rbtn_selY->isChecked())
+        emTaskTemp = emTskDXYZType_disableAxisY;
+    else
+        return;
+
+    //上一次任务与这次相同，重复任务
+    if( (emTaskTemp == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTaskTemp;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_motorClear_clicked()
+{
+    emTaskDXYZType emTaskTemp;
+
+    if(ui->rbtn_selX->isChecked())
+        emTaskTemp = emTskDXYZType_clearXAlarm;
+    else if(ui->rbtn_selY->isChecked())
+        emTaskTemp = emTskDXYZType_clearYAlarm;
+    else
+        return;
+
+    //上一次任务与这次相同，重复任务
+    if( (emTaskTemp == m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorXYZ->m_stTaskToSend.m_eTaskType = emTaskTemp;
+    m_pActionMotorXYZ->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionMotorXYZ->setTaskSend();
+}
+

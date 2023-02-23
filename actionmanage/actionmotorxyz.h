@@ -121,23 +121,27 @@ public:
 
     enum E_TASKTPYE_MOTORXYZ
     {
-       E_TASKTPYE_start = 0,
-       zeroXCheck,       //X轴原点校验1
-       setXPosZero,      //设置X轴原点2
-       minPosYSet,       //里边界定位3
-       maxPosYSet,       //外边界定位4
-       minPosZSet,       //底边界定位5
-       maxPosZSet,       //顶边界定位6
-       stop,             //停止7
-       move,             //移动到指定点8
-       moveInTime,       //一定时间内移动到指定点9
-       moveTogether,     //连轴移动10
-       moveTwoPos,       //两点移动(移动到起点，定时移动到终点)11
-       enableAxis,       //使能轴12
-       disableAxis,      //失能轴13
-       adaptive,         //自适应轴参数14
-       zeroXMoveCheck,   //设置不同的移动速度进行移动测试15
-       E_TASKTPYE_MOTORXYZ_end
+        E_TASKTPYE_start = 0,
+        zeroXCheck,       //X轴原点校验1
+        setXPosZero,      //设置X轴原点2
+        minPosYSet,       //里边界定位3
+        maxPosYSet,       //外边界定位4
+        minPosZSet,       //底边界定位5
+        maxPosZSet,       //顶边界定位6
+        stop,             //停止7
+        move,             //移动到指定点8
+        moveInTime,       //一定时间内移动到指定点9
+        moveTogether,     //连轴移动10
+        moveTwoPos,       //两点移动(移动到起点，定时移动到终点)11
+        enableAxisY,       //使能轴12
+        disableAxisY,      //失能轴13
+        adaptive,         //自适应轴参数14
+        zeroXMoveCheck,   //设置不同的移动速度进行移动测试15
+        enableAxisX,
+        disableAxisX,
+        clearXAlarm,
+        clearYAlarm,
+        E_TASKTPYE_end
     };
 
     // XYZ平台移动功能D层任务执行结果定义
