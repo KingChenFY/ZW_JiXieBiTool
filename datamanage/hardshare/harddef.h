@@ -151,6 +151,16 @@ typedef enum
     emTaskDDripOil_End
 }emTaskDDripOilType;
 
+// 二维码任务类型
+typedef enum
+{
+    emTaskDQRScanner_Start,
+
+    emTaskDQRScanner_Scan,  //扫描
+
+    emTaskDQRScanner_End
+}emTaskDQRScannerType;
+
 //夹爪模块任务类型
 typedef enum
 {
@@ -160,6 +170,16 @@ typedef enum
     emTaskDGripperType_SynSlide,      // 同步玻片状态
     emTaskDGripperType_End
 }emTaskDGripperType;
+
+//光源任务类型
+typedef enum
+{
+    emTaskDSetLED_Start,
+
+    emTaskDSetLED_Control,      //控制光源
+
+    emTaskDSetLED_End
+}emTaskDSetLEDType;
 
 // 各路传感信号状态枚举
 typedef enum
@@ -226,15 +246,7 @@ typedef enum
 
 /*Board ONE(RT1061) TAST START*/
 
-// 二维码扫码D层任务类型
-typedef enum 
-{
-    emTaskDQRScanner_Start,
-        
-    emTaskDQRScanner_Scan,
-    
-    emTaskDQRScanner_End
-}emTaskDQRScannerType;
+
 
 //夹爪旋转模块任务类型
 typedef enum 
@@ -260,15 +272,7 @@ typedef enum
 /*Board ONE(RT1061) TAST END*/
 /*Board TWO(STM32F407) TAST START*/
 
-//光源任务类型
-typedef enum 
-{
-    emTaskDSetLED_Start,
-        
-    emTaskDSetLED_Control,//控制光源
-    
-    emTaskDSetLED_End
-}emTaskDSetLEDType;
+
 
 //硬件独立小功能控制
 typedef enum

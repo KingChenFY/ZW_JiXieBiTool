@@ -358,6 +358,8 @@ typedef enum
     EnumBoardObject_CleanOil            = 7,
     EnumBoardObject_DripOil             = 8,
     EnumBoardObject_Claw                = 9,
+    EnumBoardObject_QRScan              = 10,
+    EnumBoardObject_Light               = 11,
 
     EnumBoardObject_End,
 }emBoardObject;

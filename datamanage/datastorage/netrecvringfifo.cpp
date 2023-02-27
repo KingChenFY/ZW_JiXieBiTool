@@ -6,6 +6,7 @@
 
 #include "netrecvringfifo.h"
 #include <string>
+#include "quihelperdata.h"
 
 uint32_t NetRecvRingFifo::u32NetRecvBufferLenMask = NET_RECV_BUFFER_LEN - 1;
 
@@ -94,22 +95,15 @@ uint32_t NetRecvRingFifo::findOnePackFromFifo()
 
             if(WK_BOARD_COMMAND_END == common_read_u16(&u8NetRecvBuffer[u32pRead + packLength - 2]))  //校验包尾
             {
-                if(834 == packLength)
+                if(EnumBoardId_getBoxVRecords == u8NetRecvBuffer[u32pRead+7])
                 {
-                    _LOG(QString("findOnePackFromFifo : EnumBoardId_getExitTrigInfo get!!!"));
+                    _LOG(QString("slot_netRecvData : EnumBoardId_getExitTrigInfo get!!!"));
                 }
                 u16CrcRead = common_read_u16(&u8NetRecvBuffer[u32pRead + packLength - WK_BOARD_CMD_END_LENGTH]);
                 u16CrcGet = Mb_CRC16_Generate(&u8NetRecvBuffer[u32pRead+WK_BOARD_COMMAND_HEAD_LENGTH], u16CmdLen);
-                if(834 == packLength)
-                {
-                    _LOG(QString("findOnePackFromFifo : EnumBoardId_getExitTrigInfo get!!!"));
-                }
+//                u16CrcGet = QUIHelperData::getModbus16(&u8NetRecvBuffer[u32pRead+WK_BOARD_COMMAND_HEAD_LENGTH], u16CmdLen);
                 if(u16CrcRead == u16CrcGet)
                 {
-                    if(834 == packLength)
-                    {
-                        _LOG(QString("findOnePackFromFifo : EnumBoardId_getExitTrigInfo get!!!"));
-                    }
                     return packLength;
                 }
             }

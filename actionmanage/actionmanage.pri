@@ -9,11 +9,13 @@ HEADERS += \
     $$PWD/actiondatamanage.h \
     $$PWD/actiondripoil.h \
     $$PWD/actionfourpostest.h \
+    $$PWD/actionlight.h \
     $$PWD/actionmotorv.h \
     $$PWD/actionmotorxyz.h \
     $$PWD/actionparameterset.h \
     $$PWD/actionpolein.h \
     $$PWD/actionpoleout.h \
+    $$PWD/actionqrscan.h \
     $$PWD/actiontriggerset.h \
     $$PWD/actionupender.h \
     $$PWD/cejutcpclient.h \
@@ -31,11 +33,13 @@ SOURCES += \
     $$PWD/actiondatamanage.cpp \
     $$PWD/actiondripoil.cpp \
     $$PWD/actionfourpostest.cpp \
+    $$PWD/actionlight.cpp \
     $$PWD/actionmotorv.cpp \
     $$PWD/actionmotorxyz.cpp \
     $$PWD/actionparameterset.cpp \
     $$PWD/actionpolein.cpp \
     $$PWD/actionpoleout.cpp \
+    $$PWD/actionqrscan.cpp \
     $$PWD/actiontriggerset.cpp \
     $$PWD/actionupender.cpp \
     $$PWD/cejutcpclient.cpp \

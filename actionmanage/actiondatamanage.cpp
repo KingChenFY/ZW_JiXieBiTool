@@ -34,7 +34,7 @@ void ActionDataManage::slot_netRecvData()
 
         emBoardCmdId eCmdId = (emBoardCmdId)packData[WK_BOARD_COMMAND_ID_INDEX];
         emWKCmdType eCmdType;
-        if(EnumBoardId_getExitTrigInfo == eCmdId)
+        if(EnumBoardId_getBoxVRecords == eCmdId)
         {
             _LOG(QString("slot_netRecvData : EnumBoardId_getExitTrigInfo get!!!"));
         }

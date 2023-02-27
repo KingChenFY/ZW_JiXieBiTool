@@ -514,6 +514,8 @@ void CeJuTcpClient::slot_setCejuTriggerModeExternal()
 {
     bool isSucceed;
     isSucceed = setCejuTriggerMode(emCeJuTrigMode_external);
+    if(isSucceed)
+        m_autoMeasureTimer->stop();
     emit signal_setCejuTriggerModeExternal_UiUpdate(isSucceed);
 }
 
@@ -521,6 +523,8 @@ void CeJuTcpClient::slot_setCejuTriggerModeInternal()
 {
     bool isSucceed;
     isSucceed = setCejuTriggerMode(emCeJuTrigMode_internal);
+    if(isSucceed)
+        m_autoMeasureTimer->start(CEJU_READ_FREQ);
     emit signal_setCejuTriggerModeInternal_UiUpdate(isSucceed);
 }
 /***********************************测距网络底层驱动***********************************/

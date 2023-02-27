@@ -167,10 +167,16 @@ typedef enum
 // 光源D层任务执行结果定义
 typedef enum
 {
-	emSeluteDBright_start,
-	emSeluteDBright_NoErr,//正常
-	emSeluteDBright_NoLink,//无法确认光源设备
-	emSeluteDBright_end
+    emSeluteDSetLED_start,
+    emSeluteDSetLED_NoErr,		//正常
+    emSeluteDSetLED_Outtime,	//超时(动作次数)
+
+    emSeluteDSetLED_DCfgErr,	//D层配置信息无效
+    emSeluteDSetLED_C2DDataErr,	//C->D传入参数错误
+    emSeluteDSetLED_NoLink,		//无法确认光源设备
+    emSeluteDSetLED_HardwareErr,//光源芯片异常
+
+    emSeluteDSetLED_end
 }emSeluteDBright;
 
 // XYZ平台移动功能D层任务执行结果定义

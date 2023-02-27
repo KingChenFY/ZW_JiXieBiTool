@@ -20,7 +20,7 @@ uint32_t common_read_u32 (uint8_t *puData);
 void common_write_u16 (uint8_t *puData, uint16_t uNum );
 uint16_t common_read_u16 (uint8_t *puData);
 
-uint16_t Mb_CRC16_Generate(uint8_t *puckMsg, uint8_t usDataLen);
+uint16_t Mb_CRC16_Generate(uint8_t *puckMsg, uint16_t usDataLen);
 
 /************** 打印 **************/
 //_LOG(QString("parse setTask cmd return"));

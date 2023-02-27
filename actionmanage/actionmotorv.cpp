@@ -1,4 +1,4 @@
-#include "actionmotorv.h"
+ #include "actionmotorv.h"
 #include "global.h"
 #include "head.h"
 
@@ -143,6 +143,7 @@ void ActionMotorV::getTaskSend()
     GetTaskLinkList::GetInstance().app_insertTail(m_stTaskToSend.m_uTaskId, EnumBoardObject_MotorV, getCmdData, cmdDataLen);
 }
 
+
 /*
  * settask 任务发送后，未收到settask回复的重发处理函数（用定时器实现）
  */
@@ -172,9 +173,25 @@ bool ActionMotorV::setTaskCmdReSend(uint32_t sdNum)
     return false;
 }
 
-bool ActionMotorV::getBoxLieDownPos(int32_t &pos)
+bool ActionMotorV::isBoxVLineGet()
 {
     if((WK_PhyPosNotLimit == m_iLineUp) || (WK_PhyPosNotLimit == m_iLineDown))
+        return false;
+    else
+        return true;
+}
+
+bool ActionMotorV::isTargetPosInLine(int32_t &pos)
+{
+    if((pos >= m_iLineUp) && (pos<= m_iLineDown))
+        return true;
+    else
+        return false;
+}
+
+bool ActionMotorV::getBoxLieDownPos(int32_t &pos)
+{
+    if(!isBoxVLineGet())
         return false;
 
     if((MOTOR_V_BOXOUT_LOGICPOS > LOGIC_LINE) || (MOTOR_V_BOXOUT_LOGICPOS < LOGIC_ZERO))

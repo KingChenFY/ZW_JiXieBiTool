@@ -38,6 +38,12 @@ void FormCtrl::initForm()
     ui->ledit_moveX->setEnabled(false);
     ui->ledit_moveY->setEnabled(false);
     ui->ledit_moveZ->setEnabled(false);
+    ui->cb_LT1->setCheckState(Qt::Unchecked);
+    ui->hsd_LT1->setDisabled(true);
+    ui->cb_LT2->setCheckState(Qt::Unchecked);
+    ui->hsd_LT2->setDisabled(true);
+    ui->spb_LT1->setDisabled(true);
+    ui->spb_LT2->setDisabled(true);
 
     ui->ledit_coXPos->setText(AppConfig::coXPos);
     connect(ui->ledit_coXPos, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
@@ -68,8 +74,12 @@ void FormCtrl::initForm()
     ui->ledit_changePosTime->setText(AppConfig::fourPointTurnT);
     connect(ui->ledit_changePosTime, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
-    //test
-    SfScan_SlideInfo_Show();
+    ui->ledit_MVout->setText(AppConfig::MVOutPos);
+    connect(ui->ledit_MVout, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_MVstart->setText(AppConfig::MVScanStartPos);
+    connect(ui->ledit_MVstart, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    ui->ledit_MVend->setText(AppConfig::MVScanEndPos);
+    connect(ui->ledit_MVend, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 }
 
 void FormCtrl::initConfig()
@@ -87,6 +97,8 @@ void FormCtrl::initConfig()
     m_pActionCleanOil = new ActionCleanOil;
     m_pActionDripOil = new ActionDripOil;
     m_pActionClaw = new ActionClaw;
+    m_pActionQRScan = new ActionQRScan;
+    m_pActionLight = new ActionLight;
     connect(m_pActionBeltIn, &ActionBeltIn::signal_UiUpdate, this, &FormCtrl::slot_BeltIN_UiUpdate);
     connect(m_pActionBeltOut, &ActionBeltOut::signal_UiUpdate, this, &FormCtrl::slot_BeltOUT_UiUpdate);
     connect(m_pActionPoleIn, &ActionPoleIn::signal_UiUpdate, this, &FormCtrl::slot_PoleIN_UiUpdate);
@@ -98,6 +110,19 @@ void FormCtrl::initConfig()
     connect(m_pActionCleanOil, &ActionCleanOil::signal_UiUpdate, this, &FormCtrl::slot_CleanOil_UiUpdate);
     connect(m_pActionDripOil, &ActionDripOil::signal_UiUpdate, this, &FormCtrl::slot_DripOil_UiUpdate);
     connect(m_pActionClaw, &ActionClaw::signal_UiUpdate, this, &FormCtrl::slot_Claw_UiUpdate);
+    connect(m_pActionParameterSet, &ActionParameterSet::signal_SlideInfoUiUpdate, this, &FormCtrl::slot_SlideInfo_UiUpdate);
+    connect(m_pActionParameterSet, &ActionParameterSet::signal_MVLaserUiUpdate, this, &FormCtrl::slot_MVLaser_UiUpdate);
+    connect(m_pActionQRScan, &ActionQRScan::signal_UiUpdate, this, &FormCtrl::slot_QRScan_UiUpdate);
+    connect(m_pActionLight, &ActionLight::signal_UiUpdate, this, &FormCtrl::slot_Light_UiUpdate);
+
+    connect(ui->hsd_LT1, SIGNAL(sliderReleased()), this, SLOT(on_pbtn_LTOpen_clicked()));
+    connect(ui->hsd_LT2, SIGNAL(sliderReleased()), this, SLOT(on_pbtn_LTOpen_clicked()));
+//    connect(ui->hsd_LT2, SIGNAL(valueChanged(int)), this, SLOT(on_pbtn_LTOpen_clicked()));//拖动不准
+    connect(ui->cb_LT1, SIGNAL(stateChanged(int)), this, SLOT(slot_cbLT1_StateChanged(int)));
+    connect(ui->cb_LT2, SIGNAL(stateChanged(int)), this, SLOT(slot_cbLT2_StateChanged(int)));
+
+    connect(ui->spb_LT1, SIGNAL(editingFinished()), this, SLOT(slot_spbLT1_editFinished()));
+    connect(ui->spb_LT2, SIGNAL(editingFinished()), this, SLOT(slot_spbLT2_editFinished()));
 
     //运输仓测试
     m_pActionBTransport = new ActionBTransport(m_pActionBeltIn, m_pActionBeltOut, m_pActionPoleIn, m_pActionPoleOut, m_pActionUpender, m_pActionMotorV);
@@ -152,6 +177,12 @@ void FormCtrl::saveConfig()
     iniSet->setValue("fourPointTurnT", ui->ledit_changePosTime->text());
     iniSet->endGroup();
     m_bIsFourPointConfigSet = false;
+
+    iniSet->beginGroup("MotorVConfig");
+    iniSet->setValue("MVOutPos", ui->ledit_MVout->text());
+    iniSet->setValue("MVScanStartPos", ui->ledit_MVstart->text());
+    iniSet->setValue("MVScanEndPos", ui->ledit_MVend->text());
+    iniSet->endGroup();
 //    AppConfig::writeConfig();
 }
 
@@ -165,6 +196,43 @@ void FormCtrl::slot_netNoLink()
 {
     ui->tabW_main->setDisabled(true);
     ui->gb_xyzMotor->setDisabled(true);
+}
+
+void FormCtrl::slot_cbLT1_StateChanged(int state)
+{
+    if(Qt::Unchecked == state)
+    {
+        ui->hsd_LT1->setDisabled(true);
+        ui->spb_LT1->setDisabled(true);
+    }
+    else
+    {
+        ui->hsd_LT1->setEnabled(true);
+        ui->spb_LT1->setEnabled(true);
+    }
+}
+
+void FormCtrl::slot_cbLT2_StateChanged(int state)
+{
+    if(Qt::Unchecked == state)
+    {
+        ui->hsd_LT2->setDisabled(true);
+        ui->spb_LT2->setDisabled(true);
+    }
+    else
+    {
+        ui->hsd_LT2->setEnabled(true);
+        ui->spb_LT2->setEnabled(true);
+    }
+}
+
+void FormCtrl::slot_spbLT1_editFinished()
+{
+    ui->hsd_LT1->setValue(ui->spb_LT1->value());
+}
+void FormCtrl::slot_spbLT2_editFinished()
+{
+    ui->hsd_LT2->setValue(ui->spb_LT2->value());
 }
 /*
  * ******************************************************四点测试模块******************************************************
@@ -847,7 +915,65 @@ void FormCtrl::slot_Claw_UiUpdate()
     }
 }
 
-void FormCtrl::SfScan_SlideInfo_Show()
+void FormCtrl::slot_QRScan_UiUpdate()
+{
+    uint8_t u8ScanDataTemp[COM_FIFO_DATA_LENGHT_QRSCAN];
+    static emWorkStatus lastStatus = m_pActionQRScan->m_stDTaskInfo.m_eTaskStatusD;
+    //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
+    QMetaEnum emQRScanSelute = QMetaEnum::fromType<ActionQRScan::E_SELUTE_QRSCAN>();
+    ui->lab_QRcolor->setText(QString(emQRScanSelute.valueToKey(m_pActionQRScan->m_stDTaskInfo.m_eTaskSeluteD)));
+    if((ActionQRScan::NoErr == m_pActionQRScan->m_stDTaskInfo.m_eTaskSeluteD) || (ActionQRScan::Outtime == m_pActionQRScan->m_stDTaskInfo.m_eTaskSeluteD))
+    {
+        if(emWorkStatus_ask == m_pActionQRScan->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_QRcolor->setStyleSheet("background-color:orange");
+        else if (emWorkStatus_run == m_pActionQRScan->m_stDTaskInfo.m_eTaskStatusD)
+            ui->lab_QRcolor->setStyleSheet("background-color:green");
+        else
+        {
+            if(emWorkStatus_run == lastStatus)
+            {
+                m_pActionQRScan->getQRScanContent(u8ScanDataTemp);
+                ui->txt_QRdata->setText(QString::fromLocal8Bit((const char *)u8ScanDataTemp, COM_FIFO_DATA_LENGHT_QRSCAN));
+            }
+            ui->lab_QRcolor->setStyleSheet("background-color:transparent");
+        }
+    }
+    else
+    {
+        ui->lab_QRcolor->setStyleSheet("background-color:red");
+    }
+    lastStatus = m_pActionQRScan->m_stDTaskInfo.m_eTaskStatusD;
+}
+
+void FormCtrl::slot_Light_UiUpdate()
+{
+    //刷新页面数据 m_eTaskStatusD 和 m_eTaskSeluteD
+    QMetaEnum emLightSelute = QMetaEnum::fromType<ActionLight::E_SELUTE_LIGHT>();
+    ui->lab_LTcolor->setText(QString(emLightSelute.valueToKey(m_pActionLight->m_stTaskD.m_eTaskSeluteD)));
+    ui->lab_LTlight->setText(QString("%1,%2").arg(m_pActionLight->m_stTaskD.m_u16Level1).arg(m_pActionLight->m_stTaskD.m_u16Level2));
+    if((ActionLight::NoErr == m_pActionLight->m_stTaskD.m_eTaskSeluteD) || (ActionLight::Outtime == m_pActionLight->m_stTaskD.m_eTaskSeluteD))
+    {
+        if(emWorkStatus_ask == m_pActionLight->m_stTaskD.m_eTaskStatusD)
+            ui->lab_LTcolor->setStyleSheet("background-color:orange");
+        else if (emWorkStatus_run == m_pActionLight->m_stTaskD.m_eTaskStatusD)
+            ui->lab_LTcolor->setStyleSheet("background-color:green");
+        else
+            ui->lab_LTcolor->setStyleSheet("background-color:transparent");
+    }
+    else
+    {
+        ui->lab_LTcolor->setStyleSheet("background-color:red");
+    }
+}
+
+void FormCtrl::slot_SlideInfo_UiUpdate()
+{
+    ST_MOTORV_SLIDEINFO_D m_stSlideInfoTemp;
+    m_pActionParameterSet->getMotorVSlideData(m_stSlideInfoTemp);
+    SfScan_SlideInfo_Show(m_stSlideInfoTemp);
+}
+
+void FormCtrl::SfScan_SlideInfo_Show(ST_MOTORV_SLIDEINFO_D &stData)
 {
     uint8_t m_u8Edge = SmearCoverFlagTurnOff;
     int32_t m_i32Pos = 48987;
@@ -872,33 +998,98 @@ void FormCtrl::SfScan_SlideInfo_Show()
         ui->tbw_SlideInfo->setColumnWidth(i, columnWidth.at(i));
     }
 
-    ui->tbw_SlideInfo->setRowCount(50);
-
-    for(int j=0; j<2; j++)
+    uint8_t waitNum = 0;//等待列沿的数量
+    uint8_t FinishNum = 0;//完成列沿的数量
+    uint8_t RowCount = 0;//取完成和等待中大的那个作为表格总行数
+    uint8_t SlideNum = 0;
+    for (int i=stData.u8BgnIdx; i<stData.u8GetNum; i++)
     {
-        for (int i = 0; i < 50; i++)
+        if(SmearBoxColIdWait == stData.stSlidePos[i].m_u8insex)
+            waitNum++;
+        else if(SmearBoxColIdFinish == stData.stSlidePos[i].m_u8insex)
+            FinishNum++;
+        else
+            return;
+    }
+    RowCount = (waitNum >= FinishNum)?waitNum:FinishNum;
+    ui->tbw_SlideInfo->setRowCount(RowCount);
+
+    uint8_t row_finish = 0;
+    uint8_t row_wait = 0;
+    ST_MOTORV_SLIDE_CAC stSlideCac[2][100];
+    int32_t i32thick[2][50];
+
+    for (int i=stData.u8BgnIdx; i<stData.u8GetNum; i++)
+    {
+        QTableWidgetItem *edgeWait = new QTableWidgetItem;
+        if(SmearCoverFlagTurnOff == stData.stSlidePos[i].m_u8ztoo)
+            edgeWait->setText("下沿");
+        else if(SmearCoverFlagTurnOn == stData.stSlidePos[i].m_u8ztoo)
+            edgeWait->setText("上沿");
+        else
+            edgeWait->setText("异常");
+
+        QTableWidgetItem *posWait = new QTableWidgetItem;
+        posWait->setText(QString::number(stData.stSlidePos[i].m_i32pos));
+
+        edgeWait->setTextAlignment(Qt::AlignCenter);
+        posWait->setTextAlignment(Qt::AlignCenter);
+
+        if(SmearBoxColIdWait == stData.stSlidePos[i].m_u8insex)
         {
-            QTableWidgetItem *edgeWait = new QTableWidgetItem;
-            if(SmearCoverFlagTurnOff == m_u8Edge)
-                edgeWait->setText("上沿");
-            else if(SmearCoverFlagTurnOn == m_u8Edge)
-                edgeWait->setText("下沿");
+            stSlideCac[0][row_wait].m_i32pos = stData.stSlidePos[i].m_i32pos;
+            stSlideCac[0][row_wait].m_u8ztoo = stData.stSlidePos[i].m_u8ztoo;
+            ui->tbw_SlideInfo->setItem(row_wait, 0, edgeWait);
+            ui->tbw_SlideInfo->setItem(row_wait, 1, posWait);
+            row_wait++;
+        }
+        else
+        {
+            stSlideCac[1][row_finish].m_i32pos = stData.stSlidePos[i].m_i32pos;
+            stSlideCac[1][row_finish].m_u8ztoo = stData.stSlidePos[i].m_u8ztoo;
+            ui->tbw_SlideInfo->setItem(row_finish, 2, edgeWait);
+            ui->tbw_SlideInfo->setItem(row_finish, 3, posWait);
+            row_finish++;
+        }
+
+
+        if (i % 100 == 0) {
+            qApp->processEvents();
+        }
+    }
+
+
+    //算厚度
+    uint8_t waitThick_num =0;
+    uint8_t FinishThick_num =0;
+    for(uint8_t j=0; j<2; j++)
+    {//j表示当前操作列是等待列还是完成列， 0是wait，1是finish
+        uint8_t maxNum = (0==j)?waitNum:FinishNum;
+        uint8_t isGetUp = 0;//是否得到过上沿
+        uint8_t thick_up = 0;//上一个上沿在数组中的下标
+        uint8_t thick_j = 0;//厚度数组下标
+        for(uint8_t i=0; i<maxNum; i++)
+        {
+            if(SmearCoverFlagTurnOn == stSlideCac[j][i].m_u8ztoo)
+            {
+                isGetUp = 1;
+                thick_up = i;
+            }
             else
-                edgeWait->setText("异常");
-
-            QTableWidgetItem *posWait = new QTableWidgetItem;
-            posWait->setText(QString::number(m_i32Pos));
-
-            edgeWait->setTextAlignment(Qt::AlignCenter);
-            posWait->setTextAlignment(Qt::AlignCenter);
-
-            ui->tbw_SlideInfo->setItem(i, 0+2*j, edgeWait);
-            ui->tbw_SlideInfo->setItem(i, 1+2*j, posWait);
-
-            if (i % 100 == 0) {
-                qApp->processEvents();
+            {
+                if(1  == isGetUp)
+                {
+                    //坐标值从上到下逐渐变大，所以电机从下往上扫描过程中，对应玻片盒子内的玻片边沿从上往下坐标值依次减小，即下沿<上沿
+                    i32thick[j][thick_j] = abs(stSlideCac[j][i].m_i32pos - stSlideCac[j][thick_up].m_i32pos);//下沿减去上沿
+                    isGetUp = 0;
+                    thick_j++;
+                }
             }
         }
+        if(0 == j)
+            waitThick_num = thick_j;
+        else
+            FinishThick_num = thick_j;
     }
 
     QStringList headCnt;
@@ -921,24 +1112,32 @@ void FormCtrl::SfScan_SlideInfo_Show()
         ui->tbw_SlideCnt->setColumnWidth(i, columnWidthCnt.at(i));
     }
 
-    ui->tbw_SlideCnt->setRowCount(50);
-    for (int i = 0; i < 50; i++)
+    SlideNum = RowCount>>1;
+    ui->tbw_SlideCnt->setRowCount(SlideNum);
+    for(uint8_t j=0; j<2; j++)
     {
-        QTableWidgetItem *thickWait = new QTableWidgetItem;
-        thickWait->setText(QString::number(m_i32Pos));
-
-        QTableWidgetItem *thickFinish = new QTableWidgetItem;
-        thickFinish->setText(QString::number(m_i32Pos));
-
-        thickWait->setTextAlignment(Qt::AlignCenter);
-        thickFinish->setTextAlignment(Qt::AlignCenter);
-
-        ui->tbw_SlideCnt->setItem(i, 0, thickWait);
-        ui->tbw_SlideCnt->setItem(i, 1, thickFinish);
-
-        if (i % 100 == 0) {
-            qApp->processEvents();
+        uint8_t maxNum = (0==j)?waitThick_num:FinishThick_num;
+        for (int i = 0; i < maxNum; i++)
+        {
+            QTableWidgetItem *thick = new QTableWidgetItem;
+            thick->setText(QString::number(i32thick[j][i]));
+            thick->setTextAlignment(Qt::AlignCenter);
+            ui->tbw_SlideCnt->setItem(i, j, thick);
+            if (i % 100 == 0) {
+                qApp->processEvents();
+            }
         }
+    }
+}
+
+void FormCtrl::slot_MVLaser_UiUpdate(uint8_t isSucceed)
+{
+    if(isSucceed)
+    {
+        if("打开激光" == ui->pbtn_MVLaser->text())
+            ui->pbtn_MVLaser->setText("关闭激光");
+        else
+            ui->pbtn_MVLaser->setText("打开激光");
     }
 }
 /*
@@ -1273,12 +1472,47 @@ void FormCtrl::on_rbtn_MVzero_clicked()
 
     m_pActionMotorV->setTaskSend();
 }
-void FormCtrl::on_rbtn_MVscan_clicked()
+void FormCtrl::on_rbtn_MVout_clicked()
 {
-
+    //检查是否获得坐标
+    if( !m_pActionMotorV->isBoxVLineGet() )
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("请先完成垂直轴定位"));
+        return;
+    }
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDMoveBoxVType_move == m_pActionMotorV->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    bool ok;
+    m_pActionMotorV->m_stTaskToSend.m_eTaskType = emTaskDMoveBoxVType_move;
+    m_pActionMotorV->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    m_pActionMotorV->m_stTaskToSend.m_fScanBgn = 0;
+    m_pActionMotorV->m_stTaskToSend.m_fScanEnd = 0;
+    if(ui->ledit_MVout->text().isEmpty())
+    {
+         if(!m_pActionMotorV->getBoxLieDownPos(m_pActionMotorV->m_stTaskToSend.m_fTargetPos))
+             return;
+    }
+    else
+    {
+        m_pActionMotorV->m_stTaskToSend.m_fTargetPos = ui->ledit_MVout->text().toInt(&ok);
+    }
+    _LOG(QString("task is set"));
+    m_pActionMotorV->setTaskSend();
 }
+
 void FormCtrl::on_rbtn_MVmove_clicked()
 {
+    //检查是否获得坐标
+    if( !m_pActionMotorV->isBoxVLineGet() )
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("请先完成垂直轴定位"));
+        return;
+    }
     //上一次任务与这次相同，重复任务
     if( (emTaskDMoveBoxVType_move == m_pActionMotorV->m_stTaskToSend.m_eTaskType) )
     {
@@ -1326,6 +1560,42 @@ void FormCtrl::on_pbtn_MVstop_clicked()
     m_pActionMotorV->setTaskSend();
 }
 
+void FormCtrl::on_pbtn_MVscan_clicked()
+{
+    //检查是否获得坐标
+    if( !m_pActionMotorV->isBoxVLineGet() )
+    {
+        QMessageBox::warning(this, tr("警告对话框"), tr("请先完成垂直轴定位"));
+        return;
+    }
+    //上一次任务与这次相同，重复任务
+    if( (emTaskDMoveBoxVType_slideScan == m_pActionMotorV->m_stTaskToSend.m_eTaskType) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionMotorV->m_stTaskToSend.m_eTaskType = emTaskDMoveBoxVType_slideScan;
+    m_pActionMotorV->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    m_pActionMotorV->m_stTaskToSend.m_fScanBgn = ui->ledit_MVstart->text().toInt();
+    m_pActionMotorV->m_stTaskToSend.m_fScanEnd = ui->ledit_MVend->text().toInt();
+    m_pActionMotorV->m_stTaskToSend.m_fTargetPos = 0;
+    _LOG(QString("task is set"));
+
+    m_pActionMotorV->setTaskSend();
+}
+
+void FormCtrl::on_pbtn_MVrefresh_clicked()
+{
+    //非重复任务
+    m_pActionParameterSet->m_stMotorVGetSlideInfoSet.u8AskNum = DEFAULT_SLIDE_MAX_SUM;
+    m_pActionParameterSet->m_stMotorVGetSlideInfoSet.u8BgnIdx = 0;
+//    m_pActionMotorV->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionParameterSet->getMotorVScanInfo();
+
+}
 /*
  * ******************************************************XYZ模块******************************************************
  */
@@ -1912,7 +2182,6 @@ void FormCtrl::on_pbtn_motorOff_clicked()
     m_pActionMotorXYZ->setTaskSend();
 }
 
-
 void FormCtrl::on_pbtn_motorClear_clicked()
 {
     emTaskDXYZType emTaskTemp;
@@ -1936,5 +2205,95 @@ void FormCtrl::on_pbtn_motorClear_clicked()
     _LOG(QString("task is set"));
 
     m_pActionMotorXYZ->setTaskSend();
+}
+
+void FormCtrl::on_pbtn_QRscan_clicked()
+{
+    //上一次任务与这次相同，重复任务
+//    if( (emTaskDQRScanner_Scan == m_pActionQRScan->m_stTaskToSend.m_eTaskType) )
+//    {
+//        _LOG(QString("same task"));
+//        return;
+//    }
+    //非重复任务
+    m_pActionQRScan->m_stTaskToSend.m_eTaskType = emTaskDQRScanner_Scan;
+    m_pActionQRScan->m_stTaskToSend.m_uTaskId = QUIHelper::getRandValue(0, 255, true, true);
+    _LOG(QString("task is set"));
+
+    m_pActionQRScan->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_LTOpen_clicked()
+{
+    ST_LIGHT_SETTASK_INFO stTemp;
+    stTemp.m_eTaskType = emTaskDSetLED_Control;
+    stTemp.m_uIsTri1 = DISABLE_COOL_LED_TRI;
+    stTemp.m_uIsTri2 = DISABLE_COOL_LED_TRI;
+    stTemp.m_u16Tri1Time = LIGHT_TRI_TIME_DEFAULT;
+    stTemp.m_u16Tri2Time = LIGHT_TRI_TIME_DEFAULT;
+
+    stTemp.m_u16Level1 = (ui->cb_LT1->isChecked())?ui->hsd_LT1->value():0;
+    stTemp.m_u16Level2 = (ui->cb_LT2->isChecked())?ui->hsd_LT2->value():0;
+    ui->spb_LT1->setValue(stTemp.m_u16Level1);
+    ui->spb_LT2->setValue(stTemp.m_u16Level2);//相当于hsd值改变的槽
+
+    //检查是否重复任务
+    if( (stTemp.m_eTaskType == m_pActionLight->m_stTaskToSend.m_eTaskType)
+            && (stTemp.m_u16Level1 == m_pActionLight->m_stTaskToSend.m_u16Level1)
+            && (stTemp.m_u16Level2 == m_pActionLight->m_stTaskToSend.m_u16Level2) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionLight->m_stTaskToSend = stTemp;
+    _LOG(QString("task is set"));
+
+    m_pActionLight->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_LTClose_clicked()
+{
+    ST_LIGHT_SETTASK_INFO stTemp;
+    stTemp.m_eTaskType = emTaskDSetLED_Control;
+    stTemp.m_uIsTri1 = DISABLE_COOL_LED_TRI;
+    stTemp.m_uIsTri2 = DISABLE_COOL_LED_TRI;
+    stTemp.m_u16Tri1Time = LIGHT_TRI_TIME_DEFAULT;
+    stTemp.m_u16Tri2Time = LIGHT_TRI_TIME_DEFAULT;
+    if(ui->cb_LT1->isChecked())
+        stTemp.m_u16Level1 = 0;
+    else
+        stTemp.m_u16Level1 = m_pActionLight->m_stTaskToSend.m_u16Level1;
+    if(ui->cb_LT2->isChecked())
+        stTemp.m_u16Level2 = 0;
+    else
+        stTemp.m_u16Level2 = m_pActionLight->m_stTaskToSend.m_u16Level2;
+
+    //检查是否重复任务
+    if( (stTemp.m_eTaskType == m_pActionLight->m_stTaskToSend.m_eTaskType)
+            && (stTemp.m_u16Level1 == m_pActionLight->m_stTaskToSend.m_u16Level1)
+            && (stTemp.m_u16Level2 == m_pActionLight->m_stTaskToSend.m_u16Level2) )
+    {
+        _LOG(QString("same task"));
+        return;
+    }
+    //非重复任务
+    m_pActionLight->m_stTaskToSend = stTemp;
+    _LOG(QString("task is set"));
+
+    m_pActionLight->setTaskSend();
+}
+
+
+void FormCtrl::on_pbtn_MVLaser_clicked()
+{
+    if("打开激光" == ui->pbtn_MVLaser->text())
+        m_pActionParameterSet->m_u8IsOpenLaser = 1;
+    else
+        m_pActionParameterSet->m_u8IsOpenLaser = 0;
+
+    m_pActionParameterSet->setMotorVLaser();
 }
 

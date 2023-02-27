@@ -21,6 +21,8 @@
 #include "actionboiltest.h"
 #include "actionclaw.h"
 #include "actionfourpostest.h"
+#include "actionqrscan.h"
+#include "actionlight.h"
 
 #include <QSettings>
 
@@ -71,6 +73,8 @@ public:
     ActionBOilTest *m_pActionBOilTest;//油测试流程
     ActionClaw *m_pActionClaw;//夹爪模块控制
     ActionFourPosTest *m_pActionFourPosTest;//四点稳定性测试
+    ActionQRScan *m_pActionQRScan;//二维码扫描控制
+    ActionLight *m_pActionLight;
 
 private:
     Ui::FormCtrl *ui;
@@ -84,7 +88,7 @@ private:
     //ini写入崩溃测试
     QSettings *iniSet;
 
-    void SfScan_SlideInfo_Show();
+    void SfScan_SlideInfo_Show(ST_MOTORV_SLIDEINFO_D &stData);
 
 private slots:
     void slot_TransportTestThread_Stop();
@@ -96,6 +100,11 @@ private slots:
     void initForm();
     void initConfig();
     void saveConfig();
+    void slot_cbLT1_StateChanged(int state);
+    void slot_cbLT2_StateChanged(int state);
+    void slot_spbLT1_editFinished();
+    void slot_spbLT2_editFinished();
+
     void slot_BeltIN_UiUpdate();
     void slot_BeltOUT_UiUpdate();
     void slot_PoleIN_UiUpdate();
@@ -107,6 +116,10 @@ private slots:
     void slot_CleanOil_UiUpdate();
     void slot_DripOil_UiUpdate();
     void slot_Claw_UiUpdate();
+    void slot_SlideInfo_UiUpdate();
+    void slot_QRScan_UiUpdate();
+    void slot_Light_UiUpdate();
+    void slot_MVLaser_UiUpdate(uint8_t);
 private slots:
     //皮带入
     void on_rbtn_BIin_clicked();
@@ -134,9 +147,11 @@ private slots:
     void on_pbtn_UPstop_clicked();
     //垂直扫描电机
     void on_rbtn_MVzero_clicked();
-    void on_rbtn_MVscan_clicked();
+    void on_rbtn_MVout_clicked();
     void on_rbtn_MVmove_clicked();
     void on_pbtn_MVstop_clicked();
+    void on_pbtn_MVscan_clicked();
+    void on_pbtn_MVrefresh_clicked();
     //XYZ模块
     void on_rbtn_XLineZero_clicked();
     void on_rbtn_YLineIn_clicked();
@@ -169,12 +184,19 @@ private slots:
     void on_pbtn_CWctrl_clicked();
     void on_rbtn_CWslideno_clicked(bool checked);
     void on_rbtn_CWslidein_clicked(bool checked);
+    //四点测试
     void on_pbtn_fourPConfirm_clicked();
     void on_pbtn_fourPTest_clicked();
     void on_cb_FpSave_clicked(bool checked);
+    //机械臂电机控制
     void on_pbtn_motorOn_clicked();
     void on_pbtn_motorOff_clicked();
     void on_pbtn_motorClear_clicked();
+    //二维码扫描控制
+    void on_pbtn_QRscan_clicked();
+    void on_pbtn_LTOpen_clicked();
+    void on_pbtn_LTClose_clicked();
+    void on_pbtn_MVLaser_clicked();
 };
 
 #endif // FORMCTRL_H

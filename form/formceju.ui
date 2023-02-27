@@ -178,6 +178,9 @@
       <property name="text">
        <string>外部触发</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item>

@@ -9,6 +9,8 @@ ActionParameterSet::ActionParameterSet(QObject *parent)
 {
     m_bISTrailInfoSet = false;
     HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_setEquationParam, this);
+    HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_getBoxVRecords, this);
+    HardCmdParseAgent::GetInstance().registerParser(EnumBoardId_setBoxVLedOn, this);
 }
 
 emWKCmdType ActionParameterSet::parseCmd(uint8_t* puData)
@@ -42,34 +44,54 @@ emWKCmdType ActionParameterSet::parseCmd(uint8_t* puData)
 //        emit signal_UiUpdate();
         return emCMD_GET;
     }
-
-    if (EnumBoardId_setEncodeCh == uCmdId)
+    else if (EnumBoardId_getBoxVRecords == uCmdId)
     {
-        // 向gettask链表中压入查询指令
-//        getTaskSend();
-        _LOG(QString("parse setTask cmd return"));
-        return emCMD_SET;
-    }
+        uint16_t uLen = CMD_CONTENT_INDEX;
 
-    if (EnumBoardId_getEncodeCh == uCmdId)
+        //......协议解析补全
+        m_stMotorVGetSlideInfoD.u8AskNum = puData[uLen];
+        uLen += 1;
+
+        m_stMotorVGetSlideInfoD.u8BgnIdx = puData[uLen];
+        uLen += 1;
+
+        m_stMotorVGetSlideInfoD.u8TotalNum = puData[uLen];
+        uLen += 1;
+
+        m_stMotorVGetSlideInfoD.u8GetNum = puData[uLen];
+        uLen += 1;
+
+        for(uint8_t i=m_stMotorVGetSlideInfoD.u8BgnIdx; i<m_stMotorVGetSlideInfoD.u8GetNum; i++)
+        {
+            m_stMotorVGetSlideInfoD.stSlidePos[i].m_u8insex = puData[uLen];
+            uLen += 1;
+            m_stMotorVGetSlideInfoD.stSlidePos[i].m_u8ztoo = puData[uLen];
+            uLen += 1;
+            m_stMotorVGetSlideInfoD.stSlidePos[i].m_i32pos = (int32_t)common_read_u32(&puData[uLen]);
+            uLen += 4;
+        }
+        // 更新 垂直扫描 界面信息
+        if(m_stMotorVGetSlideInfoD.u8GetNum > 0)
+            emit signal_SlideInfoUiUpdate();
+        return emCMD_GET;
+    }
+    if (EnumBoardId_setBoxVLedOn == uCmdId)
     {
         uint8_t uLen = CMD_CONTENT_INDEX;
 
         //......协议解析补全
-        m_stTrigInfoD.emAimAxis = (emMotorObj)puData[uLen];
+        m_u8IsOpenLaserD = (bool)puData[uLen];
         uLen += 1;
-
-        m_stTrigInfoD.u16TrigDistance = common_read_u16(&puData[uLen]);
-        uLen += 2;
-
-        m_stTrigInfoD.u8TrigObj = puData[uLen];;
-        uLen += 1;
-
-        // 更新 垂直扫描 界面信息
-//        emit signal_UiUpdate();
+        // 更新 垂直扫描激光按钮 界面信息
+        emit signal_MVLaserUiUpdate(m_u8IsOpenLaserD);
         return emCMD_GET;
     }
     _LOG(QString("No such cmd = [%1]").arg(uCmdId));
+}
+
+void ActionParameterSet::getMotorVSlideData(ST_MOTORV_SLIDEINFO_D &stData)
+{
+    stData = m_stMotorVGetSlideInfoD;
 }
 
 void ActionParameterSet::setFollowParameterSend()
@@ -100,19 +122,18 @@ void ActionParameterSet::setFollowParameterSend()
     }
 }
 
-void ActionParameterSet::setTrigParameterSend()
+//获取垂直扫描的玻片信息
+void ActionParameterSet::getMotorVScanInfo()
 {
     uint16_t i = 0;
     STRUCT_SETTASK_MESSAGE_INFO *pWriteAddr;
 
     //把 settask 指令封装到发送队列
-    pWriteAddr = stTaskFifo.getWriteMessageAddr(EnumBoardId_setEncodeCh);
+    pWriteAddr = stTaskFifo.getWriteMessageAddr(EnumBoardId_getBoxVRecords);
     if(pWriteAddr)
-    {
-        pWriteAddr->u8CmdContent[i++] = (uint8_t)m_stTrigInfoToSend.emAimAxis;
-        common_write_u16(&pWriteAddr->u8CmdContent[i], (uint16_t)m_stTrigInfoToSend.u16TrigDistance);
-        i += 2;
-        pWriteAddr->u8CmdContent[i++] = (uint8_t)m_stTrigInfoToSend.u8TrigObj;
+    {/* 请求：AskNum(U8) + BgnIdx(U8) */
+        pWriteAddr->u8CmdContent[i++] = m_stMotorVGetSlideInfoSet.u8AskNum;
+        pWriteAddr->u8CmdContent[i++] = m_stMotorVGetSlideInfoSet.u8BgnIdx;
         pWriteAddr->u16CmdContentLen = i;
 
         stTaskFifo.pushWriteMessageToFifo();
@@ -123,15 +144,19 @@ void ActionParameterSet::setTrigParameterSend()
     }
 }
 
-void ActionParameterSet::getTrigParameterSend()
+//获取垂直扫描的玻片信息
+void ActionParameterSet::setMotorVLaser()
 {
+    uint16_t i = 0;
     STRUCT_SETTASK_MESSAGE_INFO *pWriteAddr;
 
     //把 settask 指令封装到发送队列
-    pWriteAddr = stTaskFifo.getWriteMessageAddr(EnumBoardId_getEncodeCh);
+    pWriteAddr = stTaskFifo.getWriteMessageAddr(EnumBoardId_setBoxVLedOn);
     if(pWriteAddr)
     {
-        pWriteAddr->u16CmdContentLen = 0;
+        pWriteAddr->u8CmdContent[i++] = m_u8IsOpenLaser;
+        pWriteAddr->u16CmdContentLen = i;
+
         stTaskFifo.pushWriteMessageToFifo();
     }
     else

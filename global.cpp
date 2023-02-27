@@ -132,7 +132,7 @@ static const uint8_t auchCRCLo[] = {
  * 输入参数：puchMsg是要进行CRC校验的消息，usDataLen是消息中字节数
  * 函数输出：计算出来的CRC校验码
  */
-uint16_t Mb_CRC16_Generate(uint8_t *puckMsg, uint8_t usDataLen)
+uint16_t Mb_CRC16_Generate(uint8_t *puckMsg, uint16_t usDataLen)
 {
     uint8_t uchCRCHi = 0xFF;
     uint8_t uchCRCLo = 0xFF;

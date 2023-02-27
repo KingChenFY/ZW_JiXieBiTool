@@ -25,6 +25,11 @@ public:
     static QString fourPointT;  //单点时长
     static QString fourPointTurnT;  //换点间隔
 
+    //垂直仓参数配置
+    static QString MVOutPos;
+    static QString MVScanStartPos;
+    static QString MVScanEndPos;
+
     //读写配置参数
     static void readConfig();           //读取配置参数
     static void writeConfig();          //写入配置参数

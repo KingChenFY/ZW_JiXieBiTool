@@ -12,7 +12,9 @@ STRUCT_WK_TASKCMD_LIST st_wk_taskcmd_list[EnumBoardObject_End] =
     {EnumBoardObject_MotorXYZ, EnumBoardId_setXYZTask, EnumBoardId_getXYZTaskInfo},
     {EnumBoardObject_CleanOil, EnumBoardId_setCleanOilTask, EnumBoardId_getCleanOilTaskInfo},
     {EnumBoardObject_DripOil, EnumBoardId_setOilTask, EnumBoardId_getOilTaskInfo},
-    {EnumBoardObject_Claw, EnumBoardId_setGripperTask, EnumBoardId_getGripperTaskInfo}
+    {EnumBoardObject_Claw, EnumBoardId_setGripperTask, EnumBoardId_getGripperTaskInfo},
+    {EnumBoardObject_QRScan, EnumBoardId_setQRScannerTask, EnumBoardId_getQRScannerTaskInfo},
+    {EnumBoardObject_Light, EnumBoardId_setBrightTask, EnumBoardId_getBrightTaskInfo}
 };
 
 uint16_t formatBoardCmd(uint8_t cmdid, uint8_t* cmdcontent, uint16_t cmdcontentLen)

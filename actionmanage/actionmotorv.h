@@ -9,12 +9,6 @@
 #include "harddef.h"
 #include "hardselutedef.h"
 
-#define SmearCoverFlagTurnOn 0x71 // 激光扫玻片的遮挡信号，未遮挡转遮挡
-#define SmearCoverFlagTurnOff 0x70 // 激光扫玻片的遮挡信号，遮挡转未遮挡
-#define SmearCoverRecordMaxNum 200 // 激光扫玻片的遮挡信号记录数量值获取
-#define SmearBoxColIdWait 1 // 等待列号
-#define SmearBoxColIdFinish 2 // 完成列号
-
 #define WK_PhyPosNotLimit  (0x7FFFFFFF)//以此为坐标表示无需移动(物理)
 #define WK_PosNotLimit ((float)(0x7FFFFFFF))//以此为坐标表示无需移动(逻辑)
 #define LOGIC_ZERO  ((float)(0.00))//逻辑起点
@@ -76,6 +70,8 @@ public:
     emWKCmdType parseCmd(uint8_t* puData);//回复解析
     bool setTaskCmdReSend(uint32_t sdNum);//重发当前模块的设置任务指令
     bool getBoxLieDownPos(int32_t &pos);//获取盒子翻转位置
+    bool isTargetPosInLine(int32_t &pos);//目标位置是否超边界
+    bool isBoxVLineGet();
 
     static uint32_t u32MaxReadNum_to_reSend;
     ST_MOTORV_SETTASK_INFO m_stTaskToSend;//准备设置的任务信息/之前设置的任务信息

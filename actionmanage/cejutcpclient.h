@@ -7,6 +7,7 @@
 
 #define WK_CeJuRecordNumMax 4096*14 //测距最大记录个数
 #define WK_CeJuAskNumMax	100//单次取最大个数
+#define CEJU_READ_FREQ      100//ms
 
 typedef struct
 {
